@@ -16,7 +16,7 @@ public class ElkrommFactoryTest {
     }
 
     @Test
-    public void testFactory2() {
+    public void testFactorySingleton() {
         Object factory = ElkrommFactory.getFactory();
 
         assertNotNull(factory);
@@ -27,5 +27,17 @@ public class ElkrommFactoryTest {
         assertNotNull(factory2);
         assertTrue(factory2 instanceof ElkrommFactory);
         assertSame(factory, factory2);
+    }
+
+    @Test
+    public void testFacade() {
+        ElkrommFactory factory = ElkrommFactory.getFactory();
+
+        assertNotNull(factory);
+
+        Object facade = factory.getFacade(null, 0, 0);
+
+        assertNotNull(facade);
+        assertTrue(facade instanceof ElkrommFacade);
     }
 }
