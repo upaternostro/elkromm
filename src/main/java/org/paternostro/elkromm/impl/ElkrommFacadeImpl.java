@@ -29,31 +29,6 @@ public class ElkrommFacadeImpl implements ElkrommFacade
 {
     public static final Logger logger = LoggerFactory.getLogger(ElkrommFacadeImpl.class);
 
-    public static final byte MAX_DATA_LENGTH = (byte)140;
-
-    public static final byte SOH = 0x01;
-    public static final byte ETX = 0x03;
-    public static final byte ACK = 0x06;
-    public static final byte DC1 = 0x11;
-    public static final byte SYN = 0x16;
-
-    public static final byte CMD_HELLO = 0x60;
-    public static final byte CMD_LOGIN = 0x49;
-    public static final byte CMD_SEND = 0x65;
-    public static final byte CMD_LOGOUT = 0x63;
-    public static final byte CMD_PARTITIONS_AND_AREAS = 0x55;
-    public static final byte CMD_SYSTEM_STATUS = (byte)0x80;
-    public static final byte CMD_ARM_DISARM_SECTOR = (byte)0x81;
-    public static final byte CMD_INPUT_STATUS = (byte)0x84;
-    public static final byte CMD_EXPANSIONS = 0x51;
-    public static final byte CMD_EXCLUDE_INCLUDE_INPUT = (byte)0x83;
-    public static final byte CMD_PERIPHERAL_UNITS_ADDRESSES = 0x62;
-    public static final byte CMD_CHECKSUM = 0x50;
-    public static final byte CMD_USERS = 0x5b;
-    public static final byte CMD_KEYS = 0x5c;
-    public static final byte CMD_USER_ENABLINGS = (byte)0x87;
-    public static final byte CMD_ENABLE_DISABLE_USER = (byte)0x88;
-
     public static final int DELAY = 100;
 
     private InetAddress inetAddr;
@@ -118,7 +93,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             Thread.sleep(DELAY);
             os.write(preparePacket(this.plantCode, CMD_HELLO));
             Thread.sleep(DELAY);
-            if (getNextDeescapedByte(is) != ACK) throw new AssertionError("No ACK received");
+            if (getNextDeescapedByte(is) != BYTE_ACK) throw new AssertionError("No ACK received");
 
             List<Byte>  plantCodeBytes = bcd(plantCode, 4);
             List<Byte>  technicalCodeBytes = bcd(technicalCode, 3);
@@ -130,12 +105,12 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             Thread.sleep(DELAY);
             os.write(preparePacket(this.plantCode, CMD_LOGIN, loginData));
             Thread.sleep(DELAY);
-            if (getNextDeescapedByte(is) != ACK) throw new AssertionError("No ACK received");
+            if (getNextDeescapedByte(is) != BYTE_ACK) throw new AssertionError("No ACK received");
 
             Thread.sleep(DELAY);
             os.write(preparePacket(this.plantCode, CMD_SEND));
             Thread.sleep(DELAY);
-            if (getNextDeescapedByte(is) != SYN) throw new AssertionError("No SYN received");
+            if (getNextDeescapedByte(is) != BYTE_SYN) throw new AssertionError("No SYN received");
 
             status = Status.ST_LOGGED_IN;
         } catch (IOException e) {
@@ -154,7 +129,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             Thread.sleep(DELAY);
             os.write(preparePacket(this.plantCode, CMD_SEND));
             Thread.sleep(DELAY);
-            if (getNextDeescapedByte(is) != SYN) throw new AssertionError("No SYN received");
+            if (getNextDeescapedByte(is) != BYTE_SYN) throw new AssertionError("No SYN received");
         } catch (IOException e) {
             logger.error("Communication error", e);
         } catch (InterruptedException e) {
@@ -234,12 +209,12 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             Thread.sleep(DELAY);
             os.write(preparePacket(this.plantCode, CMD_ARM_DISARM_SECTOR, data));
             Thread.sleep(DELAY);
-            if (is.read() != SYN) throw new AssertionError("No SYN received");
+            if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
 
             Thread.sleep(DELAY);
             os.write(preparePacket(this.plantCode, CMD_SEND));
             Thread.sleep(DELAY);
-            if (is.read() != SYN) throw new AssertionError("No SYN received");
+            if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
         } catch (IOException e) {
             logger.error("Communication error", e);
         } catch (InterruptedException e) {
@@ -286,12 +261,12 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             Thread.sleep(DELAY);
             os.write(preparePacket(this.plantCode, CMD_EXCLUDE_INCLUDE_INPUT, data));
             Thread.sleep(DELAY);
-            if (is.read() != SYN) throw new AssertionError("No SYN received");
+            if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
 
             Thread.sleep(DELAY);
             os.write(preparePacket(this.plantCode, CMD_SEND));
             Thread.sleep(DELAY);
-            if (is.read() != SYN) throw new AssertionError("No SYN received");
+            if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
         } catch (IOException e) {
             logger.error("Communication error", e);
         } catch (InterruptedException e) {
@@ -482,12 +457,12 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             Thread.sleep(DELAY);
             os.write(preparePacket(this.plantCode, CMD_ENABLE_DISABLE_USER, data));
             Thread.sleep(DELAY);
-            if (is.read() != SYN) throw new AssertionError("No SYN received");
+            if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
 
             Thread.sleep(DELAY);
             os.write(preparePacket(this.plantCode, CMD_SEND));
             Thread.sleep(DELAY);
-            if (is.read() != SYN) throw new AssertionError("No SYN received");
+            if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
         } catch (IOException e) {
             logger.error("Communication error", e);
         } catch (InterruptedException e) {
@@ -505,13 +480,13 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             Thread.sleep(DELAY);
             os.write(preparePacket(this.plantCode, cmd));
             Thread.sleep(DELAY);
-            if (is.read() != SYN) throw new AssertionError("No SYN received");
+            if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
             data = readPacket(this.plantCode, is, os);
 
             Thread.sleep(DELAY);
             os.write(preparePacket(this.plantCode, CMD_SEND));
             Thread.sleep(DELAY);
-            if (is.read() != SYN) throw new AssertionError("No SYN received");
+            if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
         } catch (IOException e) {
             logger.error("Communication error", e);
         } catch (InterruptedException e) {
@@ -529,7 +504,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             Thread.sleep(DELAY);
             os.write(preparePacket(this.plantCode, CMD_LOGOUT));
             Thread.sleep(DELAY);
-            if (is.read() != SYN) throw new AssertionError("No SYN received");
+            if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
 
             status = Status.ST_CONNECTED;
         } catch (IOException e) {
@@ -600,7 +575,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         byte[]  retval = new byte[dataLength + 11];
 
         // Setup header
-        retval[0] = SOH;
+        retval[0] = BYTE_SOH;
         retval[1] = bcdPlantCode.get(0);
         retval[2] = bcdPlantCode.get(1);
         retval[3] = packets;
@@ -629,7 +604,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         int escape = 0;
 
         for (byte i = 1; i < retval.length - 1; i++) {
-            if (retval[i] == SOH || retval[i] == ETX) {
+            if (retval[i] == BYTE_SOH || retval[i] == BYTE_ETX) {
                 escape++;
             }
         }
@@ -640,8 +615,8 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             temp[0] = retval[0];
 
             for (byte i = 1, j = 1; i < retval.length - 1; i++, j++) {
-                if (retval[i] == SOH || retval[i] == ETX) {
-                    temp[j++] = DC1;
+                if (retval[i] == BYTE_SOH || retval[i] == BYTE_ETX) {
+                    temp[j++] = BYTE_DC1;
                 }
 
                 temp[j] = retval[i];
@@ -651,7 +626,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         }
 
         // Footer
-        retval[retval.length - 1] = ETX;
+        retval[retval.length - 1] = BYTE_ETX;
 
         return retval;
     }
@@ -669,12 +644,12 @@ public class ElkrommFacadeImpl implements ElkrommFacade
                 Thread.sleep(DELAY);
                 os.write(preparePacket(this.plantCode, CMD_SEND));
                 Thread.sleep(DELAY);
-                if (is.read() != SYN) throw new AssertionError("No SYN received");
+                if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
             }
 
             int c = is.read();
 
-            if (c != SOH) throw new AssertionError("No SOH received");
+            if (c != BYTE_SOH) throw new AssertionError("No SOH received");
 
             int checksum = 0;
 
@@ -730,7 +705,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             if (checksum != 0x10000) throw new AssertionError("Wrong checksum");
 
             c = is.read();
-            if (c != ETX) throw new AssertionError("Wrong packet[last]");
+            if (c != BYTE_ETX) throw new AssertionError("Wrong packet[last]");
         }
 
         return retval;
@@ -740,7 +715,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     {
         int retval = is.read();
 
-        if (retval == DC1) {
+        if (retval == BYTE_DC1) {
             retval = is.read();
         }
 
