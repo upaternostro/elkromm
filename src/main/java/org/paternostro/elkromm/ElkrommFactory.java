@@ -67,8 +67,8 @@ public class ElkrommFactory {
     {
     }
 
-    public ElkrommFacade getFacade(InetAddress inetAddr, int port)
+    public ElkrommFacade getFacade(InetAddress inetAddr, int port, int plantCode)
     {
-        return new ElkrommFacadeImpl(inetAddr, port);
+        return new ElkrommFacadeImpl(inetAddr, port, plantCode);
     }
 }
