@@ -567,7 +567,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     {
         assert(index <= packets);
 
-        int dataLength = data == null ? 0 : data.length);
+        int dataLength = data == null ? 0 : data.length;
         List<Byte> bcdPlantCode = bcd(plantCode, 4);
 
         assert(dataLength <= MAX_DATA_LENGTH);
