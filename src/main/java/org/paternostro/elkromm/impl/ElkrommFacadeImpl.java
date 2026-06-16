@@ -587,21 +587,18 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         retval[2] = bcdPlantCode.get(1);
         retval[3] = packets;
         retval[4] = index;
-        retval[5] = (byte)dataLength;
+        retval[5] = (byte)(dataLength & 0xFF);
         retval[6] = 0x00;
         retval[7] = command;
 
-        // Copy data
-        for (byte i = 0; i < dataLength; i++) {
-            retval[8 + i] = data[i];
-        }
+        // Copy data if any
+        if (dataLength > 0) System.arraycopy(data, 0, retval, 8, dataLength);
 
         // Compute checksum
         int checksum = 0x10000;
-
+        
         for (byte i = 1; i < dataLength + 8; i++) {
-            checksum -= retval[i];
-            if (retval[i] < 0) checksum -= 256;
+            checksum -= retval[i] & 0xFF;
         }
 
         retval[dataLength + 8] = (byte)((checksum & 0xFF00) >> 8);
