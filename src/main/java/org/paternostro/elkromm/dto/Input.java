@@ -23,7 +23,7 @@ public class Input implements Serializable, Comparable<Input>
             return value;
         }
 
-        public static Configuration toConfiguration(byte value) {
+        public static Configuration valueOf(byte value) {
             Configuration   retval = null;
 
             for (Configuration pivot : Configuration.values()) {
@@ -55,7 +55,7 @@ public class Input implements Serializable, Comparable<Input>
             return value;
         }
 
-        public static Specialization toSpecialization(byte value) {
+        public static Specialization valueOf(byte value) {
             Specialization  retval = null;
 
             for (Specialization pivot : Specialization.values()) {

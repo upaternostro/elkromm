@@ -23,7 +23,7 @@ public class Output implements Serializable, Comparable<Output>
             return value;
         }
 
-        public static Type toType(byte value) {
+        public static Type valueOf(byte value) {
             Type  retval = null;
 
             for (Type pivot : Type.values()) {
@@ -58,7 +58,7 @@ public class Output implements Serializable, Comparable<Output>
             return value;
         }
 
-        public static Specialization toSpecialization(byte value) {
+        public static Specialization valueOf(byte value) {
             Specialization  retval = null;
 
             for (Specialization pivot : Specialization.values()) {

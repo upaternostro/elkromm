@@ -23,7 +23,7 @@ public abstract class Credential implements Serializable, Comparable<Credential>
             return value;
         }
 
-        public static Enabling toEnabling(byte value) {
+        public static Enabling valueOf(byte value) {
             Enabling    retval = null;
 
             for (Enabling pivot : Enabling.values()) {

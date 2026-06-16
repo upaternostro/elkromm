@@ -28,7 +28,7 @@ public abstract class Credentials implements ElkrommSerializer<Credential[]>
         Credential[]  retval = new Credential[ElkrommFacade.MAX_CREDENTIALS];
 
         for (byte i = 0; i < ElkrommFacade.MAX_CREDENTIALS; i++) {
-            retval[i] = allocateCredential(i + 1, ElkrommUtils.getText(data, 2 + i*26, 24), Credential.Enabling.toEnabling(data[i*26]), ElkrommUtils.unpackPartitions(data[i*26 + 1]));
+            retval[i] = allocateCredential(i + 1, ElkrommUtils.getText(data, 2 + i*26, 24), Credential.Enabling.valueOf(data[i*26]), ElkrommUtils.unpackPartitions(data[i*26 + 1]));
         }
 
         return retval;

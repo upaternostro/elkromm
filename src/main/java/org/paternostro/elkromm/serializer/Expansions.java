@@ -89,7 +89,7 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
                     continue;
                 }
 
-                retval[i].addInput(new Input(data[offset], Input.Configuration.toConfiguration(data[offset + 1]), Input.Specialization.toSpecialization(data[offset + 2]), ElkrommUtils.unpackPartitions(data[offset + 5]), ElkrommUtils.getText(data, offset + 6, ElkrommFacade.NAME_LENGTH)));
+                retval[i].addInput(new Input(data[offset], Input.Configuration.valueOf(data[offset + 1]), Input.Specialization.valueOf(data[offset + 2]), ElkrommUtils.unpackPartitions(data[offset + 5]), ElkrommUtils.getText(data, offset + 6, ElkrommFacade.NAME_LENGTH)));
             }
 
             for (int j = 0; j < 6; j++) {
@@ -100,7 +100,7 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
                     continue;
                 }
 
-                retval[i].addOutput(new Output(data[offset], Output.Type.toType(data[offset + 1]), ElkrommUtils.unpackPartitions(data[offset + 2]), Output.Specialization.toSpecialization(data[offset + 3]), ElkrommUtils.getText(data, offset + 8, ElkrommFacade.NAME_LENGTH)));
+                retval[i].addOutput(new Output(data[offset], Output.Type.valueOf(data[offset + 1]), ElkrommUtils.unpackPartitions(data[offset + 2]), Output.Specialization.valueOf(data[offset + 3]), ElkrommUtils.getText(data, offset + 8, ElkrommFacade.NAME_LENGTH)));
             }
 
 //            int checksum = 0;
