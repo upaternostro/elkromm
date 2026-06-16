@@ -1,5 +1,9 @@
 package org.paternostro.elkromm;
 
+import java.net.InetAddress;
+import java.util.List;
+import java.util.Map;
+
 import org.paternostro.elkromm.dto.AreasAndPartitions;
 import org.paternostro.elkromm.dto.Checksums;
 import org.paternostro.elkromm.dto.Key;
@@ -7,12 +11,10 @@ import org.paternostro.elkromm.dto.PeripheralUnits;
 import org.paternostro.elkromm.dto.User;
 import org.paternostro.elkromm.dto.Expansion;
 
-import java.util.List;
-import java.util.Map;
-
 public interface ElkrommFacade
 {
     enum Status {
+        ST_NOT_INITIALIZED,
         ST_DISCONNECTED,
         ST_CONNECTED,
         ST_LOGGED_IN
@@ -93,6 +95,7 @@ public interface ElkrommFacade
         }
     }
 
+    void init(InetAddress inetAddr, int port, int plantCode);
     Status getStatus();
     void connect();
     void disconnect();

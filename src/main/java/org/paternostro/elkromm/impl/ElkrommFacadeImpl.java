@@ -39,8 +39,15 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     private InputStream is;
     private OutputStream os;
 
-    public ElkrommFacadeImpl(InetAddress inetAddr, int port, int plantCode)
+    public ElkrommFacadeImpl()
     {
+        this.status = Status.ST_NOT_INITIALIZED;
+    }
+
+    public void init(InetAddress inetAddr, int port, int plantCode)
+    {
+        if (status != Status.ST_NOT_INITIALIZED) throw new AssertionError("Wrong status");
+        
         this.inetAddr = inetAddr;
         this.port = port;
         this.plantCode = plantCode;

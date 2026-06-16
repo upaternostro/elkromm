@@ -17,7 +17,7 @@ public class ElkrommFacadeTest {
 
         assertNotNull(factory);
 
-        ElkrommFacade facade = factory.getFacade(InetAddress.getLocalHost(), 8030, 12345678);
+        ElkrommFacade facade = factory.getElkrommFacade(InetAddress.getLocalHost(), 8030, 12345678);
 
         assertNotNull(facade);
         assertEquals(facade.getStatus(), Status.ST_DISCONNECTED);
@@ -59,7 +59,7 @@ public class ElkrommFacadeTest {
 
         assertNotNull(factory);
 
-        ElkrommFacade facade = factory.getFacade(InetAddress.getLocalHost(), 8030, 12345678);
+        ElkrommFacade facade = factory.getElkrommFacade(InetAddress.getLocalHost(), 8030, 12345678);
 
         assertNotNull(facade);
         assertEquals(facade.getStatus(), Status.ST_DISCONNECTED);

@@ -35,7 +35,7 @@ public class ElkrommFactoryTest {
 
         assertNotNull(factory);
 
-        Object facade = factory.getFacade(null, 0, 0);
+        Object facade = factory.getElkrommFacade(null, 0, 0);
 
         assertNotNull(facade);
         assertTrue(facade instanceof ElkrommFacade);
