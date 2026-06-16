@@ -40,23 +40,6 @@ public interface ElkrommFacade
     public static final byte BYTE_NAK = 0x15;
     public static final byte BYTE_SYN = 0x16;
 
-    public static final byte CMD_HELLO = 0x60;
-    public static final byte CMD_LOGIN = 0x49;
-    public static final byte CMD_SEND = 0x65;
-    public static final byte CMD_LOGOUT = 0x63;
-    public static final byte CMD_PARTITIONS_AND_AREAS = 0x55;
-    public static final byte CMD_SYSTEM_STATUS = (byte)0x80;
-    public static final byte CMD_ARM_DISARM_SECTOR = (byte)0x81;
-    public static final byte CMD_INPUT_STATUS = (byte)0x84;
-    public static final byte CMD_EXPANSIONS = 0x51;
-    public static final byte CMD_EXCLUDE_INCLUDE_INPUT = (byte)0x83;
-    public static final byte CMD_PERIPHERAL_UNITS_ADDRESSES = 0x62;
-    public static final byte CMD_CHECKSUM = 0x50;
-    public static final byte CMD_USERS = 0x5b;
-    public static final byte CMD_KEYS = 0x5c;
-    public static final byte CMD_USER_ENABLINGS = (byte)0x87;
-    public static final byte CMD_ENABLE_DISABLE_USER = (byte)0x88;
-
     enum Partition {
         P_ONE(0x01),
         P_TWO(0x02),

@@ -14,6 +14,7 @@ import java.util.Map;
 import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.ElkrommUtils;
+import org.paternostro.elkromm.ElkronCommand;
 import org.paternostro.elkromm.dto.AreasAndPartitions;
 import org.paternostro.elkromm.dto.Checksums;
 import org.paternostro.elkromm.dto.Credential;
@@ -95,7 +96,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
 
         try {
             Thread.sleep(DELAY);
-            os.write(preparePacket(this.plantCode, CMD_HELLO));
+            os.write(preparePacket(this.plantCode, ElkronCommand.HELLO));
             Thread.sleep(DELAY);
             if (getNextDeescapedByte(is) != BYTE_ACK) throw new AssertionError("No ACK received");
 
@@ -107,12 +108,12 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             byte[] loginData = listToArray(plantCodeBytes);
 
             Thread.sleep(DELAY);
-            os.write(preparePacket(this.plantCode, CMD_LOGIN, loginData));
+            os.write(preparePacket(this.plantCode, ElkronCommand.LOGIN, loginData));
             Thread.sleep(DELAY);
             if (getNextDeescapedByte(is) != BYTE_ACK) throw new AssertionError("No ACK received");
 
             Thread.sleep(DELAY);
-            os.write(preparePacket(this.plantCode, CMD_SEND));
+            os.write(preparePacket(this.plantCode, ElkronCommand.SEND));
             Thread.sleep(DELAY);
             if (getNextDeescapedByte(is) != BYTE_SYN) throw new AssertionError("No SYN received");
 
@@ -131,7 +132,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
 
         try {
             Thread.sleep(DELAY);
-            os.write(preparePacket(this.plantCode, CMD_SEND));
+            os.write(preparePacket(this.plantCode, ElkronCommand.SEND));
             Thread.sleep(DELAY);
             if (getNextDeescapedByte(is) != BYTE_SYN) throw new AssertionError("No SYN received");
         } catch (IOException e) {
@@ -144,7 +145,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     @Override
     public AreasAndPartitions getAreasAndPartitions()
     {
-        byte[]  data = getData(CMD_PARTITIONS_AND_AREAS);
+        byte[]  data = getData(ElkronCommand.PARTITIONS_AND_AREAS);
 
         return ElkrommFactory.getFactory().getAreasAndPartitionsSerializer().deserialize(data);
     }
@@ -153,7 +154,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     public boolean[] getSystemStatus()
     {
         boolean[]   retval = new boolean[MAX_PARTITIONS];
-        byte[]      data = getData(CMD_SYSTEM_STATUS);
+        byte[]      data = getData(ElkronCommand.SYSTEM_STATUS);
 
         for (Partition partition : Partition.values()) {
             retval[partition.ordinal()] = (data[0] & partition.getBitMask()) != 0x00;
@@ -174,12 +175,12 @@ public class ElkrommFacadeImpl implements ElkrommFacade
 
         try {
             Thread.sleep(DELAY);
-            os.write(preparePacket(this.plantCode, CMD_ARM_DISARM_SECTOR, data));
+            os.write(preparePacket(this.plantCode, ElkronCommand.ARM_DISARM_SECTOR, data));
             Thread.sleep(DELAY);
             if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
 
             Thread.sleep(DELAY);
-            os.write(preparePacket(this.plantCode, CMD_SEND));
+            os.write(preparePacket(this.plantCode, ElkronCommand.SEND));
             Thread.sleep(DELAY);
             if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
         } catch (IOException e) {
@@ -193,7 +194,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     public Map<InputStatus,List<Integer>> getInputStatus()
     {
         Map<InputStatus,List<Integer>>  retval = new HashMap<>();
-        byte[]                          data = getData(CMD_INPUT_STATUS);
+        byte[]                          data = getData(ElkronCommand.INPUT_STATUS);
 
         for (InputStatus status : InputStatus.values()) {
             List<Integer>   inputs = new ArrayList<>();
@@ -226,12 +227,12 @@ public class ElkrommFacadeImpl implements ElkrommFacade
 
         try {
             Thread.sleep(DELAY);
-            os.write(preparePacket(this.plantCode, CMD_EXCLUDE_INCLUDE_INPUT, data));
+            os.write(preparePacket(this.plantCode, ElkronCommand.EXCLUDE_INCLUDE_INPUT, data));
             Thread.sleep(DELAY);
             if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
 
             Thread.sleep(DELAY);
-            os.write(preparePacket(this.plantCode, CMD_SEND));
+            os.write(preparePacket(this.plantCode, ElkronCommand.SEND));
             Thread.sleep(DELAY);
             if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
         } catch (IOException e) {
@@ -244,7 +245,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     @Override
     public PeripheralUnits getPeripheralUnitsAddresses()
     {
-        byte[]  data = getData(CMD_PERIPHERAL_UNITS_ADDRESSES);
+        byte[]  data = getData(ElkronCommand.PERIPHERAL_UNITS_ADDRESSES);
 
         return ElkrommFactory.getFactory().getPeripheralUnitsSerializer().deserialize(data);
     }
@@ -252,7 +253,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     @Override
     public Checksums getChecksums()
     {
-        byte[]  data = getData(CMD_CHECKSUM);
+        byte[]  data = getData(ElkronCommand.CHECKSUM);
         
         return ElkrommFactory.getFactory().getChecksumsSerializer().deserialize(data);
     }
@@ -260,7 +261,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     @Override
     public Credential[] getUsers()
     {
-        byte[]  data = getData(CMD_USERS);
+        byte[]  data = getData(ElkronCommand.USERS);
 
         return ElkrommFactory.getFactory().getUsersSerializer().deserialize(data);
     }
@@ -268,7 +269,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     @Override
     public Credential[] getKeys()
     {
-        byte[]      data = getData(CMD_KEYS);
+        byte[]      data = getData(ElkronCommand.KEYS);
 
         return ElkrommFactory.getFactory().getKeysSerializer().deserialize(data);
     }
@@ -276,7 +277,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     @Override
     public Expansion[] getExpansions()
     {
-        byte[]          data = getData(CMD_EXPANSIONS);
+        byte[]          data = getData(ElkronCommand.EXPANSIONS);
 
         return ElkrommFactory.getFactory().getExpansionsSerializer().deserialize(data);
     }
@@ -285,7 +286,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     public boolean[] getUserEnablings()
     {
         boolean[]   retval = new boolean[MAX_CREDENTIALS];
-        byte[]      data = getData(CMD_USER_ENABLINGS);
+        byte[]      data = getData(ElkronCommand.USER_ENABLINGS);
         int         enablings = ElkrommUtils.getLong(data, 0);
 
         for (int i = MAX_CREDENTIALS - 1; i >= 0; i--) {
@@ -307,12 +308,12 @@ public class ElkrommFacadeImpl implements ElkrommFacade
 
         try {
             Thread.sleep(DELAY);
-            os.write(preparePacket(this.plantCode, CMD_ENABLE_DISABLE_USER, data));
+            os.write(preparePacket(this.plantCode, ElkronCommand.ENABLE_DISABLE_USER, data));
             Thread.sleep(DELAY);
             if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
 
             Thread.sleep(DELAY);
-            os.write(preparePacket(this.plantCode, CMD_SEND));
+            os.write(preparePacket(this.plantCode, ElkronCommand.SEND));
             Thread.sleep(DELAY);
             if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
         } catch (IOException e) {
@@ -322,7 +323,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         }
     }
 
-    private byte[] getData(byte cmd)
+    private byte[] getData(ElkronCommand cmd)
     {
         if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
 
@@ -336,7 +337,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             data = readPacket(this.plantCode, is, os);
 
             Thread.sleep(DELAY);
-            os.write(preparePacket(this.plantCode, CMD_SEND));
+            os.write(preparePacket(this.plantCode, ElkronCommand.SEND));
             Thread.sleep(DELAY);
             if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
         } catch (IOException e) {
@@ -354,7 +355,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
 
         try {
             Thread.sleep(DELAY);
-            os.write(preparePacket(this.plantCode, CMD_LOGOUT));
+            os.write(preparePacket(this.plantCode, ElkronCommand.LOGOUT));
             Thread.sleep(DELAY);
             if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
 
@@ -403,19 +404,19 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     }
 
     // dataless packet
-    private byte[] preparePacket(int plantCode, byte command)
+    private byte[] preparePacket(int plantCode, ElkronCommand command)
     {
         return preparePacket(plantCode, command, null, (byte)0, (byte)0);
     }
 
     // single packet
-    private byte[] preparePacket(int plantCode, byte command, byte[] data)
+    private byte[] preparePacket(int plantCode, ElkronCommand command, byte[] data)
     {
         return preparePacket(plantCode, command, data, (byte)0, (byte)0);
     }
 
     // generic packet
-    private byte[] preparePacket(int plantCode, byte command, byte[] data, byte packets, byte index)
+    private byte[] preparePacket(int plantCode, ElkronCommand command, byte[] data, byte packets, byte index)
     {
         assert(index <= packets);
 
@@ -434,7 +435,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         retval[4] = index;
         retval[5] = (byte)(dataLength & 0xFF);
         retval[6] = 0x00;
-        retval[7] = command;
+        retval[7] = (byte)(command.getValue() & 0xFF);
 
         // Copy data if any
         if (dataLength > 0) System.arraycopy(data, 0, retval, 8, dataLength);
@@ -491,7 +492,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             if (pktOrdinal >= 0) {
                 // not first time
                 Thread.sleep(DELAY);
-                os.write(preparePacket(this.plantCode, CMD_SEND));
+                os.write(preparePacket(this.plantCode, ElkronCommand.SEND));
                 Thread.sleep(DELAY);
                 if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
             }
