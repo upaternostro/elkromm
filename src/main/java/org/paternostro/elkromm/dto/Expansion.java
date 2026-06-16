@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Expansion implements Serializable
+public class Expansion implements Serializable, Comparable<Expansion>
 {
     private int             address;
     private String          version;
@@ -14,11 +14,11 @@ public class Expansion implements Serializable
 
     public Expansion(int address, String version, String name)
     {
-        this.address = address;
-        this.version = version;
+        setAddress(address);
+        setVersion(version);
         this.inputs = new ArrayList<>();
         this.outputs = new ArrayList<>();
-        this.name = name;
+        setName(name);
     }
 
     public void addInput(Input input)
@@ -58,6 +58,8 @@ public class Expansion implements Serializable
 
     public void setAddress(int address)
     {
+        if (address < 1) throw new IllegalArgumentException("Wrong address " + address + ", expected greater than 0");
+
         this.address = address;
     }
 
@@ -68,6 +70,8 @@ public class Expansion implements Serializable
 
     public void setVersion(String version)
     {
+        if (version == null) throw new IllegalArgumentException("Missing mandatory version");
+
         this.version = version;
     }
 
@@ -78,6 +82,8 @@ public class Expansion implements Serializable
 
     public void setName(String name)
     {
+        if (name == null) throw new IllegalArgumentException("Missing mandatory name");
+
         this.name = name;
     }
 
@@ -88,5 +94,10 @@ public class Expansion implements Serializable
                 ", address=" + address +
                 ", version='" + version + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Expansion o) {
+        return Integer.compare(this.getAddress(), o.getAddress());
     }
 }

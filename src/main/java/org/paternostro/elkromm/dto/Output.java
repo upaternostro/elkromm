@@ -1,8 +1,11 @@
 package org.paternostro.elkromm.dto;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
-public class Output implements Serializable
+import org.paternostro.elkromm.ElkrommFacade;
+
+public class Output implements Serializable, Comparable<Output>
 {
     public enum Type {
         OT_NORMALLY_LOW(0x01),
@@ -18,6 +21,19 @@ public class Output implements Serializable
         public byte getValue()
         {
             return value;
+        }
+
+        public static Type toType(byte value) {
+            Type  retval = null;
+
+            for (Type pivot : Type.values()) {
+                if (pivot.getValue() == value) {
+                    retval = pivot;
+                    break;
+                }
+            }
+
+            return retval;
         }
     }
 
@@ -41,6 +57,19 @@ public class Output implements Serializable
         {
             return value;
         }
+
+        public static Specialization toSpecialization(byte value) {
+            Specialization  retval = null;
+
+            for (Specialization pivot : Specialization.values()) {
+                if (pivot.getValue() == value) {
+                    retval = pivot;
+                    break;
+                }
+            }
+
+            return retval;
+        }
     }
 
     private int             logicNumber;
@@ -51,11 +80,11 @@ public class Output implements Serializable
 
     public Output(int logicNumber, Type type, boolean[] associatedPartitions, Specialization specialization, String name)
     {
-        this.logicNumber = logicNumber;
-        this.type = type;
-        this.associatedPartitions = associatedPartitions;
-        this.specialization = specialization;
-        this.name = name;
+        setLogicNumber(logicNumber);
+        setType(type);
+        setAssociatedPartitions(associatedPartitions);
+        setSpecialization(specialization);
+        setName(name);
     }
 
     public int getLogicNumber()
@@ -65,6 +94,8 @@ public class Output implements Serializable
 
     public void setLogicNumber(int logicNumber)
     {
+        if (logicNumber < 1) throw new IllegalArgumentException("Wrong logic number " + logicNumber + ", expected greater than 0");
+
         this.logicNumber = logicNumber;
     }
 
@@ -75,17 +106,21 @@ public class Output implements Serializable
 
     public void setType(Type type)
     {
+        if (type == null) throw new IllegalArgumentException("Missing mandatory type");
+
         this.type = type;
     }
 
     public boolean[] getAssociatedPartitions()
     {
-        return associatedPartitions;
+        return Arrays.copyOf(associatedPartitions, ElkrommFacade.MAX_PARTITIONS);
     }
 
     public void setAssociatedPartitions(boolean[] associatedPartitions)
     {
-        this.associatedPartitions = associatedPartitions;
+        if (associatedPartitions == null) throw new IllegalArgumentException("Missing mandatory associated partitions");
+
+        this.associatedPartitions = Arrays.copyOf(associatedPartitions, ElkrommFacade.MAX_PARTITIONS);
     }
 
     public Specialization getSpecialization()
@@ -95,6 +130,8 @@ public class Output implements Serializable
 
     public void setSpecialization(Specialization specialization)
     {
+        if (specialization == null) throw new IllegalArgumentException("Missing mandatory specialization");
+
         this.specialization = specialization;
     }
 
@@ -105,6 +142,8 @@ public class Output implements Serializable
 
     public void setName(String name)
     {
+        if (name == null) throw new IllegalArgumentException("Missing mandatory name");
+
         this.name = name;
     }
 
@@ -116,5 +155,11 @@ public class Output implements Serializable
                 ", type=" + type +
                 ", specialization=" + specialization +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Output o)
+    {
+        return Integer.compare(this.getLogicNumber(), o.getLogicNumber());
     }
 }

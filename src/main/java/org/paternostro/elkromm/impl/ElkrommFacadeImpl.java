@@ -1,19 +1,5 @@
 package org.paternostro.elkromm.impl;
 
-import org.paternostro.elkromm.ElkrommFacade;
-import org.paternostro.elkromm.ElkrommUtils;
-import org.paternostro.elkromm.dto.Area;
-import org.paternostro.elkromm.dto.AreasAndPartitions;
-import org.paternostro.elkromm.dto.Checksums;
-import org.paternostro.elkromm.dto.Expansion;
-import org.paternostro.elkromm.dto.Input;
-import org.paternostro.elkromm.dto.Key;
-import org.paternostro.elkromm.dto.Output;
-import org.paternostro.elkromm.dto.PeripheralUnits;
-import org.paternostro.elkromm.dto.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -24,6 +10,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.paternostro.elkromm.ElkrommFacade;
+import org.paternostro.elkromm.ElkrommFactory;
+import org.paternostro.elkromm.ElkrommUtils;
+import org.paternostro.elkromm.dto.AreasAndPartitions;
+import org.paternostro.elkromm.dto.Checksums;
+import org.paternostro.elkromm.dto.Credential;
+import org.paternostro.elkromm.dto.Expansion;
+import org.paternostro.elkromm.dto.PeripheralUnits;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ElkrommFacadeImpl implements ElkrommFacade
 {
@@ -147,46 +144,9 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     @Override
     public AreasAndPartitions getAreasAndPartitions()
     {
-        AreasAndPartitions  retval = new AreasAndPartitions();
-        byte[]              data = getData(CMD_PARTITIONS_AND_AREAS);
-        int                 areas;
-        int                 partitions;
-        int                 selfExclusion;
-        int                 armingBlock;
+        byte[]  data = getData(CMD_PARTITIONS_AND_AREAS);
 
-        areas = data[0]; // numero di aree
-
-        for (byte i = 0; i < areas; i++) {
-            retval.addArea(new Area(i, ElkrommUtils.getText(data, 5 + i * 24, 24), ElkrommUtils.unpackPartitions(data[i + 1])));
-        }
-
-        partitions = data[101]; // numero di settori
-        selfExclusion = data[102];
-        armingBlock = data[103];
-
-        for (byte i = 0; i < partitions; i++) {
-            String name = ElkrommUtils.getText(data, 136 + i * 24, 24);
-            org.paternostro.elkromm.dto.Partition.Type type;
-            byte partitionBitMask = Partition.values()[i].getBitMask();
-
-            if ((selfExclusion & partitionBitMask) == 0x00) {
-                if ((armingBlock & partitionBitMask) == 0x00) {
-                    type = org.paternostro.elkromm.dto.Partition.Type.STANDARD;
-                } else {
-                    type = org.paternostro.elkromm.dto.Partition.Type.ARMING_BLOCK;
-                }
-            } else {
-                if ((armingBlock & partitionBitMask) == 0x00) {
-                    type = org.paternostro.elkromm.dto.Partition.Type.SELF_EXCLUSION;
-                } else {
-                    type = org.paternostro.elkromm.dto.Partition.Type.UNKNOWN;
-                }
-            }
-
-            retval.addPartition(new org.paternostro.elkromm.dto.Partition(i, name, false, type, ElkrommUtils.getWord(data, 104 + i * 2), ElkrommUtils.getWord(data, 120 + i * 2)));
-        }
-
-        return retval;
+        return ElkrommFactory.getFactory().getAreasAndPartitionsSerializer().deserialize(data);
     }
 
     @Override
@@ -284,28 +244,9 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     @Override
     public PeripheralUnits getPeripheralUnitsAddresses()
     {
-        PeripheralUnits retval = new PeripheralUnits();
-        byte[]          data = getData(CMD_PERIPHERAL_UNITS_ADDRESSES);
-        int             offset = 0;
-        int             length = data[offset++];
+        byte[]  data = getData(CMD_PERIPHERAL_UNITS_ADDRESSES);
 
-        for (int i = 0; i < length; i++) {
-            retval.addKeypad(data[offset++]);
-        }
-
-        length = data[offset++];
-
-        for (int i = 0; i < length; i++) {
-            retval.addReader(data[offset++]);
-        }
-
-        length = data[offset++];
-
-        for (int i = 0; i < length; i++) {
-            retval.addExpansion(data[offset++]);
-        }
-
-        return retval;
+        return ElkrommFactory.getFactory().getPeripheralUnitsSerializer().deserialize(data);
     }
 
     @Override
@@ -313,138 +254,42 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     {
         byte[]  data = getData(CMD_CHECKSUM);
         
-        return new Checksums(
-                ElkrommUtils.getLong(data,  0),
-                ElkrommUtils.getLong(data,  4),
-                ElkrommUtils.getLong(data,  8),
-                ElkrommUtils.getLong(data, 12),
-                ElkrommUtils.getLong(data, 16),
-                ElkrommUtils.getLong(data, 20),
-                ElkrommUtils.getLong(data, 24),
-                ElkrommUtils.getLong(data, 28),
-                ElkrommUtils.getLong(data, 32),
-                ElkrommUtils.getLong(data, 36),
-                ElkrommUtils.getLong(data, 40),
-                ElkrommUtils.getLong(data, 44),
-                ElkrommUtils.getLong(data, 48)
-        );
+        return ElkrommFactory.getFactory().getChecksumsSerializer().deserialize(data);
     }
 
     @Override
-    public User[] getUsers()
+    public Credential[] getUsers()
     {
-        List<User>  retval = new ArrayList<>();
-        byte[]      data = getData(CMD_USERS);
+        byte[]  data = getData(CMD_USERS);
 
-        for (int i = 0; i < 32; i++) {
-           retval.add(new User((data[26 * i] & 0x02) != 0x00, ElkrommUtils.unpackPartitions(data[26 * i + 1]),  ElkrommUtils.getText(data, 26 * i + 2, 24)));
-        }
-
-        return retval.toArray(new User[0]);
+        return ElkrommFactory.getFactory().getUsersSerializer().deserialize(data);
     }
 
     @Override
-    public Key[] getKeys()
+    public Credential[] getKeys()
     {
-        List<Key>  retval = new ArrayList<>();
         byte[]      data = getData(CMD_KEYS);
 
-        for (int i = 0; i < 32; i++) {
-            // FIXME: byte[0] cos'e'? always enabled come users?
-            retval.add(new Key(ElkrommUtils.unpackPartitions(data[26 * i + 1]),  ElkrommUtils.getText(data, 26 * i + 2, 24)));
-        }
-
-        return retval.toArray(new Key[0]);
+        return ElkrommFactory.getFactory().getKeysSerializer().deserialize(data);
     }
 
     @Override
     public Expansion[] getExpansions()
     {
-        List<Expansion> retval = new ArrayList<>();
         byte[]          data = getData(CMD_EXPANSIONS);
 
-        for (int i = 0; i < data.length / 559; i++) {
-            int         offset = i * 559;
-            Expansion   expansion = new Expansion(data[offset + 1], ElkrommUtils.getText(data, offset + 3, 4), ElkrommUtils.getText(data, offset + 533, 24));
-
-            for (int j = 0; j < 8; j++) {
-                offset = i * 559 + j * 38 + 7;
-
-                if (data[offset] == 0x00) {
-                    // Unused input, skip
-                    continue;
-                }
-
-                Input.Configuration     configuration = null;
-                Input.Specialization    specialization = null;
-
-                for (Input.Configuration pivot : Input.Configuration.values()) {
-                    if (pivot.getValue() == data[offset + 1]) {
-                        configuration = pivot;
-                        break;
-                    }
-                }
-
-                for (Input.Specialization pivot : Input.Specialization.values()) {
-                    if (pivot.getValue() == data[offset + 2]) {
-                        specialization = pivot;
-                        break;
-                    }
-                }
-
-                expansion.addInput(new Input(data[offset], configuration, specialization, ElkrommUtils.unpackPartitions(data[offset + 5]), ElkrommUtils.getText(data, offset + 6, 24)));
-            }
-
-            for (int j = 0; j < 6; j++) {
-                offset = i * 559 + 8 * 38 + j * 37 + 7;
-
-                if (data[offset] == 0x00) {
-                    // Unused output, skip
-                    continue;
-                }
-
-                Output.Type             type = null;
-                Output.Specialization   specialization = null;
-
-                for (Output.Type pivot : Output.Type.values()) {
-                    if (pivot.getValue() == data[offset + 1]) {
-                        type = pivot;
-                        break;
-                    }
-                }
-
-                for (Output.Specialization pivot : Output.Specialization.values()) {
-                    if (pivot.getValue() == data[offset + 3]) {
-                        specialization = pivot;
-                        break;
-                    }
-                }
-
-                expansion.addOutput(new Output(data[offset], type, ElkrommUtils.unpackPartitions(data[offset + 2]), specialization, ElkrommUtils.getText(data, offset + 8, 24)));
-            }
-
-            retval.add(expansion);
-
-//            int checksum = 0;
-//            for (int j = 0; j < 557; j++) {
-//                checksum += data[i * 559 + j];
-//            }
-//            checksum += ElkrommUtils.getWord(data, i * 559 + 557);
-//            logger.info("Checksum: " + checksum);
-        }
-
-        return retval.toArray(new Expansion[0]);
+        return ElkrommFactory.getFactory().getExpansionsSerializer().deserialize(data);
     }
 
     @Override
     public boolean[] getUserEnablings()
     {
-        boolean[]   retval = new boolean[MAX_USERS];
+        boolean[]   retval = new boolean[MAX_CREDENTIALS];
         byte[]      data = getData(CMD_USER_ENABLINGS);
         int         enablings = ElkrommUtils.getLong(data, 0);
 
-        for (int i = MAX_USERS - 1; i >= 0; i--) {
-            retval[MAX_USERS - 1 - i] = (enablings & (1 << i)) != 0x00;
+        for (int i = MAX_CREDENTIALS - 1; i >= 0; i--) {
+            retval[MAX_CREDENTIALS - 1 - i] = (enablings & (1 << i)) != 0x00;
         }
 
         return retval;

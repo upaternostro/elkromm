@@ -1,8 +1,11 @@
 package org.paternostro.elkromm.dto;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
-public class Input implements Serializable
+import org.paternostro.elkromm.ElkrommFacade;
+
+public class Input implements Serializable, Comparable<Input>
 {
     public enum Configuration {
         IC_NORMALLY_OPEN(0x02),
@@ -18,6 +21,19 @@ public class Input implements Serializable
         public byte getValue()
         {
             return value;
+        }
+
+        public static Configuration toConfiguration(byte value) {
+            Configuration   retval = null;
+
+            for (Configuration pivot : Configuration.values()) {
+                if (pivot.getValue() == value) {
+                    retval = pivot;
+                    break;
+                }
+            }
+
+            return retval;
         }
     }
 
@@ -38,6 +54,19 @@ public class Input implements Serializable
         {
             return value;
         }
+
+        public static Specialization toSpecialization(byte value) {
+            Specialization  retval = null;
+
+            for (Specialization pivot : Specialization.values()) {
+                if (pivot.getValue() == value) {
+                    retval = pivot;
+                    break;
+                }
+            }
+
+            return retval;
+        }
     }
 
     private int             logicNumber;
@@ -48,11 +77,11 @@ public class Input implements Serializable
 
     public Input(int logicNumber, Configuration configuration, Specialization specialization, boolean[] associatedPartitions, String name)
     {
-        this.logicNumber = logicNumber;
-        this.configuration = configuration;
-        this.specialization = specialization;
-        this.associatedPartitions = associatedPartitions;
-        this.name = name;
+        setLogicNumber(logicNumber);
+        setConfiguration(configuration);
+        setSpecialization(specialization);
+        setAssociatedPartitions(associatedPartitions);
+        setName(name);
     }
 
     public int getLogicNumber()
@@ -62,6 +91,8 @@ public class Input implements Serializable
 
     public void setLogicNumber(int logicNumber)
     {
+        if (logicNumber < 1) throw new IllegalArgumentException("Wrong logic number " + logicNumber + ", expected greater than 0");
+
         this.logicNumber = logicNumber;
     }
 
@@ -72,6 +103,8 @@ public class Input implements Serializable
 
     public void setConfiguration(Configuration configuration)
     {
+        if (configuration == null) throw new IllegalArgumentException("Missing mandatory configuration");
+
         this.configuration = configuration;
     }
 
@@ -82,17 +115,21 @@ public class Input implements Serializable
 
     public void setSpecialization(Specialization specialization)
     {
+        if (specialization == null) throw new IllegalArgumentException("Missing mandatory specialization");
+
         this.specialization = specialization;
     }
 
     public boolean[] getAssociatedPartitions()
     {
-        return associatedPartitions;
+        return Arrays.copyOf(associatedPartitions, ElkrommFacade.MAX_PARTITIONS);
     }
 
     public void setAssociatedPartitions(boolean[] associatedPartitions)
     {
-        this.associatedPartitions = associatedPartitions;
+        if (associatedPartitions == null) throw new IllegalArgumentException("Missing mandatory associated partitions");
+
+        this.associatedPartitions = Arrays.copyOf(associatedPartitions, ElkrommFacade.MAX_PARTITIONS);
     }
 
     public String getName()
@@ -102,6 +139,8 @@ public class Input implements Serializable
 
     public void setName(String name)
     {
+        if (name == null) throw new IllegalArgumentException("Missing mandatory name");
+
         this.name = name;
     }
 
@@ -114,5 +153,11 @@ public class Input implements Serializable
                 ", configuration=" + configuration +
                 ", specialization=" + specialization +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Input o)
+    {
+        return Integer.compare(this.getLogicNumber(), o.getLogicNumber());
     }
 }

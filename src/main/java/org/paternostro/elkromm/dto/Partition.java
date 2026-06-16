@@ -2,7 +2,9 @@ package org.paternostro.elkromm.dto;
 
 import java.io.Serializable;
 
-public class Partition implements Serializable
+import org.paternostro.elkromm.ElkrommFacade;
+
+public class Partition implements Serializable, Comparable<Partition>
 {
     public enum Type
     {
@@ -21,12 +23,12 @@ public class Partition implements Serializable
 
     public Partition(int ordinal, String name, boolean vocalName, Type type, int entryDelay, int exitDelay)
     {
-        this.ordinal = ordinal;
-        this.name = name;
-        this.vocalName = vocalName;
-        this.type = type;
-        this.entryDelay = entryDelay;
-        this.exitDelay = exitDelay;
+        setOrdinal(ordinal);
+        setName(name);
+        setVocalName(vocalName);
+        setType(type);
+        setEntryDelay(entryDelay);
+        setExitDelay(exitDelay);
     }
 
     public int getOrdinal()
@@ -36,6 +38,8 @@ public class Partition implements Serializable
 
     public void setOrdinal(int ordinal)
     {
+        if (ordinal < 1 || ordinal > ElkrommFacade.MAX_PARTITIONS) throw new IllegalArgumentException("Wrong ordinal " + ordinal + ", expected between 1 and " + ElkrommFacade.MAX_PARTITIONS);
+
         this.ordinal = ordinal;
     }
 
@@ -46,6 +50,8 @@ public class Partition implements Serializable
 
     public void setName(String name)
     {
+        if (name == null) throw new IllegalArgumentException("Missing mandatory name");
+
         this.name = name;
     }
 
@@ -66,6 +72,9 @@ public class Partition implements Serializable
 
     public void setType(Type type)
     {
+        if (type == null) throw new IllegalArgumentException("Missing mandatory type");
+        if (type == Type.UNKNOWN) throw new IllegalArgumentException("Wrong type UNKNOWN");
+
         this.type = type;
     }
 
@@ -76,6 +85,8 @@ public class Partition implements Serializable
 
     public void setEntryDelay(int entryDelay)
     {
+        if (entryDelay < 0) throw new IllegalArgumentException("Wrong entry delay " + entryDelay);
+
         this.entryDelay = entryDelay;
     }
 
@@ -86,6 +97,8 @@ public class Partition implements Serializable
 
     public void setExitDelay(int exitDelay)
     {
+        if (exitDelay < 0) throw new IllegalArgumentException("Wrong exit delay " + exitDelay);
+
         this.exitDelay = exitDelay;
     }
 
@@ -96,5 +109,10 @@ public class Partition implements Serializable
                 "ordinal=" + ordinal +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Partition o) {
+        return Integer.compare(this.getOrdinal(), o.getOrdinal());
     }
 }

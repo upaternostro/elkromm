@@ -1,8 +1,11 @@
 package org.paternostro.elkromm.dto;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
-public class Area implements Serializable
+import org.paternostro.elkromm.ElkrommFacade;
+
+public class Area implements Serializable, Comparable<Area>
 {
     private int         ordinal;
     private String      name;
@@ -10,9 +13,9 @@ public class Area implements Serializable
 
     public Area(int ordinal, String name, boolean[] associatedPartitions)
     {
-        this.ordinal = ordinal;
-        this.name = name;
-        this.associatedPartitions = associatedPartitions;
+        setOrdinal(ordinal);
+        setName(name);
+        setAssociatedPartitions(associatedPartitions);
     }
 
     public int getOrdinal()
@@ -22,6 +25,8 @@ public class Area implements Serializable
 
     public void setOrdinal(int ordinal)
     {
+        if (ordinal < 1 || ordinal > ElkrommFacade.MAX_AREAS) throw new IllegalArgumentException("Wrong ordinal " + ordinal + ", expected between 1 and " + ElkrommFacade.MAX_AREAS);
+
         this.ordinal = ordinal;
     }
 
@@ -32,17 +37,21 @@ public class Area implements Serializable
 
     public void setName(String name)
     {
+        if (name == null) throw new IllegalArgumentException("Missing mandatory name");
+
         this.name = name;
     }
 
     public boolean[] getAssociatedPartitions()
     {
-        return associatedPartitions;
+        return Arrays.copyOf(associatedPartitions, ElkrommFacade.MAX_PARTITIONS);
     }
 
     public void setAssociatedPartitions(boolean[] associatedPartitions)
     {
-        this.associatedPartitions = associatedPartitions;
+        if (associatedPartitions == null) throw new IllegalArgumentException("Missing mandatory associated partitions");
+
+        this.associatedPartitions = Arrays.copyOf(associatedPartitions, ElkrommFacade.MAX_PARTITIONS);
     }
 
     @Override
@@ -52,5 +61,10 @@ public class Area implements Serializable
                 "ordinal=" + ordinal +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Area o) {
+        return Integer.compare(this.getOrdinal(), o.getOrdinal());
     }
 }

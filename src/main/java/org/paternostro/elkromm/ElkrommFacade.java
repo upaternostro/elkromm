@@ -6,10 +6,9 @@ import java.util.Map;
 
 import org.paternostro.elkromm.dto.AreasAndPartitions;
 import org.paternostro.elkromm.dto.Checksums;
-import org.paternostro.elkromm.dto.Key;
-import org.paternostro.elkromm.dto.PeripheralUnits;
-import org.paternostro.elkromm.dto.User;
+import org.paternostro.elkromm.dto.Credential;
 import org.paternostro.elkromm.dto.Expansion;
+import org.paternostro.elkromm.dto.PeripheralUnits;
 
 public interface ElkrommFacade
 {
@@ -22,9 +21,17 @@ public interface ElkrommFacade
 
     public static final int MAX_AREAS = 4;
     public static final int MAX_PARTITIONS = 8;
-    public static final int MAX_USERS = 32;
+    public static final int MAX_CREDENTIALS = 32;
+
+    public static final int MAX_READERS = 16;
+    public static final int MAX_EXPANSIONS = 7;
+    public static final int MAX_KEYPADS = 8;
+    
+    public static final int MAX_INPUTS = 8;
+    public static final int MAX_OUTPUTS = 6;
 
     public static final int MAX_DATA_LENGTH = 140;
+    public static final int NAME_LENGTH = 24;
 
     public static final byte BYTE_SOH = 0x01;
     public static final byte BYTE_ETX = 0x03;
@@ -108,8 +115,8 @@ public interface ElkrommFacade
     void excludeIncludeInput(byte inputOrdinal, boolean exclude);
     PeripheralUnits getPeripheralUnitsAddresses();
     Checksums getChecksums();
-    User[] getUsers();
-    Key[] getKeys();
+    Credential[] getUsers();
+    Credential[] getKeys();
     Expansion[] getExpansions();
     boolean[] getUserEnablings();
     void enableDisableUser(byte userOrdinal, boolean enable);
