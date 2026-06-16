@@ -5,6 +5,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.paternostro.elkromm.impl.MyElkrommFacadeImpl;
 
 public class ElkrommFactoryTest {
     @Test
@@ -20,12 +21,12 @@ public class ElkrommFactoryTest {
         Object factory = ElkrommFactory.getFactory();
 
         assertNotNull(factory);
-        assertTrue(factory instanceof ElkrommFactory);
+        assertTrue(factory instanceof MyElkrommFactory);
 
         Object factory2 = ElkrommFactory.getFactory();
 
         assertNotNull(factory2);
-        assertTrue(factory2 instanceof ElkrommFactory);
+        assertTrue(factory2 instanceof MyElkrommFactory);
         assertSame(factory, factory2);
     }
 
@@ -39,5 +40,6 @@ public class ElkrommFactoryTest {
 
         assertNotNull(facade);
         assertTrue(facade instanceof ElkrommFacade);
+        assertTrue(facade instanceof MyElkrommFacadeImpl);
     }
 }

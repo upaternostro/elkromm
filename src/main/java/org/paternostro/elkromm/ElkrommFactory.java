@@ -94,7 +94,7 @@ public class ElkrommFactory {
 
     private Properties  properties;
 
-    private ElkrommFactory()
+    protected ElkrommFactory()
     {
         this.properties = new Properties();
     }
