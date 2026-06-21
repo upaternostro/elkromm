@@ -162,4 +162,45 @@ public class ElkrommUtils
             }
         }
     }
+
+    public static List<Byte> bcd(int in, int minLen)
+    {
+        List<Byte> retval = new ArrayList<>();
+
+        while (in > 0) {
+            retval.add(0, bcdByte(in % 100));
+            in /= 100;
+        }
+
+        while (retval.size() < minLen) {
+            retval.add(0, (byte)0x00);
+        }
+
+        return retval;
+    }
+
+    public static byte bcdByte(int in)
+    {
+        if (in < 0 || in > 99) {
+            throw new IllegalArgumentException("bcdByte: input must be in range [0,99], found " + in);
+        }
+
+        int lower = in % 10;
+        in /= 10;
+        int upper = in % 10;
+
+        return (byte)(upper << 4 | lower);
+    }
+
+    public static int dcbByte(byte bcd) {
+        int high = (bcd >> 4) & 0x0F;
+
+        if (high > 9) throw new IllegalArgumentException("dcbByte: high nibble must be in range [0,9], found " + high);
+
+        int low = bcd & 0x0F;
+
+        if (low > 9) throw new IllegalArgumentException("dcbByte: lower nibble must be in range [0,9], found " + low);
+
+        return high * 10 + low;
+    }
 }

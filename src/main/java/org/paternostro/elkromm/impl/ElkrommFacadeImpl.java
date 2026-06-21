@@ -100,8 +100,8 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             Thread.sleep(DELAY);
             if (getNextDeescapedByte(is) != BYTE_ACK) throw new AssertionError("No ACK received");
 
-            List<Byte>  plantCodeBytes = bcd(plantCode, 4);
-            List<Byte>  technicalCodeBytes = bcd(technicalCode, 3);
+            List<Byte>  plantCodeBytes = ElkrommUtils.bcd(plantCode, 4);
+            List<Byte>  technicalCodeBytes = ElkrommUtils.bcd(technicalCode, 3);
 
             plantCodeBytes.addAll(technicalCodeBytes);
 
@@ -367,31 +367,6 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         }
     }
 
-    private List<Byte> bcd(int in, int minLen)
-    {
-        List<Byte> retval = new ArrayList<>();
-
-        while (in > 0) {
-            retval.add(0, bcdByte(in % 100));
-            in /= 100;
-        }
-
-        while (retval.size() < minLen) {
-            retval.add(0, (byte)0x00);
-        }
-
-        return retval;
-    }
-
-    private byte bcdByte(int in)
-    {
-        int lower = in % 10;
-        in /= 10;
-        int upper = in % 10;
-
-        return (byte)(upper << 4 | lower);
-    }
-
     private byte[] listToArray(List<Byte> list)
     {
         byte[] retval = new byte[list.size()];
@@ -421,7 +396,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         assert(index <= packets);
 
         int dataLength = data == null ? 0 : data.length;
-        List<Byte> bcdPlantCode = bcd(plantCode, 4);
+        List<Byte> bcdPlantCode = ElkrommUtils.bcd(plantCode, 4);
 
         assert(dataLength <= MAX_DATA_LENGTH);
 
@@ -486,7 +461,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         int pktNum = 0xff; // total number of packets (minus one)
         int pktOrdinal = -1; // current packet index
         byte[] retval = null;
-        List<Byte> bcdPlantCode = bcd(plantCode, 4);
+        List<Byte> bcdPlantCode = ElkrommUtils.bcd(plantCode, 4);
 
         while (pktOrdinal < pktNum) {
             if (pktOrdinal >= 0) {
