@@ -21,8 +21,8 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
 
         byte[]                      data = new byte[obj.length * EXPANSION_SIZE + 4];
         int                         offset;       
-        ElkrommSerializer<Input>    iSerializer = ElkrommFactory.getFactory().getInputsSerializer();
-        ElkrommSerializer<Output>   oSerializer = ElkrommFactory.getFactory().getOutputsSerializer();
+        ElkrommSerializer<Input>    iSerializer = ElkrommFactory.getFactory().getInputSerializer();
+        ElkrommSerializer<Output>   oSerializer = ElkrommFactory.getFactory().getOutputSerializer();
 
         for (int i = 0; i < obj.length; i++) {
             offset = i * EXPANSION_SIZE;
@@ -71,9 +71,9 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
 
         Expansion[]                 retval = new Expansion[(data.length - 4) / EXPANSION_SIZE];
         int                         offset;
-        ElkrommSerializer<Input>    iSerializer = ElkrommFactory.getFactory().getInputsSerializer();
+        ElkrommSerializer<Input>    iSerializer = ElkrommFactory.getFactory().getInputSerializer();
         byte[]                      iData = new byte[INPUT_SIZE];
-        ElkrommSerializer<Output>   oSerializer = ElkrommFactory.getFactory().getOutputsSerializer();
+        ElkrommSerializer<Output>   oSerializer = ElkrommFactory.getFactory().getOutputSerializer();
         byte[]                      oData = new byte[OUTPUT_SIZE];
 
         for (int i = 0; i < data.length / EXPANSION_SIZE; i++) {

@@ -5,17 +5,17 @@ import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.dto.Output;
 
-public class OutputsTest {
+public class OutputTest {
     @Test
     public void test()
     {
         boolean[]   associatedPartitions = { false, false, false, false, true, false, false, false };
         Output      output = new Output(69, Output.Type.OT_NORMALLY_HIGH, associatedPartitions, Output.Specialization.OS_TAMPERING, "Input 42");
-        byte[]      data = ElkrommFactory.getFactory().getOutputsSerializer().serialize(output);
+        byte[]      data = ElkrommFactory.getFactory().getOutputSerializer().serialize(output);
 
         assert data.length == 37 : "Wrong length";
 
-        Output      output2 = ElkrommFactory.getFactory().getOutputsSerializer().deserialize(data);
+        Output      output2 = ElkrommFactory.getFactory().getOutputSerializer().deserialize(data);
 
         assert output.getLogicNumber() == output2.getLogicNumber();
         assert output.getType() == output2.getType();

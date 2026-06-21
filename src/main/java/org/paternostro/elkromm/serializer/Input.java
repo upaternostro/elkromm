@@ -2,12 +2,11 @@ package org.paternostro.elkromm.serializer;
 
 import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommUtils;
-import org.paternostro.elkromm.dto.Input;
 
-public class Inputs implements ElkrommSerializer<Input>
+public class Input implements ElkrommSerializer<org.paternostro.elkromm.dto.Input>
 {
     @Override
-    public byte[] serialize(Input obj)
+    public byte[] serialize(org.paternostro.elkromm.dto.Input obj)
     {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
 
@@ -29,13 +28,13 @@ public class Inputs implements ElkrommSerializer<Input>
     }
 
     @Override
-    public Input deserialize(byte[] data)
+    public org.paternostro.elkromm.dto.Input deserialize(byte[] data)
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
         if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
 
-        return data[0] == 0 ? null : new Input(data[0], Input.Configuration.valueOf(data[1]), Input.Specialization.valueOf(data[2]), Input.Sensitivity.valueOf(data[3]), (byte)(data[3] & Input.Flags.IF_ALL.getValue()), Input.Video.valueOf(data[4]), ElkrommUtils.unpackPartitions(data[5]), ElkrommUtils.getText(data, 6, ElkrommFacade.NAME_LENGTH), Input.Delay.valueOf(data[34]));
+        return data[0] == 0 ? null : new org.paternostro.elkromm.dto.Input(data[0], org.paternostro.elkromm.dto.Input.Configuration.valueOf(data[1]), org.paternostro.elkromm.dto.Input.Specialization.valueOf(data[2]), org.paternostro.elkromm.dto.Input.Sensitivity.valueOf(data[3]), (byte)(data[3] & org.paternostro.elkromm.dto.Input.Flags.IF_ALL.getValue()), org.paternostro.elkromm.dto.Input.Video.valueOf(data[4]), ElkrommUtils.unpackPartitions(data[5]), ElkrommUtils.getText(data, 6, ElkrommFacade.NAME_LENGTH), org.paternostro.elkromm.dto.Input.Delay.valueOf(data[34]));
     }
 
     @Override

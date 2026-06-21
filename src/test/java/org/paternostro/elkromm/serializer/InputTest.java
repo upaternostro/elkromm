@@ -5,17 +5,17 @@ import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.dto.Input;
 
-public class InputsTest {
+public class InputTest {
     @Test
     public void test()
     {
         boolean[]   associatedPartitions = { false, false, true, false, false, false, false, false };
         Input       input = new Input(42, Input.Configuration.IC_NORMALLY_CLOSED_DOUBLE_BALANCED, Input.Specialization.IS_IMMEDIATE, Input.Sensitivity.IS_HIGH, Input.Flags.IF_EXCLUSION_ENABLED.getValue(), Input.Video.IV_CAMERA_3, associatedPartitions, "Input 42", Input.Delay.ID_10_SECS);
-        byte[]      data = ElkrommFactory.getFactory().getInputsSerializer().serialize(input);
+        byte[]      data = ElkrommFactory.getFactory().getInputSerializer().serialize(input);
 
         assert data.length == 38 : "Wrong length";
 
-        Input       input2 = ElkrommFactory.getFactory().getInputsSerializer().deserialize(data);
+        Input       input2 = ElkrommFactory.getFactory().getInputSerializer().deserialize(data);
 
         assert input.getLogicNumber() == input2.getLogicNumber();
         assert input.getConfiguration() == input2.getConfiguration();

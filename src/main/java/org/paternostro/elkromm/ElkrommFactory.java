@@ -10,9 +10,9 @@ import org.paternostro.elkromm.serializer.AreasAndPartitions;
 import org.paternostro.elkromm.serializer.Checksums;
 import org.paternostro.elkromm.serializer.ElkrommSerializer;
 import org.paternostro.elkromm.serializer.Expansions;
-import org.paternostro.elkromm.serializer.Inputs;
+import org.paternostro.elkromm.serializer.Input;
 import org.paternostro.elkromm.serializer.Keys;
-import org.paternostro.elkromm.serializer.Outputs;
+import org.paternostro.elkromm.serializer.Output;
 import org.paternostro.elkromm.serializer.PeripheralUnits;
 import org.paternostro.elkromm.serializer.SystemStatus;
 import org.paternostro.elkromm.serializer.Users;
@@ -98,11 +98,11 @@ public class ElkrommFactory {
     public static final String SYSTEM_STATUS_CLASS          = "org.paternostro.elkromm.ElkrommFactory.SystemStatus.class";
     public static final String SYSTEM_STATUS_DEFAULT        = "org.paternostro.elkromm.serializer.SystemStatus";
 
-    public static final String INPUTS_CLASS                 = "org.paternostro.elkromm.ElkrommFactory.Inputs.class";
-    public static final String INPUTS_DEFAULT               = "org.paternostro.elkromm.serializer.Inputs";
+    public static final String INPUT_CLASS                  = "org.paternostro.elkromm.ElkrommFactory.Input.class";
+    public static final String INPUT_DEFAULT                = "org.paternostro.elkromm.serializer.Input";
 
-    public static final String OUTPUTS_CLASS                = "org.paternostro.elkromm.ElkrommFactory.Outputs.class";
-    public static final String OUTPUTS_DEFAULT              = "org.paternostro.elkromm.serializer.Outputs";
+    public static final String OUTPUT_CLASS                 = "org.paternostro.elkromm.ElkrommFactory.Output.class";
+    public static final String OUTPUT_DEFAULT               = "org.paternostro.elkromm.serializer.Output";
 
     private Properties  properties;
 
@@ -246,24 +246,24 @@ public class ElkrommFactory {
         return retval;
     }
 
-    public ElkrommSerializer<org.paternostro.elkromm.dto.Input> getInputsSerializer()
+    public ElkrommSerializer<org.paternostro.elkromm.dto.Input> getInputSerializer()
     {
         @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.Input>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.Input>)getSerializer(INPUTS_CLASS, INPUTS_DEFAULT);
+        ElkrommSerializer<org.paternostro.elkromm.dto.Input>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.Input>)getSerializer(INPUT_CLASS, INPUT_DEFAULT);
 
         if (retval == null) {
-            retval = new Inputs();
+            retval = new Input();
         }
 
         return retval;
     }
-    public ElkrommSerializer<org.paternostro.elkromm.dto.Output> getOutputsSerializer()
+    public ElkrommSerializer<org.paternostro.elkromm.dto.Output> getOutputSerializer()
     {
         @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.Output>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.Output>)getSerializer(OUTPUTS_CLASS, OUTPUTS_DEFAULT);
+        ElkrommSerializer<org.paternostro.elkromm.dto.Output>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.Output>)getSerializer(OUTPUT_CLASS, OUTPUT_DEFAULT);
 
         if (retval == null) {
-            retval = new Outputs();
+            retval = new Output();
         }
 
         return retval;
