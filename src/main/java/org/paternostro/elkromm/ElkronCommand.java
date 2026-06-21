@@ -47,7 +47,10 @@ public enum ElkronCommand {
     EXPANSIONS_PROGRAMMING(0xe1),
     KEYBOARD_PROGRAMMING(0xe2),
     
-    KEYPADS(0x52);
+    KEYPADS(0x52),
+    READERS(0x53),
+    READER_PROGRAMMING(0x93),
+    SET_READERS(0xe3);
 
     protected int value;
 

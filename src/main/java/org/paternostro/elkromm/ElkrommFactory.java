@@ -15,6 +15,8 @@ import org.paternostro.elkromm.serializer.Keyboards;
 import org.paternostro.elkromm.serializer.Keys;
 import org.paternostro.elkromm.serializer.Output;
 import org.paternostro.elkromm.serializer.PeripheralUnits;
+import org.paternostro.elkromm.serializer.Reader;
+import org.paternostro.elkromm.serializer.Readers;
 import org.paternostro.elkromm.serializer.SystemStatus;
 import org.paternostro.elkromm.serializer.Users;
 import org.slf4j.Logger;
@@ -107,6 +109,12 @@ public class ElkrommFactory {
 
     public static final String KEYBOARDS_CLASS              = "org.paternostro.elkromm.ElkrommFactory.Keyboards.class";
     public static final String KEYBOARDS_DEFAULT            = "org.paternostro.elkromm.serializer.Keyboards";
+
+    public static final String READER_CLASS                 = "org.paternostro.elkromm.ElkrommFactory.Reader.class";
+    public static final String READER_DEFAULT               = "org.paternostro.elkromm.serializer.Reader";
+
+    public static final String READERS_CLASS                = "org.paternostro.elkromm.ElkrommFactory.Readers.class";
+    public static final String READERS_DEFAULT              = "org.paternostro.elkromm.serializer.Readers";
 
     private Properties  properties;
 
@@ -281,6 +289,30 @@ public class ElkrommFactory {
 
         if (retval == null) {
             retval = new Keyboards();
+        }
+
+        return retval;
+    }
+    
+    public ElkrommSerializer<org.paternostro.elkromm.dto.Reader> getReaderSerializer()
+    {
+        @SuppressWarnings("unchecked")
+        ElkrommSerializer<org.paternostro.elkromm.dto.Reader>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.Reader>)getSerializer(READER_CLASS, READER_DEFAULT);
+
+        if (retval == null) {
+            retval = new Reader();
+        }
+
+        return retval;
+    }
+
+    public ElkrommSerializer<org.paternostro.elkromm.dto.Reader[]> getReadersSerializer()
+    {
+        @SuppressWarnings("unchecked")
+        ElkrommSerializer<org.paternostro.elkromm.dto.Reader[]>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.Reader[]>)getSerializer(READERS_CLASS, READERS_DEFAULT);
+
+        if (retval == null) {
+            retval = new Readers();
         }
 
         return retval;

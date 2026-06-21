@@ -61,6 +61,17 @@ public interface ElkrommFacade
         {
             return bitMask;
         }
+
+        public static Partition valueOf(byte value)
+        {
+            for (Partition pivot : Partition.values()) {
+                if (pivot.getBitMask() == value) {
+                    return pivot;
+                }
+            }
+
+            return null;
+        }
     }
 
     enum InputStatus {
