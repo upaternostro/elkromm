@@ -11,6 +11,7 @@ import org.paternostro.elkromm.serializer.Checksums;
 import org.paternostro.elkromm.serializer.ElkrommSerializer;
 import org.paternostro.elkromm.serializer.Expansions;
 import org.paternostro.elkromm.serializer.Input;
+import org.paternostro.elkromm.serializer.Keyboards;
 import org.paternostro.elkromm.serializer.Keys;
 import org.paternostro.elkromm.serializer.Output;
 import org.paternostro.elkromm.serializer.PeripheralUnits;
@@ -103,6 +104,9 @@ public class ElkrommFactory {
 
     public static final String OUTPUT_CLASS                 = "org.paternostro.elkromm.ElkrommFactory.Output.class";
     public static final String OUTPUT_DEFAULT               = "org.paternostro.elkromm.serializer.Output";
+
+    public static final String KEYBOARDS_CLASS              = "org.paternostro.elkromm.ElkrommFactory.Keyboards.class";
+    public static final String KEYBOARDS_DEFAULT            = "org.paternostro.elkromm.serializer.Keyboards";
 
     private Properties  properties;
 
@@ -265,6 +269,18 @@ public class ElkrommFactory {
 
         if (retval == null) {
             retval = new Output();
+        }
+
+        return retval;
+    }
+    
+    public ElkrommSerializer<org.paternostro.elkromm.dto.Keyboard[]> getKeyboardsSerializer()
+    {
+        @SuppressWarnings("unchecked")
+        ElkrommSerializer<org.paternostro.elkromm.dto.Keyboard[]>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.Keyboard[]>)getSerializer(KEYBOARDS_CLASS, KEYBOARDS_DEFAULT);
+
+        if (retval == null) {
+            retval = new Keyboards();
         }
 
         return retval;
