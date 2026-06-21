@@ -10,7 +10,9 @@ import org.paternostro.elkromm.serializer.AreasAndPartitions;
 import org.paternostro.elkromm.serializer.Checksums;
 import org.paternostro.elkromm.serializer.ElkrommSerializer;
 import org.paternostro.elkromm.serializer.Expansions;
+import org.paternostro.elkromm.serializer.Inputs;
 import org.paternostro.elkromm.serializer.Keys;
+import org.paternostro.elkromm.serializer.Outputs;
 import org.paternostro.elkromm.serializer.PeripheralUnits;
 import org.paternostro.elkromm.serializer.SystemStatus;
 import org.paternostro.elkromm.serializer.Users;
@@ -95,6 +97,12 @@ public class ElkrommFactory {
 
     public static final String SYSTEM_STATUS_CLASS          = "org.paternostro.elkromm.ElkrommFactory.SystemStatus.class";
     public static final String SYSTEM_STATUS_DEFAULT        = "org.paternostro.elkromm.serializer.SystemStatus";
+
+    public static final String INPUTS_CLASS                 = "org.paternostro.elkromm.ElkrommFactory.Inputs.class";
+    public static final String INPUTS_DEFAULT               = "org.paternostro.elkromm.serializer.Inputs";
+
+    public static final String OUTPUTS_CLASS                = "org.paternostro.elkromm.ElkrommFactory.Outputs.class";
+    public static final String OUTPUTS_DEFAULT              = "org.paternostro.elkromm.serializer.Outputs";
 
     private Properties  properties;
 
@@ -233,6 +241,29 @@ public class ElkrommFactory {
 
         if (retval == null) {
             retval = new SystemStatus();
+        }
+
+        return retval;
+    }
+
+    public ElkrommSerializer<org.paternostro.elkromm.dto.Input> getInputsSerializer()
+    {
+        @SuppressWarnings("unchecked")
+        ElkrommSerializer<org.paternostro.elkromm.dto.Input>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.Input>)getSerializer(INPUTS_CLASS, INPUTS_DEFAULT);
+
+        if (retval == null) {
+            retval = new Inputs();
+        }
+
+        return retval;
+    }
+    public ElkrommSerializer<org.paternostro.elkromm.dto.Output> getOutputsSerializer()
+    {
+        @SuppressWarnings("unchecked")
+        ElkrommSerializer<org.paternostro.elkromm.dto.Output>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.Output>)getSerializer(OUTPUTS_CLASS, OUTPUTS_DEFAULT);
+
+        if (retval == null) {
+            retval = new Outputs();
         }
 
         return retval;

@@ -19,7 +19,7 @@ public class ExpansionsTest {
 
             for (int j = 0; j < ElkrommFacade.MAX_INPUTS; j++) {
                 associatedPartitions[j] = true;
-                expansions[i].addInput(new Input(i*8+j+1, Input.Configuration.IC_NORMALLY_CLOSED_DOUBLE_BALANCED, Input.Specialization.IS_IMMEDIATE, associatedPartitions, "Input " + j));
+                expansions[i].addInput(new Input(i*8+j+1, Input.Configuration.IC_NORMALLY_CLOSED_DOUBLE_BALANCED, Input.Specialization.IS_IMMEDIATE, Input.Sensitivity.IS_HIGH, Input.Flags.IF_EXCLUSION_ENABLED.getValue(), Input.Video.IV_CAMERA_3, associatedPartitions, "Input " + j, null));
                 associatedPartitions[j] = false;
             }
 
