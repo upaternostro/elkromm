@@ -2,8 +2,13 @@ package org.paternostro.elkromm;
 
 import java.util.Arrays;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ElkrommUtils
 {
+    public static final Logger logger = LoggerFactory.getLogger(ElkrommUtils.class);
+
     public static String getText(byte[] data, int startingOffset, int maxLength)
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory parameter");
@@ -106,7 +111,7 @@ public class ElkrommUtils
         return checksum;
     }
 
-    public static void dumpPayload(byte[] payload) {
+    public static void dumpPayload(ElkronCommand cmd, byte[] payload) {
         if (payload == null || payload.length == 0) {
             return;
         }
@@ -115,6 +120,8 @@ public class ElkrommUtils
         StringBuffer    sb2 = new StringBuffer();
         int             i;
         int             checksum = payload.length > 4 ? getLong(payload, payload.length - 4) : 0;
+
+        logger.info("Dumping " + cmd + ", payload size: " + payload.length);
 
         for (i = 0; i < payload.length; ) {
             if (i % 16 == 0) {
@@ -133,7 +140,7 @@ public class ElkrommUtils
             
             if (i % 16 == 0) {
                 sb.append(" ").append(sb2);
-                System.out.println(sb.toString());
+                logger.info(sb.toString());
                 sb.setLength(0); // Clear the buffer
                 sb2.setLength(0); // Clear the buffer
             }
@@ -151,14 +158,14 @@ public class ElkrommUtils
             }
 
             sb.append(" ").append(sb2);
-            System.out.println(sb.toString());
+            logger.info(sb.toString());
         }
 
         if (payload.length > 4) {
             if (checksum == computeBlockChecksum(payload)) {
-                System.out.println(String.format("Checksum %08x is valid", checksum));
+                logger.info(String.format("Checksum %08x is valid", checksum));
             } else {
-                System.err.println(String.format("Checksum %08x is invalid", checksum));
+                logger.warn(String.format("Checksum %08x is invalid", checksum));
             }
         }
     }
