@@ -1,6 +1,7 @@
 package org.paternostro.elkromm.serializer;
 
 import org.paternostro.elkromm.ElkrommFacade;
+import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.dto.Expansion;
 import org.paternostro.elkromm.dto.Input;
@@ -18,8 +19,10 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
         if (obj.length == 0) throw new IllegalArgumentException("Empty mandatory obj");
 
-        byte[]  data = new byte[obj.length * EXPANSION_SIZE + 4];
-        int     offset;       
+        byte[]                      data = new byte[obj.length * EXPANSION_SIZE + 4];
+        int                         offset;       
+        ElkrommSerializer<Input>    iSerializer = ElkrommFactory.getFactory().getInputsSerializer();
+        ElkrommSerializer<Output>   oSerializer = ElkrommFactory.getFactory().getOutputsSerializer();
 
         for (int i = 0; i < obj.length; i++) {
             offset = i * EXPANSION_SIZE;
@@ -36,11 +39,7 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
                     continue;
                 }
 
-                data[offset] = (byte)(obj[i].getInput(j).getLogicNumber() & 0xFF);
-                data[offset + 1] = obj[i].getInput(j).getConfiguration().getValue();
-                data[offset + 2] = obj[i].getInput(j).getSpecialization().getValue();
-                data[offset + 5] = ElkrommUtils.packPartitions(obj[i].getInput(j).getAssociatedPartitions());
-                ElkrommUtils.setText(data, offset + 6, obj[i].getInput(j).getName(), ElkrommFacade.NAME_LENGTH);
+                System.arraycopy(iSerializer.serialize(obj[i].getInput(j)), 0, data, offset, INPUT_SIZE);
             }
 
             for (int j = 0; j < obj[i].getOutputNum(); j++) {
@@ -51,11 +50,7 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
                     continue;
                 }
 
-                data[offset] = (byte)(obj[i].getOutput(j).getLogicNumber() & 0xFF);
-                data[offset + 1] = obj[i].getOutput(j).getType().getValue();
-                data[offset + 2] = ElkrommUtils.packPartitions(obj[i].getOutput(j).getAssociatedPartitions());
-                data[offset + 3] = obj[i].getOutput(j).getSpecialization().getValue();
-                ElkrommUtils.setText(data, offset + 8, obj[i].getOutput(j).getName(), ElkrommFacade.NAME_LENGTH);
+                System.arraycopy(oSerializer.serialize(obj[i].getOutput(j)), 0, data, offset, OUTPUT_SIZE);
             }
 
             // FIXME: single expansion checksum???
@@ -74,8 +69,12 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
         if (data.length % EXPANSION_SIZE != 4) throw new IllegalArgumentException("Wrong data size");
         if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getLong(data, data.length - 4)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getLong(data, data.length - 4));
 
-        Expansion[] retval = new Expansion[(data.length - 4) / EXPANSION_SIZE];
-        int         offset;
+        Expansion[]                 retval = new Expansion[(data.length - 4) / EXPANSION_SIZE];
+        int                         offset;
+        ElkrommSerializer<Input>    iSerializer = ElkrommFactory.getFactory().getInputsSerializer();
+        byte[]                      iData = new byte[INPUT_SIZE];
+        ElkrommSerializer<Output>   oSerializer = ElkrommFactory.getFactory().getOutputsSerializer();
+        byte[]                      oData = new byte[OUTPUT_SIZE];
 
         for (int i = 0; i < data.length / EXPANSION_SIZE; i++) {
             offset = i * EXPANSION_SIZE;
@@ -89,7 +88,8 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
                     continue;
                 }
 
-                retval[i].addInput(new Input(data[offset], Input.Configuration.valueOf(data[offset + 1]), Input.Specialization.valueOf(data[offset + 2]), ElkrommUtils.unpackPartitions(data[offset + 5]), ElkrommUtils.getText(data, offset + 6, ElkrommFacade.NAME_LENGTH)));
+                System.arraycopy(data, offset, iData, 0, INPUT_SIZE);
+                retval[i].addInput(iSerializer.deserialize(iData));
             }
 
             for (int j = 0; j < 6; j++) {
@@ -100,7 +100,8 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
                     continue;
                 }
 
-                retval[i].addOutput(new Output(data[offset], Output.Type.valueOf(data[offset + 1]), ElkrommUtils.unpackPartitions(data[offset + 2]), Output.Specialization.valueOf(data[offset + 3]), ElkrommUtils.getText(data, offset + 8, ElkrommFacade.NAME_LENGTH)));
+                System.arraycopy(data, offset, oData, 0, OUTPUT_SIZE);
+                retval[i].addOutput(oSerializer.deserialize(oData));
             }
 
 //            int checksum = 0;
