@@ -12,6 +12,7 @@ import org.paternostro.elkromm.serializer.ElkrommSerializer;
 import org.paternostro.elkromm.serializer.Expansions;
 import org.paternostro.elkromm.serializer.Keys;
 import org.paternostro.elkromm.serializer.PeripheralUnits;
+import org.paternostro.elkromm.serializer.SystemStatus;
 import org.paternostro.elkromm.serializer.Users;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,6 +92,9 @@ public class ElkrommFactory {
 
     public static final String PERIPHERAL_UNITS_CLASS       = "org.paternostro.elkromm.ElkrommFactory.PeripheralUnits.class";
     public static final String PERIPHERAL_UNITS_DEFAULT     = "org.paternostro.elkromm.serializer.PeripheralUnits";
+
+    public static final String SYSTEM_STATUS_CLASS          = "org.paternostro.elkromm.ElkrommFactory.SystemStatus.class";
+    public static final String SYSTEM_STATUS_DEFAULT        = "org.paternostro.elkromm.serializer.SystemStatus";
 
     private Properties  properties;
 
@@ -217,6 +221,18 @@ public class ElkrommFactory {
 
         if (retval == null) {
             retval = new PeripheralUnits();
+        }
+
+        return retval;
+    }
+
+    public ElkrommSerializer<org.paternostro.elkromm.dto.SystemStatus> getSystemStatusSerializer()
+    {
+        @SuppressWarnings("unchecked")
+        ElkrommSerializer<org.paternostro.elkromm.dto.SystemStatus>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.SystemStatus>)getSerializer(SYSTEM_STATUS_CLASS, SYSTEM_STATUS_DEFAULT);
+
+        if (retval == null) {
+            retval = new SystemStatus();
         }
 
         return retval;
