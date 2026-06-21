@@ -58,7 +58,7 @@ public class Expansion implements Serializable, Comparable<Expansion>
 
     public void setAddress(int address)
     {
-        if (address < 1) throw new IllegalArgumentException("Wrong address " + address + ", expected greater than 0");
+        if (address < 0) throw new IllegalArgumentException("Wrong address " + address + ", expected greater or equal than 0");
 
         this.address = address;
     }
