@@ -11,8 +11,8 @@ public enum ElkronCommand {
     INPUT_STATUS(0x84),
     EXPANSIONS(0x51),
     EXCLUDE_INCLUDE_INPUT(0x83),
-    PERIPHERAL_UNITS_ADDRESSES(0x62),
-    CHECKSUM(0x50),
+    PERIPHERAL_UNITS_ADDRESSES(0x62), // No block checksum!
+    CHECKSUM(0x50), // No block checksum!
     USERS(0x5b),
     KEYS(0x5c),
     PARAMETERS_ENABLINGS(0x26),
@@ -28,6 +28,7 @@ public enum ElkronCommand {
 
     EVENT_LOG(0x70),    
     
+    CONTROL_PANEL_PROGRAMMING(0x91),
     USER_PROGRAMMING(0x95),
     SET_PARAMETERS_ENABLINGS(0x96),
 
@@ -41,8 +42,12 @@ public enum ElkronCommand {
     SET_USERS(0xeb),
     SET_KEYS(0xec),
 
-    // No checksum!
-    SMS_PROGRAMMING(0xa0);
+    SMS_PROGRAMMING(0xa0), // No block checksum!
+    KEYPAD_PROGRAMMING(0x92), // No block checksum!
+    EXPANSIONS_PROGRAMMING(0xe1),
+    KEYBOARD_PROGRAMMING(0xe2),
+    
+    KEYPADS(0x52);
 
     protected int value;
 
