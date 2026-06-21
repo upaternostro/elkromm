@@ -257,6 +257,7 @@ public class ElkrommFactory {
 
         return retval;
     }
+    
     public ElkrommSerializer<org.paternostro.elkromm.dto.Output> getOutputSerializer()
     {
         @SuppressWarnings("unchecked")
