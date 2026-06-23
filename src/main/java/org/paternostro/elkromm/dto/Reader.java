@@ -42,7 +42,7 @@ public class Reader implements Serializable, Comparable<Reader>
         }
 
         public static boolean isValid(byte bitmask) {
-            return (bitmask & (RE_ALL.getValue() ^ 0xFF)) == 0;
+            return (bitmask & ((RE_ALL.getValue() ^ 0xFF) & 0xFF)) == 0;
         }
     }
 

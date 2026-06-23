@@ -160,7 +160,7 @@ public class Input implements Serializable, Comparable<Input>
         }
 
         public static boolean isValid(byte bitmask) {
-            return (bitmask & (IF_ALL.getValue() ^ 0xFF)) == 0;
+            return (bitmask & ((IF_ALL.getValue() ^ 0xFF) & 0xFF)) == 0;
         }
     }
 

@@ -49,7 +49,7 @@ public class Keyboard implements Serializable, Comparable<Keyboard>
         }
 
         public static boolean isValid(byte bitmask) {
-            return (bitmask & (KE_ALL.getValue() ^ 0xFF)) == 0;
+            return (bitmask & ((KE_ALL.getValue() ^ 0xFF) & 0xFF)) == 0;
         }
     }
 
@@ -90,7 +90,7 @@ public class Keyboard implements Serializable, Comparable<Keyboard>
         }
 
         public static boolean isValid(byte bitmask) {
-            return (bitmask & (KA_ALL.getValue() ^ 0xFF)) == 0;
+            return (bitmask & ((KA_ALL.getValue() ^ 0xFF) & 0xFF)) == 0;
         }
     }
 
