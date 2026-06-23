@@ -14,6 +14,7 @@ import org.paternostro.elkromm.serializer.Input;
 import org.paternostro.elkromm.serializer.Keyboards;
 import org.paternostro.elkromm.serializer.Keys;
 import org.paternostro.elkromm.serializer.Output;
+import org.paternostro.elkromm.serializer.ParametersEnablings;
 import org.paternostro.elkromm.serializer.PeripheralUnits;
 import org.paternostro.elkromm.serializer.Reader;
 import org.paternostro.elkromm.serializer.Readers;
@@ -115,6 +116,9 @@ public class ElkrommFactory {
 
     public static final String READERS_CLASS                = "org.paternostro.elkromm.ElkrommFactory.Readers.class";
     public static final String READERS_DEFAULT              = "org.paternostro.elkromm.serializer.Readers";
+
+    public static final String PARAMETERS_ENABLINGS_CLASS   = "org.paternostro.elkromm.ElkrommFactory.ParametersEnablings.class";
+    public static final String PARAMETERS_ENABLINGS_DEFAULT = "org.paternostro.elkromm.serializer.ParametersEnablings";
 
     private Properties  properties;
 
@@ -313,6 +317,18 @@ public class ElkrommFactory {
 
         if (retval == null) {
             retval = new Readers();
+        }
+
+        return retval;
+    }
+
+    public ElkrommSerializer<org.paternostro.elkromm.dto.ParametersEnablings> getParametersEnablingsSerializer()
+    {
+        @SuppressWarnings("unchecked")
+        ElkrommSerializer<org.paternostro.elkromm.dto.ParametersEnablings>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.ParametersEnablings>)getSerializer(PARAMETERS_ENABLINGS_CLASS, PARAMETERS_ENABLINGS_DEFAULT);
+
+        if (retval == null) {
+            retval = new ParametersEnablings();
         }
 
         return retval;
