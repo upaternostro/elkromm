@@ -8,6 +8,8 @@ import java.util.Properties;
 import org.paternostro.elkromm.impl.ElkrommFacadeImpl;
 import org.paternostro.elkromm.serializer.AreasAndPartitions;
 import org.paternostro.elkromm.serializer.Checksums;
+import org.paternostro.elkromm.serializer.Commands;
+import org.paternostro.elkromm.serializer.DayClassCommands;
 import org.paternostro.elkromm.serializer.ElkrommSerializer;
 import org.paternostro.elkromm.serializer.Expansions;
 import org.paternostro.elkromm.serializer.Input;
@@ -19,6 +21,7 @@ import org.paternostro.elkromm.serializer.PeripheralUnits;
 import org.paternostro.elkromm.serializer.Reader;
 import org.paternostro.elkromm.serializer.Readers;
 import org.paternostro.elkromm.serializer.SystemStatus;
+import org.paternostro.elkromm.serializer.TimeProgrammer;
 import org.paternostro.elkromm.serializer.Users;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,6 +122,15 @@ public class ElkrommFactory {
 
     public static final String PARAMETERS_ENABLINGS_CLASS   = "org.paternostro.elkromm.ElkrommFactory.ParametersEnablings.class";
     public static final String PARAMETERS_ENABLINGS_DEFAULT = "org.paternostro.elkromm.serializer.ParametersEnablings";
+
+    public static final String COMMANDS_CLASS               = "org.paternostro.elkromm.ElkrommFactory.Commands.class";
+    public static final String COMMANDS_DEFAULT             = "org.paternostro.elkromm.serializer.Commands";
+
+    public static final String DAY_CLASS_COMMANDS_CLASS     = "org.paternostro.elkromm.ElkrommFactory.DayClassCommands.class";
+    public static final String DAY_CLASS_COMMANDS_DEFAULT   = "org.paternostro.elkromm.serializer.DayClassCommands";
+
+    public static final String TIME_PROGRAMMER_CLASS     = "org.paternostro.elkromm.ElkrommFactory.TimeProgrammer.class";
+    public static final String TIME_PROGRAMMER_DEFAULT   = "org.paternostro.elkromm.serializer.TimeProgrammer";
 
     private Properties  properties;
 
@@ -329,6 +341,42 @@ public class ElkrommFactory {
 
         if (retval == null) {
             retval = new ParametersEnablings();
+        }
+
+        return retval;
+    }
+
+    public ElkrommSerializer<org.paternostro.elkromm.dto.Command[]> getCommandsSerializer()
+    {
+        @SuppressWarnings("unchecked")
+        ElkrommSerializer<org.paternostro.elkromm.dto.Command[]>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.Command[]>)getSerializer(COMMANDS_CLASS, COMMANDS_DEFAULT);
+
+        if (retval == null) {
+            retval = new Commands();
+        }
+
+        return retval;
+    }
+
+    public ElkrommSerializer<org.paternostro.elkromm.dto.DayClassCommands> getDayClassCommandsSerializer()
+    {
+        @SuppressWarnings("unchecked")
+        ElkrommSerializer<org.paternostro.elkromm.dto.DayClassCommands>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.DayClassCommands>)getSerializer(DAY_CLASS_COMMANDS_CLASS, DAY_CLASS_COMMANDS_DEFAULT);
+
+        if (retval == null) {
+            retval = new DayClassCommands();
+        }
+
+        return retval;
+    }
+
+    public ElkrommSerializer<org.paternostro.elkromm.dto.TimeProgrammer> getTimeProgrammerSerializer()
+    {
+        @SuppressWarnings("unchecked")
+        ElkrommSerializer<org.paternostro.elkromm.dto.TimeProgrammer>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.TimeProgrammer>)getSerializer(TIME_PROGRAMMER_CLASS, TIME_PROGRAMMER_DEFAULT);
+
+        if (retval == null) {
+            retval = new TimeProgrammer();
         }
 
         return retval;

@@ -50,7 +50,9 @@ public enum ElkronCommand {
     KEYPADS(0x52),
     READERS(0x53),
     READER_PROGRAMMING(0x93),
-    SET_READERS(0xe3);
+    SET_READERS(0xe3),
+    
+    DAY_CLASS_CMDS(0Xa1); // No Block checksum!
 
     protected int value;
 
