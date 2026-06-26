@@ -16,8 +16,10 @@ import org.paternostro.elkromm.serializer.Input;
 import org.paternostro.elkromm.serializer.Keyboards;
 import org.paternostro.elkromm.serializer.Keys;
 import org.paternostro.elkromm.serializer.Output;
+import org.paternostro.elkromm.serializer.PSTNGSM;
 import org.paternostro.elkromm.serializer.ParametersEnablings;
 import org.paternostro.elkromm.serializer.PeripheralUnits;
+import org.paternostro.elkromm.serializer.PhoneParameters;
 import org.paternostro.elkromm.serializer.Reader;
 import org.paternostro.elkromm.serializer.Readers;
 import org.paternostro.elkromm.serializer.SystemStatus;
@@ -129,8 +131,14 @@ public class ElkrommFactory {
     public static final String DAY_CLASS_COMMANDS_CLASS     = "org.paternostro.elkromm.ElkrommFactory.DayClassCommands.class";
     public static final String DAY_CLASS_COMMANDS_DEFAULT   = "org.paternostro.elkromm.serializer.DayClassCommands";
 
-    public static final String TIME_PROGRAMMER_CLASS     = "org.paternostro.elkromm.ElkrommFactory.TimeProgrammer.class";
-    public static final String TIME_PROGRAMMER_DEFAULT   = "org.paternostro.elkromm.serializer.TimeProgrammer";
+    public static final String TIME_PROGRAMMER_CLASS        = "org.paternostro.elkromm.ElkrommFactory.TimeProgrammer.class";
+    public static final String TIME_PROGRAMMER_DEFAULT      = "org.paternostro.elkromm.serializer.TimeProgrammer";
+
+    public static final String PHONE_PARAMETERS_CLASS       = "org.paternostro.elkromm.ElkrommFactory.PhoneParameters.class";
+    public static final String PHONE_PARAMETERS_DEFAULT     = "org.paternostro.elkromm.serializer.PhoneParameters";
+
+    public static final String PSTN_GSM_CLASS               = "org.paternostro.elkromm.ElkrommFactory.PSTNGSM.class";
+    public static final String PSTN_GSM_DEFAULT             = "org.paternostro.elkromm.serializer.PSTNGSM";
 
     private Properties  properties;
 
@@ -377,6 +385,30 @@ public class ElkrommFactory {
 
         if (retval == null) {
             retval = new TimeProgrammer();
+        }
+
+        return retval;
+    }
+
+    public ElkrommSerializer<org.paternostro.elkromm.dto.PhoneParameters> getPhoneParametersSerializer()
+    {
+        @SuppressWarnings("unchecked")
+        ElkrommSerializer<org.paternostro.elkromm.dto.PhoneParameters>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.PhoneParameters>)getSerializer(PHONE_PARAMETERS_CLASS, PHONE_PARAMETERS_DEFAULT);
+
+        if (retval == null) {
+            retval = new PhoneParameters();
+        }
+
+        return retval;
+    }
+
+    public ElkrommSerializer<org.paternostro.elkromm.dto.PSTNGSM> getPSTNGSMSerializer()
+    {
+        @SuppressWarnings("unchecked")
+        ElkrommSerializer<org.paternostro.elkromm.dto.PSTNGSM>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.PSTNGSM>)getSerializer(PSTN_GSM_CLASS, PSTN_GSM_DEFAULT);
+
+        if (retval == null) {
+            retval = new PSTNGSM();
         }
 
         return retval;
