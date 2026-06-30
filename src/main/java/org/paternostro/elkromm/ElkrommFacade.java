@@ -30,6 +30,9 @@ public interface ElkrommFacade
     public static final int MAX_INPUTS = 8;
     public static final int MAX_OUTPUTS = 6;
 
+    public static final int MAX_PHONE_NUMBERS = 12;
+    public static final int PHONE_NUMBER_LENGTH = 28; // digits!
+
     public static final int MAX_DATA_LENGTH = 140;
     public static final int NAME_LENGTH = 24;
 

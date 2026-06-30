@@ -19,6 +19,8 @@ import org.paternostro.elkromm.serializer.Output;
 import org.paternostro.elkromm.serializer.PSTNGSM;
 import org.paternostro.elkromm.serializer.ParametersEnablings;
 import org.paternostro.elkromm.serializer.PeripheralUnits;
+import org.paternostro.elkromm.serializer.PhoneNumber;
+import org.paternostro.elkromm.serializer.PhoneNumbersSendingCodes;
 import org.paternostro.elkromm.serializer.PhoneParameters;
 import org.paternostro.elkromm.serializer.Reader;
 import org.paternostro.elkromm.serializer.Readers;
@@ -83,62 +85,68 @@ public class ElkrommFactory {
         return retval;
     }
 
-    public static final String FACADE_CLASS                 = "org.paternostro.elkromm.ElkrommFactory.ElkrommFacade.class";
-    public static final String FACADE_DEFAULT               = "org.paternostro.elkromm.impl.ElkrommFacadeImpl";
+    public static final String FACADE_CLASS                         = "org.paternostro.elkromm.ElkrommFactory.ElkrommFacade.class";
+    public static final String FACADE_DEFAULT                       = "org.paternostro.elkromm.impl.ElkrommFacadeImpl";
 
-    public static final String AREAS_AND_PARTITIONS_CLASS   = "org.paternostro.elkromm.ElkrommFactory.AreasAndPartitions.class";
-    public static final String AREAS_AND_PARTITIONS_DEFAULT = "org.paternostro.elkromm.serializer.AreasAndPartitions";
+    public static final String AREAS_AND_PARTITIONS_CLASS           = "org.paternostro.elkromm.ElkrommFactory.AreasAndPartitions.class";
+    public static final String AREAS_AND_PARTITIONS_DEFAULT         = "org.paternostro.elkromm.serializer.AreasAndPartitions";
 
-    public static final String USERS_CLASS                  = "org.paternostro.elkromm.ElkrommFactory.Users.class";
-    public static final String USERS_DEFAULT                = "org.paternostro.elkromm.serializer.Users";
+    public static final String USERS_CLASS                          = "org.paternostro.elkromm.ElkrommFactory.Users.class";
+    public static final String USERS_DEFAULT                        = "org.paternostro.elkromm.serializer.Users";
 
-    public static final String CHECKSUMS_CLASS              = "org.paternostro.elkromm.ElkrommFactory.Checksums.class";
-    public static final String CHECKSUMS_DEFAULT            = "org.paternostro.elkromm.serializer.Checksums";
+    public static final String CHECKSUMS_CLASS                      = "org.paternostro.elkromm.ElkrommFactory.Checksums.class";
+    public static final String CHECKSUMS_DEFAULT                    = "org.paternostro.elkromm.serializer.Checksums";
 
-    public static final String KEYS_CLASS                   = "org.paternostro.elkromm.ElkrommFactory.Keys.class";
-    public static final String KEYS_DEFAULT                 = "org.paternostro.elkromm.serializer.Keys";
+    public static final String KEYS_CLASS                           = "org.paternostro.elkromm.ElkrommFactory.Keys.class";
+    public static final String KEYS_DEFAULT                         = "org.paternostro.elkromm.serializer.Keys";
 
-    public static final String EXPANSIONS_CLASS             = "org.paternostro.elkromm.ElkrommFactory.Expansions.class";
-    public static final String EXPANSIONS_DEFAULT           = "org.paternostro.elkromm.serializer.Expansions";
+    public static final String EXPANSIONS_CLASS                     = "org.paternostro.elkromm.ElkrommFactory.Expansions.class";
+    public static final String EXPANSIONS_DEFAULT                   = "org.paternostro.elkromm.serializer.Expansions";
 
-    public static final String PERIPHERAL_UNITS_CLASS       = "org.paternostro.elkromm.ElkrommFactory.PeripheralUnits.class";
-    public static final String PERIPHERAL_UNITS_DEFAULT     = "org.paternostro.elkromm.serializer.PeripheralUnits";
+    public static final String PERIPHERAL_UNITS_CLASS               = "org.paternostro.elkromm.ElkrommFactory.PeripheralUnits.class";
+    public static final String PERIPHERAL_UNITS_DEFAULT             = "org.paternostro.elkromm.serializer.PeripheralUnits";
 
-    public static final String SYSTEM_STATUS_CLASS          = "org.paternostro.elkromm.ElkrommFactory.SystemStatus.class";
-    public static final String SYSTEM_STATUS_DEFAULT        = "org.paternostro.elkromm.serializer.SystemStatus";
+    public static final String SYSTEM_STATUS_CLASS                  = "org.paternostro.elkromm.ElkrommFactory.SystemStatus.class";
+    public static final String SYSTEM_STATUS_DEFAULT                = "org.paternostro.elkromm.serializer.SystemStatus";
 
-    public static final String INPUT_CLASS                  = "org.paternostro.elkromm.ElkrommFactory.Input.class";
-    public static final String INPUT_DEFAULT                = "org.paternostro.elkromm.serializer.Input";
+    public static final String INPUT_CLASS                          = "org.paternostro.elkromm.ElkrommFactory.Input.class";
+    public static final String INPUT_DEFAULT                        = "org.paternostro.elkromm.serializer.Input";
 
-    public static final String OUTPUT_CLASS                 = "org.paternostro.elkromm.ElkrommFactory.Output.class";
-    public static final String OUTPUT_DEFAULT               = "org.paternostro.elkromm.serializer.Output";
+    public static final String OUTPUT_CLASS                         = "org.paternostro.elkromm.ElkrommFactory.Output.class";
+    public static final String OUTPUT_DEFAULT                       = "org.paternostro.elkromm.serializer.Output";
 
-    public static final String KEYBOARDS_CLASS              = "org.paternostro.elkromm.ElkrommFactory.Keyboards.class";
-    public static final String KEYBOARDS_DEFAULT            = "org.paternostro.elkromm.serializer.Keyboards";
+    public static final String KEYBOARDS_CLASS                      = "org.paternostro.elkromm.ElkrommFactory.Keyboards.class";
+    public static final String KEYBOARDS_DEFAULT                    = "org.paternostro.elkromm.serializer.Keyboards";
 
-    public static final String READER_CLASS                 = "org.paternostro.elkromm.ElkrommFactory.Reader.class";
-    public static final String READER_DEFAULT               = "org.paternostro.elkromm.serializer.Reader";
+    public static final String READER_CLASS                         = "org.paternostro.elkromm.ElkrommFactory.Reader.class";
+    public static final String READER_DEFAULT                       = "org.paternostro.elkromm.serializer.Reader";
 
-    public static final String READERS_CLASS                = "org.paternostro.elkromm.ElkrommFactory.Readers.class";
-    public static final String READERS_DEFAULT              = "org.paternostro.elkromm.serializer.Readers";
+    public static final String READERS_CLASS                        = "org.paternostro.elkromm.ElkrommFactory.Readers.class";
+    public static final String READERS_DEFAULT                      = "org.paternostro.elkromm.serializer.Readers";
 
-    public static final String PARAMETERS_ENABLINGS_CLASS   = "org.paternostro.elkromm.ElkrommFactory.ParametersEnablings.class";
-    public static final String PARAMETERS_ENABLINGS_DEFAULT = "org.paternostro.elkromm.serializer.ParametersEnablings";
+    public static final String PARAMETERS_ENABLINGS_CLASS           = "org.paternostro.elkromm.ElkrommFactory.ParametersEnablings.class";
+    public static final String PARAMETERS_ENABLINGS_DEFAULT         = "org.paternostro.elkromm.serializer.ParametersEnablings";
 
-    public static final String COMMANDS_CLASS               = "org.paternostro.elkromm.ElkrommFactory.Commands.class";
-    public static final String COMMANDS_DEFAULT             = "org.paternostro.elkromm.serializer.Commands";
+    public static final String COMMANDS_CLASS                       = "org.paternostro.elkromm.ElkrommFactory.Commands.class";
+    public static final String COMMANDS_DEFAULT                     = "org.paternostro.elkromm.serializer.Commands";
 
-    public static final String DAY_CLASS_COMMANDS_CLASS     = "org.paternostro.elkromm.ElkrommFactory.DayClassCommands.class";
-    public static final String DAY_CLASS_COMMANDS_DEFAULT   = "org.paternostro.elkromm.serializer.DayClassCommands";
+    public static final String DAY_CLASS_COMMANDS_CLASS             = "org.paternostro.elkromm.ElkrommFactory.DayClassCommands.class";
+    public static final String DAY_CLASS_COMMANDS_DEFAULT           = "org.paternostro.elkromm.serializer.DayClassCommands";
 
-    public static final String TIME_PROGRAMMER_CLASS        = "org.paternostro.elkromm.ElkrommFactory.TimeProgrammer.class";
-    public static final String TIME_PROGRAMMER_DEFAULT      = "org.paternostro.elkromm.serializer.TimeProgrammer";
+    public static final String TIME_PROGRAMMER_CLASS                = "org.paternostro.elkromm.ElkrommFactory.TimeProgrammer.class";
+    public static final String TIME_PROGRAMMER_DEFAULT              = "org.paternostro.elkromm.serializer.TimeProgrammer";
 
-    public static final String PHONE_PARAMETERS_CLASS       = "org.paternostro.elkromm.ElkrommFactory.PhoneParameters.class";
-    public static final String PHONE_PARAMETERS_DEFAULT     = "org.paternostro.elkromm.serializer.PhoneParameters";
+    public static final String PHONE_PARAMETERS_CLASS               = "org.paternostro.elkromm.ElkrommFactory.PhoneParameters.class";
+    public static final String PHONE_PARAMETERS_DEFAULT             = "org.paternostro.elkromm.serializer.PhoneParameters";
 
-    public static final String PSTN_GSM_CLASS               = "org.paternostro.elkromm.ElkrommFactory.PSTNGSM.class";
-    public static final String PSTN_GSM_DEFAULT             = "org.paternostro.elkromm.serializer.PSTNGSM";
+    public static final String PSTN_GSM_CLASS                       = "org.paternostro.elkromm.ElkrommFactory.PSTNGSM.class";
+    public static final String PSTN_GSM_DEFAULT                     = "org.paternostro.elkromm.serializer.PSTNGSM";
+
+    public static final String PHONE_NUMBER_CLASS                   = "org.paternostro.elkromm.ElkrommFactory.PhoneNumber.class";
+    public static final String PHONE_NUMBER_DEFAULT                 = "org.paternostro.elkromm.serializer.PhoneNumber";
+
+    public static final String PHONE_NUMBERS_SENDING_CODES_CLASS    = "org.paternostro.elkromm.ElkrommFactory.PhoneNumbersSendingCodes.class";
+    public static final String PHONE_NUMBERS_SENDING_CODES_DEFAULT  = "org.paternostro.elkromm.serializer.PhoneNumbersSendingCodes";
 
     private Properties  properties;
 
@@ -409,6 +417,30 @@ public class ElkrommFactory {
 
         if (retval == null) {
             retval = new PSTNGSM();
+        }
+
+        return retval;
+    }
+
+    public ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumber> getPhoneNumberSerializer()
+    {
+        @SuppressWarnings("unchecked")
+        ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumber>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumber>)getSerializer(PHONE_NUMBER_CLASS, PHONE_NUMBER_DEFAULT);
+
+        if (retval == null) {
+            retval = new PhoneNumber();
+        }
+
+        return retval;
+    }
+
+    public ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumbersSendingCodes> getPhoneNumbersSendingCodesSerializer()
+    {
+        @SuppressWarnings("unchecked")
+        ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumbersSendingCodes>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumbersSendingCodes>)getSerializer(PHONE_NUMBERS_SENDING_CODES_CLASS, PHONE_NUMBERS_SENDING_CODES_DEFAULT);
+
+        if (retval == null) {
+            retval = new PhoneNumbersSendingCodes();
         }
 
         return retval;
