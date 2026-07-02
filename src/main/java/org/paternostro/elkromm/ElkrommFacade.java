@@ -33,8 +33,11 @@ public interface ElkrommFacade
     public static final int MAX_PHONE_NUMBERS = 12;
     public static final int PHONE_NUMBER_LENGTH = 28; // digits!
 
+    public static final int MAX_SMS = 9;
+
     public static final int MAX_DATA_LENGTH = 140;
     public static final int NAME_LENGTH = 24;
+    public static final int SMS_LENGTH = 40;
 
     public static final byte BYTE_SOH = 0x01;
     public static final byte BYTE_ETX = 0x03;

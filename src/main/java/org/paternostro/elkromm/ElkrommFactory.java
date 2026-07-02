@@ -24,6 +24,9 @@ import org.paternostro.elkromm.serializer.PhoneNumbersSendingCodes;
 import org.paternostro.elkromm.serializer.PhoneParameters;
 import org.paternostro.elkromm.serializer.Reader;
 import org.paternostro.elkromm.serializer.Readers;
+import org.paternostro.elkromm.serializer.SMS;
+import org.paternostro.elkromm.serializer.SMSs;
+import org.paternostro.elkromm.serializer.SingleSMS;
 import org.paternostro.elkromm.serializer.SystemStatus;
 import org.paternostro.elkromm.serializer.TimeProgrammer;
 import org.paternostro.elkromm.serializer.Users;
@@ -147,6 +150,15 @@ public class ElkrommFactory {
 
     public static final String PHONE_NUMBERS_SENDING_CODES_CLASS    = "org.paternostro.elkromm.ElkrommFactory.PhoneNumbersSendingCodes.class";
     public static final String PHONE_NUMBERS_SENDING_CODES_DEFAULT  = "org.paternostro.elkromm.serializer.PhoneNumbersSendingCodes";
+
+    public static final String SMS_CLASS                            = "org.paternostro.elkromm.ElkrommFactory.SMS.class";
+    public static final String SMS_DEFAULT                          = "org.paternostro.elkromm.serializer.SMS";
+
+    public static final String SMSs_CLASS                           = "org.paternostro.elkromm.ElkrommFactory.SMSs.class";
+    public static final String SMSs_DEFAULT                         = "org.paternostro.elkromm.serializer.SMSs";
+
+    public static final String SINGLE_SMS_CLASS                     = "org.paternostro.elkromm.ElkrommFactory.SingleSMS.class";
+    public static final String SINGLE_SMS_DEFAULT                   = "org.paternostro.elkromm.serializer.SingleSMS";
 
     private Properties  properties;
 
@@ -441,6 +453,42 @@ public class ElkrommFactory {
 
         if (retval == null) {
             retval = new PhoneNumbersSendingCodes();
+        }
+
+        return retval;
+    }
+
+    public ElkrommSerializer<org.paternostro.elkromm.dto.SMS> getSMSSerializer()
+    {
+        @SuppressWarnings("unchecked")
+        ElkrommSerializer<org.paternostro.elkromm.dto.SMS>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.SMS>)getSerializer(SMS_CLASS, SMS_DEFAULT);
+
+        if (retval == null) {
+            retval = new SMS();
+        }
+
+        return retval;
+    }
+
+    public ElkrommSerializer<org.paternostro.elkromm.dto.SMSs> getSMSsSerializer()
+    {
+        @SuppressWarnings("unchecked")
+        ElkrommSerializer<org.paternostro.elkromm.dto.SMSs>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.SMSs>)getSerializer(SMSs_CLASS, SMSs_DEFAULT);
+
+        if (retval == null) {
+            retval = new SMSs();
+        }
+
+        return retval;
+    }
+
+    public ElkrommSerializer<org.paternostro.elkromm.dto.SingleSMS> getSingleSMSSerializer()
+    {
+        @SuppressWarnings("unchecked")
+        ElkrommSerializer<org.paternostro.elkromm.dto.SingleSMS>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.SingleSMS>)getSerializer(SINGLE_SMS_CLASS, SINGLE_SMS_DEFAULT);
+
+        if (retval == null) {
+            retval = new SingleSMS();
         }
 
         return retval;
