@@ -7,6 +7,7 @@ import java.util.Properties;
 
 import org.paternostro.elkromm.impl.ElkrommFacadeImpl;
 import org.paternostro.elkromm.serializer.AreasAndPartitions;
+import org.paternostro.elkromm.serializer.C200bParameters;
 import org.paternostro.elkromm.serializer.Checksums;
 import org.paternostro.elkromm.serializer.Commands;
 import org.paternostro.elkromm.serializer.DayClassCommands;
@@ -159,6 +160,9 @@ public class ElkrommFactory {
 
     public static final String SINGLE_SMS_CLASS                     = "org.paternostro.elkromm.ElkrommFactory.SingleSMS.class";
     public static final String SINGLE_SMS_DEFAULT                   = "org.paternostro.elkromm.serializer.SingleSMS";
+
+    public static final String C200B_PARAMETERS_CLASS               = "org.paternostro.elkromm.ElkrommFactory.C200bParameters.class";
+    public static final String C200B_PARAMETERS_DEFAULT             = "org.paternostro.elkromm.serializer.C200bParameters";
 
     private Properties  properties;
 
@@ -489,6 +493,18 @@ public class ElkrommFactory {
 
         if (retval == null) {
             retval = new SingleSMS();
+        }
+
+        return retval;
+    }
+
+    public ElkrommSerializer<org.paternostro.elkromm.dto.C200bParameters> getC200bParametersSerializer()
+    {
+        @SuppressWarnings("unchecked")
+        ElkrommSerializer<org.paternostro.elkromm.dto.C200bParameters>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.C200bParameters>)getSerializer(C200B_PARAMETERS_CLASS, C200B_PARAMETERS_DEFAULT);
+
+        if (retval == null) {
+            retval = new C200bParameters();
         }
 
         return retval;
