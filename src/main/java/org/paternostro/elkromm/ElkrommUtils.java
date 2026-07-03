@@ -1,5 +1,8 @@
 package org.paternostro.elkromm;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -222,5 +225,43 @@ public class ElkrommUtils
         if (low > 9) throw new IllegalArgumentException("dcbByte: lower nibble must be in range [0,9], found " + low);
 
         return high * 10 + low;
+    }
+
+    public static void sendSYN(OutputStream outputStream) throws IOException {
+        logger.debug("Sending SYN...");
+        outputStream.write(ElkrommFacade.BYTE_SYN);
+        outputStream.flush();
+    }
+
+    public static void sendACK(OutputStream outputStream) throws IOException {
+        logger.debug("Sending ACK...");
+        outputStream.write(ElkrommFacade.BYTE_ACK);
+        outputStream.flush();
+    }
+
+    public static void sendNAK(OutputStream outputStream) throws IOException {
+        logger.debug("Sending NAK...");
+        outputStream.write(ElkrommFacade.BYTE_NAK);
+        outputStream.flush();
+    }
+    
+    // Source - https://stackoverflow.com/a/9855338
+    // Posted by maybeWeCouldStealAVan, modified by community. See post 'Timeline' for change history
+    // Retrieved 2026-03-27, License - CC BY-SA 4.0
+
+    protected static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
+
+    public static String bytesToHex(byte[] bytes) {
+        byte[]  hexChars = new byte[bytes.length * 2];
+        int     v;
+
+        for (int j = 0; j < bytes.length; j++) {
+            v = bytes[j] & 0xFF;
+
+            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+        }
+
+        return new String(hexChars, StandardCharsets.UTF_8);
     }
 }

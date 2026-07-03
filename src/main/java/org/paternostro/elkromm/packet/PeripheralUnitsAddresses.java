@@ -1,0 +1,13 @@
+package org.paternostro.elkromm.packet;
+
+import org.paternostro.elkromm.ElkronCommand;
+
+public class PeripheralUnitsAddresses extends ElkrommPacket {
+    public PeripheralUnitsAddresses(int plantCode12, int plantCode34, int totalPackets, int index, int dataLength, byte[] data) {
+        super(Direction.FROM_CLIENT, plantCode12, plantCode34, 0, 0, dataLength, ElkronCommand.PERIPHERAL_UNITS_ADDRESSES.getValue(), data);
+
+        assert totalPackets == 0 : "PeripheralunitsAddresses: totalPackets: expected 0, found " + totalPackets;
+        assert index == 0 : "PeripheralunitsAddresses: index: expected 0, found " + index;
+        assert (dataLength == 0 && (data == null || data.length == 0)) || (dataLength >= 3 && data != null && data.length == dataLength) : "PeripheralunitsAddresses: data: mismatch in data length";
+    }
+}
