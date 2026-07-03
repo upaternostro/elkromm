@@ -19,7 +19,16 @@ import org.paternostro.elkromm.dto.AreasAndPartitions;
 import org.paternostro.elkromm.dto.Checksums;
 import org.paternostro.elkromm.dto.Credential;
 import org.paternostro.elkromm.dto.Expansion;
+import org.paternostro.elkromm.dto.Keyboard;
+import org.paternostro.elkromm.dto.PSTNGSM;
+import org.paternostro.elkromm.dto.ParametersEnablings;
 import org.paternostro.elkromm.dto.PeripheralUnits;
+import org.paternostro.elkromm.dto.PhoneNumbersSendingCodes;
+import org.paternostro.elkromm.dto.PhoneParameters;
+import org.paternostro.elkromm.dto.Reader;
+import org.paternostro.elkromm.dto.SMSs;
+import org.paternostro.elkromm.dto.SystemStatus;
+import org.paternostro.elkromm.dto.TimeProgrammer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,16 +160,11 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     }
 
     @Override
-    public boolean[] getSystemStatus()
+    public SystemStatus getSystemStatus()
     {
-        boolean[]   retval = new boolean[MAX_PARTITIONS];
         byte[]      data = getData(ElkronCommand.SYSTEM_STATUS);
 
-        for (Partition partition : Partition.values()) {
-            retval[partition.ordinal()] = (data[0] & partition.getBitMask()) != 0x00;
-        }
-
-        return retval;
+        return ElkrommFactory.getFactory().getSystemStatusSerializer().deserialize(data);
     }
 
     @Override
@@ -545,5 +549,61 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         }
 
         return retval;
+    }
+
+    @Override
+    public Keyboard[] getKeyboards() {
+        byte[]      data = getData(ElkronCommand.KEYPADS);
+
+        return ElkrommFactory.getFactory().getKeyboardsSerializer().deserialize(data);
+    }
+
+    @Override
+    public ParametersEnablings getParametersEnablings() {
+        byte[]      data = getData(ElkronCommand.PARAMETERS_ENABLINGS);
+
+        return ElkrommFactory.getFactory().getParametersEnablingsSerializer().deserialize(data);
+    }
+
+    @Override
+    public PhoneNumbersSendingCodes getPhoneNumbersSendingCodes() {
+        byte[]      data = getData(ElkronCommand.PHONE_NUMBERS);
+
+        return ElkrommFactory.getFactory().getPhoneNumbersSendingCodesSerializer().deserialize(data);
+    }
+
+    @Override
+    public PhoneParameters getPhoneParameters() {
+        byte[]      data = getData(ElkronCommand.PHONE_PARAMETERS);
+
+        return ElkrommFactory.getFactory().getPhoneParametersSerializer().deserialize(data);
+    }
+
+    @Override
+    public PSTNGSM getPSTNGSM() {
+        byte[]      data = getData(ElkronCommand.PSTN_GSM);
+
+        return ElkrommFactory.getFactory().getPSTNGSMSerializer().deserialize(data);
+    }
+
+    @Override
+    public Reader[] getReaders() {
+        byte[]      data = getData(ElkronCommand.READERS);
+
+        return ElkrommFactory.getFactory().getReadersSerializer().deserialize(data);
+    }
+
+    @Override
+    public SMSs getSMSs() {
+        byte[]      data = getData(ElkronCommand.SMS);
+
+        return ElkrommFactory.getFactory().getSMSsSerializer().deserialize(data);
+    }
+
+    @Override
+    public TimeProgrammer getTimeProgrammer() {
+        byte[]      data = getData(ElkronCommand.TIME_PROGRAMMER);
+
+        return ElkrommFactory.getFactory().getTimeProgrammerSerializer().deserialize(data);
     }
 }

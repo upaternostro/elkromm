@@ -8,7 +8,16 @@ import org.paternostro.elkromm.dto.AreasAndPartitions;
 import org.paternostro.elkromm.dto.Checksums;
 import org.paternostro.elkromm.dto.Credential;
 import org.paternostro.elkromm.dto.Expansion;
+import org.paternostro.elkromm.dto.Keyboard;
+import org.paternostro.elkromm.dto.PSTNGSM;
+import org.paternostro.elkromm.dto.ParametersEnablings;
 import org.paternostro.elkromm.dto.PeripheralUnits;
+import org.paternostro.elkromm.dto.PhoneNumbersSendingCodes;
+import org.paternostro.elkromm.dto.PhoneParameters;
+import org.paternostro.elkromm.dto.Reader;
+import org.paternostro.elkromm.dto.SMSs;
+import org.paternostro.elkromm.dto.SystemStatus;
+import org.paternostro.elkromm.dto.TimeProgrammer;
 
 public interface ElkrommFacade
 {
@@ -110,7 +119,7 @@ public interface ElkrommFacade
     void login(int plantCode, int technicalCode);
     void ping();
     AreasAndPartitions getAreasAndPartitions();
-    boolean[] getSystemStatus();
+    SystemStatus getSystemStatus();
     void armDisarmSector(Partition sector, boolean arm);
     Map<InputStatus,List<Integer>> getInputStatus();
     void excludeIncludeInput(byte inputOrdinal, boolean exclude);
@@ -122,4 +131,13 @@ public interface ElkrommFacade
     boolean[] getUserEnablings();
     void enableDisableUser(byte userOrdinal, boolean enable);
     void logout();
+    // v0.3 APIs
+    Keyboard[] getKeyboards();
+    ParametersEnablings getParametersEnablings();
+    PhoneNumbersSendingCodes getPhoneNumbersSendingCodes();
+    PhoneParameters getPhoneParameters();
+    PSTNGSM getPSTNGSM();
+    Reader[] getReaders();
+    SMSs getSMSs();
+    TimeProgrammer getTimeProgrammer();
 }
