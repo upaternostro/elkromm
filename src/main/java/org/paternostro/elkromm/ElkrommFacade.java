@@ -27,8 +27,9 @@ public interface ElkrommFacade
     public static final int MAX_EXPANSIONS = 7;
     public static final int MAX_KEYPADS = 8;
     
-    public static final int MAX_INPUTS = 8;
-    public static final int MAX_OUTPUTS = 6;
+    public static final int MAX_LOGICAL_INPUTS = 64;
+    public static final int MAX_EXP_INPUTS = 8;
+    public static final int MAX_EXP_OUTPUTS = 6;
 
     public static final int MAX_PHONE_NUMBERS = 12;
     public static final int PHONE_NUMBER_LENGTH = 28; // digits!

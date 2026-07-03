@@ -17,13 +17,13 @@ public class ExpansionsTest {
         for (int i = 0; i < expansions.length; i++) {
             expansions[i] = new Expansion(i+1, "3.14", "Expansion " + (i + 1));
 
-            for (int j = 0; j < ElkrommFacade.MAX_INPUTS; j++) {
+            for (int j = 0; j < ElkrommFacade.MAX_EXP_INPUTS; j++) {
                 associatedPartitions[j] = true;
                 expansions[i].addInput(new Input(i*8+j+1, Input.Configuration.IC_NORMALLY_CLOSED_DOUBLE_BALANCED, Input.Specialization.IS_IMMEDIATE, Input.Sensitivity.IS_HIGH, Input.Flags.IF_EXCLUSION_ENABLED.getValue(), Input.Video.IV_CAMERA_3, associatedPartitions, "Input " + j, null));
                 associatedPartitions[j] = false;
             }
 
-            for (int j = 0; j < ElkrommFacade.MAX_OUTPUTS; j++) {
+            for (int j = 0; j < ElkrommFacade.MAX_EXP_OUTPUTS; j++) {
                 associatedPartitions[j] = true;
                 expansions[i].addOutput(new Output(i*8+j+1, Output.Type.OT_NORMALLY_HIGH, associatedPartitions, Output.Specialization.OS_OR_TC, "Output " + j));
                 associatedPartitions[j] = false;
@@ -46,7 +46,7 @@ public class ExpansionsTest {
             assert expansions[i].getInputNum() == expansions2[i].getInputNum() : "Expected input number " + expansions[i].getInputNum() + " got " + expansions2[i].getInputNum();
             assert expansions[i].getOutputNum() == expansions2[i].getOutputNum() : "Expected output number " + expansions[i].getOutputNum() + " got " + expansions2[i].getOutputNum();
 
-            for (int j = 0; j < ElkrommFacade.MAX_INPUTS; j++) {
+            for (int j = 0; j < ElkrommFacade.MAX_EXP_INPUTS; j++) {
                 assert expansions[i].getInput(j).getLogicNumber() == expansions2[i].getInput(j).getLogicNumber();
                 assert expansions[i].getInput(j).getConfiguration() == expansions2[i].getInput(j).getConfiguration();
                 assert expansions[i].getInput(j).getSpecialization() == expansions2[i].getInput(j).getSpecialization();
@@ -58,7 +58,7 @@ public class ExpansionsTest {
                 assert expansions[i].getInput(j).getName().equals(expansions2[i].getInput(j).getName());
             }
 
-            for (int j = 0; j < ElkrommFacade.MAX_OUTPUTS; j++) {
+            for (int j = 0; j < ElkrommFacade.MAX_EXP_OUTPUTS; j++) {
                 assert expansions[i].getOutput(j).getLogicNumber() == expansions2[i].getOutput(j).getLogicNumber();
                 assert expansions[i].getOutput(j).getType() == expansions2[i].getOutput(j).getType();
                 assert expansions[i].getOutput(j).getSpecialization() == expansions2[i].getOutput(j).getSpecialization();
