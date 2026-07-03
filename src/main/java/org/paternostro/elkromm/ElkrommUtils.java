@@ -201,6 +201,17 @@ public class ElkrommUtils
         return (byte)(upper << 4 | lower);
     }
 
+    public static int dcb(byte[] data, int offset, int length) {
+        int retval = 0;
+
+        while (length-- > 0) {
+            retval *= 100;
+            retval += dcbByte(data[offset++]);
+        }
+
+        return retval;
+    }
+
     public static int dcbByte(byte bcd) {
         int high = (bcd >> 4) & 0x0F;
 
