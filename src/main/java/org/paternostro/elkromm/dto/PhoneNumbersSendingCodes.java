@@ -1,11 +1,12 @@
 package org.paternostro.elkromm.dto;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.dto.PhoneNumber.Event;
 
-public class PhoneNumbersSendingCodes {
+public class PhoneNumbersSendingCodes implements Serializable {
     private PhoneNumber[]   phoneNumbers;
 
     public PhoneNumbersSendingCodes(PhoneNumber[] phoneNumbers) {

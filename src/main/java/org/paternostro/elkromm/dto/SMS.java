@@ -1,8 +1,10 @@
 package org.paternostro.elkromm.dto;
 
+import java.io.Serializable;
+
 import org.paternostro.elkromm.ElkrommFacade;
 
-public class SMS {
+public class SMS implements Serializable {
     private String  text;
 
     public SMS(String text) {

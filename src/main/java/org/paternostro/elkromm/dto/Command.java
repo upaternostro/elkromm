@@ -1,6 +1,8 @@
 package org.paternostro.elkromm.dto;
 
-public class Command {
+import java.io.Serializable;
+
+public class Command implements Serializable {
     public enum Action {
         CA_NONE(0x00),
         CA_ENABLE(0x01),

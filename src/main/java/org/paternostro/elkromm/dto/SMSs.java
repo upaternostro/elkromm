@@ -1,10 +1,11 @@
 package org.paternostro.elkromm.dto;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import org.paternostro.elkromm.ElkrommFacade;
 
-public class SMSs {
+public class SMSs implements Serializable {
     public enum SMSIndex {
         SMS_BURLGAR,
         SMS_TECHNICAL_ALARM_1,

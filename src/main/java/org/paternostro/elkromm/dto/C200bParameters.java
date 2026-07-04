@@ -1,5 +1,6 @@
 package org.paternostro.elkromm.dto;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,7 +8,7 @@ import java.util.Map.Entry;
 
 import org.paternostro.elkromm.ElkrommFacade;
 
-public class C200bParameters {
+public class C200bParameters implements Serializable {
     public enum Event {
         C2PE_BURGLAR_ALARM(0x38), // prima occorrenza, poi 39, 3a, 3b
         C2PE_PRE_ALARM(0x3c),

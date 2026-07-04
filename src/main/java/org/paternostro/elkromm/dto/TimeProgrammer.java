@@ -1,8 +1,10 @@
 package org.paternostro.elkromm.dto;
 
+import java.io.Serializable;
+
 import org.paternostro.elkromm.dto.DayClassCommands.DayClass;
 
-public class TimeProgrammer
+public class TimeProgrammer implements Serializable
 {
     private Command[]   workingDaysCommands;
     private Command[]   preHolidayDaysCommands;

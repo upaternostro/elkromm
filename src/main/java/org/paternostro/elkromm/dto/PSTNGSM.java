@@ -1,6 +1,8 @@
 package org.paternostro.elkromm.dto;
 
-public class PSTNGSM {
+import java.io.Serializable;
+
+public class PSTNGSM implements Serializable {
     public enum Enabling {
         PGE_DISABLED(0x00),
         PGE_ENABLED(0x01);

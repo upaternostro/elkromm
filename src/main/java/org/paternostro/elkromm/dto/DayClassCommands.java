@@ -1,6 +1,8 @@
 package org.paternostro.elkromm.dto;
 
-public class DayClassCommands implements Comparable<DayClassCommands>
+import java.io.Serializable;
+
+public class DayClassCommands implements Serializable, Comparable<DayClassCommands>
 {
     public enum DayClass {
         DCCDC_WORKING_DAY(0x00),

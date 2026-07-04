@@ -1,6 +1,8 @@
 package org.paternostro.elkromm.dto;
 
-public class PhoneParameters {
+import java.io.Serializable;
+
+public class PhoneParameters implements Serializable {
     public enum Enabling {
         PPE_DISABLED(0x00),
         PPE_ENABLED(0x01);

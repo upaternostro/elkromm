@@ -1,5 +1,6 @@
 package org.paternostro.elkromm.dto;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -7,7 +8,7 @@ import java.util.Set;
 
 import org.paternostro.elkromm.ElkrommFacade;
 
-public class PhoneNumber {
+public class PhoneNumber implements Serializable {
     public enum Type {
         PNT_PSTN(0x00),
         PNT_GSM(0x01),

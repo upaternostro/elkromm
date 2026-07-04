@@ -1,8 +1,10 @@
 package org.paternostro.elkromm.dto;
 
+import java.io.Serializable;
+
 import org.paternostro.elkromm.dto.SMSs.SMSIndex;
 
-public class SingleSMS {
+public class SingleSMS implements Serializable {
     private SMSIndex    index;
     private SMS         sMS;
 

@@ -1,6 +1,8 @@
 package org.paternostro.elkromm.dto;
 
-public class ParametersEnablings {
+import java.io.Serializable;
+
+public class ParametersEnablings implements Serializable {
     public enum Time {
         PET_30_SECS(0x00),
         PET_60_SECS(0x01),
