@@ -202,311 +202,174 @@ public class ElkrommFactory {
         return retval;
     }
 
-    private ElkrommSerializer<?> getSerializer(String key, String defaultClass)
+    private ElkrommSerializer<?> getSerializer(String key, String defaultClass, Class<?> serializerClass)
     {
         ElkrommSerializer<?>    retval = null;
         String                  className = properties.getProperty(key, defaultClass);
 
         try {
-            retval = (ElkrommSerializer<?> )Class.forName(className).newInstance();
+            retval = (ElkrommSerializer<?>)Class.forName(className).newInstance();
         } catch (ClassNotFoundException e) {
             logger.warn("Class " + className + " not found, using defaults", e);
-        } catch (InstantiationException e) {
-            logger.warn("Class " + className + " instantiation error, using defaults", e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException|IllegalAccessException e) {
             logger.warn("Class " + className + " instantiation error, using defaults", e);
         } catch (ClassCastException e) {
-            logger.warn("Cannot cast class " + className + " to AreasAndPartitions, using defaults", e);
+            logger.warn("Cannot cast class " + className + " to ElkrommSerializer<?>, using defaults", e);
+        } finally {
+            if (retval == null) {
+                try {
+                    retval = (ElkrommSerializer<?>)serializerClass.newInstance();
+                } catch (InstantiationException|IllegalAccessException e) {
+                    logger.error("Class " + serializerClass.getName() + " cannot be instantiated!", e);
+                }
+            }
         }
 
         return retval;
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.AreasAndPartitions> getAreasAndPartitionsSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.AreasAndPartitions>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.AreasAndPartitions>)getSerializer(AREAS_AND_PARTITIONS_CLASS, AREAS_AND_PARTITIONS_DEFAULT);
-
-        if (retval == null) {
-            retval = new AreasAndPartitions();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.AreasAndPartitions>)getSerializer(AREAS_AND_PARTITIONS_CLASS, AREAS_AND_PARTITIONS_DEFAULT, AreasAndPartitions.class);
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Credential[]> getUsersSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.Credential[]>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.Credential[]>)getSerializer(USERS_CLASS, USERS_DEFAULT);
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.Credential[]>)getSerializer(USERS_CLASS, USERS_DEFAULT, Users.class);
 
-        if (retval == null) {
-            retval = new Users();
-        }
-
-        return retval;
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Checksums> getChecksumsSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.Checksums>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.Checksums>)getSerializer(CHECKSUMS_CLASS, CHECKSUMS_DEFAULT);
-
-        if (retval == null) {
-            retval = new Checksums();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.Checksums>)getSerializer(CHECKSUMS_CLASS, CHECKSUMS_DEFAULT, Checksums.class);
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Credential[]> getKeysSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.Credential[]>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.Credential[]>)getSerializer(KEYS_CLASS, KEYS_DEFAULT);
-
-        if (retval == null) {
-            retval = new Keys();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.Credential[]>)getSerializer(KEYS_CLASS, KEYS_DEFAULT, Keys.class);
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Expansion[]> getExpansionsSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.Expansion[]>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.Expansion[]>)getSerializer(EXPANSIONS_CLASS, EXPANSIONS_DEFAULT);
-
-        if (retval == null) {
-            retval = new Expansions();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.Expansion[]>)getSerializer(EXPANSIONS_CLASS, EXPANSIONS_DEFAULT, Expansions.class);
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.PeripheralUnits> getPeripheralUnitsSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.PeripheralUnits>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.PeripheralUnits>)getSerializer(PERIPHERAL_UNITS_CLASS, PERIPHERAL_UNITS_DEFAULT);
-
-        if (retval == null) {
-            retval = new PeripheralUnits();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.PeripheralUnits>)getSerializer(PERIPHERAL_UNITS_CLASS, PERIPHERAL_UNITS_DEFAULT, PeripheralUnits.class);
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.SystemStatus> getSystemStatusSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.SystemStatus>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.SystemStatus>)getSerializer(SYSTEM_STATUS_CLASS, SYSTEM_STATUS_DEFAULT);
-
-        if (retval == null) {
-            retval = new SystemStatus();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.SystemStatus>)getSerializer(SYSTEM_STATUS_CLASS, SYSTEM_STATUS_DEFAULT, SystemStatus.class);
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Input> getInputSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.Input>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.Input>)getSerializer(INPUT_CLASS, INPUT_DEFAULT);
-
-        if (retval == null) {
-            retval = new Input();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.Input>)getSerializer(INPUT_CLASS, INPUT_DEFAULT, Input.class);
     }
     
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Output> getOutputSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.Output>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.Output>)getSerializer(OUTPUT_CLASS, OUTPUT_DEFAULT);
-
-        if (retval == null) {
-            retval = new Output();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.Output>)getSerializer(OUTPUT_CLASS, OUTPUT_DEFAULT, Output.class);
     }
     
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Keyboard[]> getKeyboardsSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.Keyboard[]>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.Keyboard[]>)getSerializer(KEYBOARDS_CLASS, KEYBOARDS_DEFAULT);
-
-        if (retval == null) {
-            retval = new Keyboards();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.Keyboard[]>)getSerializer(KEYBOARDS_CLASS, KEYBOARDS_DEFAULT, Keyboards.class);
     }
     
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Reader> getReaderSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.Reader>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.Reader>)getSerializer(READER_CLASS, READER_DEFAULT);
-
-        if (retval == null) {
-            retval = new Reader();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.Reader>)getSerializer(READER_CLASS, READER_DEFAULT, Reader.class);
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Reader[]> getReadersSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.Reader[]>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.Reader[]>)getSerializer(READERS_CLASS, READERS_DEFAULT);
-
-        if (retval == null) {
-            retval = new Readers();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.Reader[]>)getSerializer(READERS_CLASS, READERS_DEFAULT, Readers.class);
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.ParametersEnablings> getParametersEnablingsSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.ParametersEnablings>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.ParametersEnablings>)getSerializer(PARAMETERS_ENABLINGS_CLASS, PARAMETERS_ENABLINGS_DEFAULT);
-
-        if (retval == null) {
-            retval = new ParametersEnablings();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.ParametersEnablings>)getSerializer(PARAMETERS_ENABLINGS_CLASS, PARAMETERS_ENABLINGS_DEFAULT, ParametersEnablings.class);
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Command[]> getCommandsSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.Command[]>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.Command[]>)getSerializer(COMMANDS_CLASS, COMMANDS_DEFAULT);
-
-        if (retval == null) {
-            retval = new Commands();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.Command[]>)getSerializer(COMMANDS_CLASS, COMMANDS_DEFAULT, Commands.class);
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.DayClassCommands> getDayClassCommandsSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.DayClassCommands>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.DayClassCommands>)getSerializer(DAY_CLASS_COMMANDS_CLASS, DAY_CLASS_COMMANDS_DEFAULT);
-
-        if (retval == null) {
-            retval = new DayClassCommands();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.DayClassCommands>)getSerializer(DAY_CLASS_COMMANDS_CLASS, DAY_CLASS_COMMANDS_DEFAULT, DayClassCommands.class);
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.TimeProgrammer> getTimeProgrammerSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.TimeProgrammer>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.TimeProgrammer>)getSerializer(TIME_PROGRAMMER_CLASS, TIME_PROGRAMMER_DEFAULT);
-
-        if (retval == null) {
-            retval = new TimeProgrammer();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.TimeProgrammer>)getSerializer(TIME_PROGRAMMER_CLASS, TIME_PROGRAMMER_DEFAULT, TimeProgrammer.class);
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.PhoneParameters> getPhoneParametersSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.PhoneParameters>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.PhoneParameters>)getSerializer(PHONE_PARAMETERS_CLASS, PHONE_PARAMETERS_DEFAULT);
-
-        if (retval == null) {
-            retval = new PhoneParameters();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.PhoneParameters>)getSerializer(PHONE_PARAMETERS_CLASS, PHONE_PARAMETERS_DEFAULT, PhoneParameters.class);
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.PSTNGSM> getPSTNGSMSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.PSTNGSM>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.PSTNGSM>)getSerializer(PSTN_GSM_CLASS, PSTN_GSM_DEFAULT);
-
-        if (retval == null) {
-            retval = new PSTNGSM();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.PSTNGSM>)getSerializer(PSTN_GSM_CLASS, PSTN_GSM_DEFAULT, PSTNGSM.class);
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumber> getPhoneNumberSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumber>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumber>)getSerializer(PHONE_NUMBER_CLASS, PHONE_NUMBER_DEFAULT);
-
-        if (retval == null) {
-            retval = new PhoneNumber();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumber>)getSerializer(PHONE_NUMBER_CLASS, PHONE_NUMBER_DEFAULT, PhoneNumber.class);
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumbersSendingCodes> getPhoneNumbersSendingCodesSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumbersSendingCodes>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumbersSendingCodes>)getSerializer(PHONE_NUMBERS_SENDING_CODES_CLASS, PHONE_NUMBERS_SENDING_CODES_DEFAULT);
-
-        if (retval == null) {
-            retval = new PhoneNumbersSendingCodes();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumbersSendingCodes>)getSerializer(PHONE_NUMBERS_SENDING_CODES_CLASS, PHONE_NUMBERS_SENDING_CODES_DEFAULT, PhoneNumbersSendingCodes.class);
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.SMS> getSMSSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.SMS>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.SMS>)getSerializer(SMS_CLASS, SMS_DEFAULT);
-
-        if (retval == null) {
-            retval = new SMS();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.SMS>)getSerializer(SMS_CLASS, SMS_DEFAULT, SMS.class);
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.SMSs> getSMSsSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.SMSs>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.SMSs>)getSerializer(SMSs_CLASS, SMSs_DEFAULT);
-
-        if (retval == null) {
-            retval = new SMSs();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.SMSs>)getSerializer(SMSs_CLASS, SMSs_DEFAULT, SMSs.class);
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.SingleSMS> getSingleSMSSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.SingleSMS>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.SingleSMS>)getSerializer(SINGLE_SMS_CLASS, SINGLE_SMS_DEFAULT);
-
-        if (retval == null) {
-            retval = new SingleSMS();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.SingleSMS>)getSerializer(SINGLE_SMS_CLASS, SINGLE_SMS_DEFAULT, SingleSMS.class);
     }
 
+    @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.C200bParameters> getC200bParametersSerializer()
     {
-        @SuppressWarnings("unchecked")
-        ElkrommSerializer<org.paternostro.elkromm.dto.C200bParameters>  retval = (ElkrommSerializer<org.paternostro.elkromm.dto.C200bParameters>)getSerializer(C200B_PARAMETERS_CLASS, C200B_PARAMETERS_DEFAULT);
-
-        if (retval == null) {
-            retval = new C200bParameters();
-        }
-
-        return retval;
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.C200bParameters>)getSerializer(C200B_PARAMETERS_CLASS, C200B_PARAMETERS_DEFAULT, C200bParameters.class);
     }
 }
