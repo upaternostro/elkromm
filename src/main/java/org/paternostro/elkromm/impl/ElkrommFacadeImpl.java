@@ -174,8 +174,8 @@ public class ElkrommFacadeImpl implements ElkrommFacade
 
         byte[] data = new byte[2];
 
-        data[0] = partition.getBitMask();
-        data[1] = arm ? partition.getBitMask() : 0x00;
+        data[0] = partition.getValue();
+        data[1] = arm ? partition.getValue() : 0x00;
 
         try {
             Thread.sleep(DELAY);

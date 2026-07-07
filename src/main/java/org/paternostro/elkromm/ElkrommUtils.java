@@ -80,7 +80,9 @@ public class ElkrommUtils
         boolean[]   partitions = new boolean[ElkrommFacade.MAX_PARTITIONS];
 
         for (ElkrommFacade.Partition partition : ElkrommFacade.Partition.values()) {
-            partitions[partition.ordinal()] = (data & partition.getBitMask()) != 0x00;
+            if (partition == ElkrommFacade.Partition.P_NONE || partition == ElkrommFacade.Partition.P_ALL) continue;
+
+            partitions[partition.ordinal()-1] = (data & partition.getValue()) != 0x00;
         }
 
         return partitions;
@@ -94,8 +96,10 @@ public class ElkrommUtils
         byte    data = 0x00;
 
         for (ElkrommFacade.Partition partition : ElkrommFacade.Partition.values()) {
-            if (partitions[partition.ordinal()]) {
-                data |= partition.getBitMask();
+            if (partition == ElkrommFacade.Partition.P_NONE || partition == ElkrommFacade.Partition.P_ALL) continue;
+
+            if (partitions[partition.ordinal()-1]) {
+                data |= partition.getValue();
             }
         }
 

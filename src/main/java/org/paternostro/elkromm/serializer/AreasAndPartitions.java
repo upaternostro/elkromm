@@ -27,10 +27,10 @@ public class AreasAndPartitions implements ElkrommSerializer<org.paternostro.elk
                 case STANDARD:
                     break;
                 case SELF_EXCLUSION:
-                    data[102] |= ElkrommFacade.Partition.values()[i].getBitMask();
+                    data[102] |= ElkrommFacade.Partition.values()[i].getValue();
                     break;
                 case ARMING_BLOCK:
-                    data[103] |= ElkrommFacade.Partition.values()[i].getBitMask();
+                    data[103] |= ElkrommFacade.Partition.values()[i].getValue();
                     break;
                 case UNKNOWN:
                     break;
@@ -71,7 +71,7 @@ public class AreasAndPartitions implements ElkrommSerializer<org.paternostro.elk
         armingBlock = data[103];
 
         for (byte i = 0; i < partitions; i++) {
-            partitionBitMask = ElkrommFacade.Partition.values()[i].getBitMask();
+            partitionBitMask = ElkrommFacade.Partition.values()[i].getValue();
 
             if ((selfExclusion & partitionBitMask) == 0x00) {
                 if ((armingBlock & partitionBitMask) == 0x00) {

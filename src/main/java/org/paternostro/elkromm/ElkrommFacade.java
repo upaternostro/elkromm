@@ -56,7 +56,9 @@ public interface ElkrommFacade
     public static final byte BYTE_NAK = 0x15;
     public static final byte BYTE_SYN = 0x16;
 
+    // bitmask!
     enum Partition {
+        P_NONE(0x00), // not a real bitmask
         P_ONE(0x01),
         P_TWO(0x02),
         P_THREE(0x04),
@@ -64,29 +66,38 @@ public interface ElkrommFacade
         P_FIVE(0x10),
         P_SIX(0x20),
         P_SEVEN(0x40),
-        P_EIGHT(0x80);
+        P_EIGHT(0x80),
+        P_ALL(0xFF); // not a real bitmask
 
-        private byte bitMask;
+        private byte value;
 
-        Partition(int bitMask)
+        Partition(int value)
         {
-            this.bitMask = (byte)bitMask;
+            this.value = (byte)value;
         }
 
-        public byte getBitMask()
+        public byte getValue()
         {
-            return bitMask;
+            return value;
         }
 
         public static Partition valueOf(byte value)
         {
             for (Partition pivot : Partition.values()) {
-                if (pivot.getBitMask() == value) {
+                if (pivot.getValue() == value) {
                     return pivot;
                 }
             }
 
             return null;
+        }
+
+        public static boolean is(byte value, Partition partition) {
+            return (value & partition.getValue()) != 0;
+        }
+
+        public static boolean isValid(byte bitmask) {
+            return (bitmask & ((P_ALL.getValue() ^ 0xFF) & 0xFF)) == 0;
         }
     }
 

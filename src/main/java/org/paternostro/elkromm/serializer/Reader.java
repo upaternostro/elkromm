@@ -20,10 +20,10 @@ public class Reader implements ElkrommSerializer<org.paternostro.elkromm.dto.Rea
         data[0] = (byte)(obj.getAddress() & 0xFF);
         System.arraycopy(iSerializer.serialize(obj.getFirstInput()), 0, data, 6, INPUT_SIZE);
         System.arraycopy(iSerializer.serialize(obj.getSecondInput()), 0, data, 6 + INPUT_SIZE, INPUT_SIZE);
-        data[6 + 2*INPUT_SIZE] = obj.getLed1() == null ? 0 : obj.getLed1().getBitMask();
-        data[7 + 2*INPUT_SIZE] = obj.getLed2() == null ? 0 : obj.getLed2().getBitMask();
-        data[8 + 2*INPUT_SIZE] = obj.getLed3() == null ? 0 : obj.getLed3().getBitMask();
-        data[9 + 2*INPUT_SIZE] = obj.getLed4() == null ? 0 : obj.getLed4().getBitMask();
+        data[6 + 2*INPUT_SIZE] = obj.getLed1() == null ? 0 : obj.getLed1().getValue();
+        data[7 + 2*INPUT_SIZE] = obj.getLed2() == null ? 0 : obj.getLed2().getValue();
+        data[8 + 2*INPUT_SIZE] = obj.getLed3() == null ? 0 : obj.getLed3().getValue();
+        data[9 + 2*INPUT_SIZE] = obj.getLed4() == null ? 0 : obj.getLed4().getValue();
         data[10 + 2*INPUT_SIZE] = obj.getEnablings();
         ElkrommUtils.setText(data, 11 + 2*INPUT_SIZE, obj.getName(), ElkrommFacade.NAME_LENGTH);
 
