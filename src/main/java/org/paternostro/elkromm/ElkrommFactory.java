@@ -19,6 +19,7 @@ import org.paternostro.elkromm.serializer.Keys;
 import org.paternostro.elkromm.serializer.Output;
 import org.paternostro.elkromm.serializer.PSTNGSM;
 import org.paternostro.elkromm.serializer.ParametersEnablings;
+import org.paternostro.elkromm.serializer.PartitionArming;
 import org.paternostro.elkromm.serializer.PeripheralUnits;
 import org.paternostro.elkromm.serializer.PhoneNumber;
 import org.paternostro.elkromm.serializer.PhoneNumbersSendingCodes;
@@ -163,6 +164,9 @@ public class ElkrommFactory {
 
     public static final String C200B_PARAMETERS_CLASS               = "org.paternostro.elkromm.ElkrommFactory.C200bParameters.class";
     public static final String C200B_PARAMETERS_DEFAULT             = "org.paternostro.elkromm.serializer.C200bParameters";
+
+    public static final String PARTITION_ARMING_CLASS               = "org.paternostro.elkromm.ElkrommFactory.PartitionArming.class";
+    public static final String PARTITION_ARMING_DEFAULT             = "org.paternostro.elkromm.serializer.PartitionArming";
 
     private Properties  properties;
 
@@ -371,5 +375,11 @@ public class ElkrommFactory {
     public ElkrommSerializer<org.paternostro.elkromm.dto.C200bParameters> getC200bParametersSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.C200bParameters>)getSerializer(C200B_PARAMETERS_CLASS, C200B_PARAMETERS_DEFAULT, C200bParameters.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    public ElkrommSerializer<org.paternostro.elkromm.dto.PartitionArming> getPartitionArmingSerializer()
+    {
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.PartitionArming>)getSerializer(PARTITION_ARMING_CLASS, PARTITION_ARMING_DEFAULT, PartitionArming.class);
     }
 }

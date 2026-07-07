@@ -22,6 +22,7 @@ import org.paternostro.elkromm.dto.Expansion;
 import org.paternostro.elkromm.dto.Keyboard;
 import org.paternostro.elkromm.dto.PSTNGSM;
 import org.paternostro.elkromm.dto.ParametersEnablings;
+import org.paternostro.elkromm.dto.PartitionArming;
 import org.paternostro.elkromm.dto.PeripheralUnits;
 import org.paternostro.elkromm.dto.PhoneNumbersSendingCodes;
 import org.paternostro.elkromm.dto.PhoneParameters;
@@ -172,14 +173,27 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     {
         if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
 
-        byte[] data = new byte[2];
+        PartitionArming pa = new PartitionArming(partition.getValue(), arm ? partition.getValue() : 0x00);
+        byte[]          data = ElkrommFactory.getFactory().getPartitionArmingSerializer().serialize(pa);
 
-        data[0] = partition.getValue();
-        data[1] = arm ? partition.getValue() : 0x00;
+        sendCommand(ElkronCommand.ARM_DISARM_SECTOR, data);
+    }
 
+    @Override
+    public void armDisarmSectors(byte partitions, byte armingMask)
+    {
+        if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
+
+        PartitionArming pa = new PartitionArming(partitions, armingMask);
+        byte[]          data = ElkrommFactory.getFactory().getPartitionArmingSerializer().serialize(pa);
+
+        sendCommand(ElkronCommand.ARM_DISARM_SECTOR, data);
+    }
+
+    private void sendCommand(ElkronCommand command, byte[] data) throws AssertionError {
         try {
             Thread.sleep(DELAY);
-            os.write(preparePacket(this.plantCode, ElkronCommand.ARM_DISARM_SECTOR, data));
+            os.write(preparePacket(this.plantCode, command, data));
             Thread.sleep(DELAY);
             if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
 
@@ -229,21 +243,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         data[0] = inputOrdinal;
         data[1] = (byte)(exclude ? 0x01 : 0x00);
 
-        try {
-            Thread.sleep(DELAY);
-            os.write(preparePacket(this.plantCode, ElkronCommand.EXCLUDE_INCLUDE_INPUT, data));
-            Thread.sleep(DELAY);
-            if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
-
-            Thread.sleep(DELAY);
-            os.write(preparePacket(this.plantCode, ElkronCommand.SEND));
-            Thread.sleep(DELAY);
-            if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
-        } catch (IOException e) {
-            logger.error("Communication error", e);
-        } catch (InterruptedException e) {
-            logger.error("Interruption error", e);
-        }
+        sendCommand(ElkronCommand.EXCLUDE_INCLUDE_INPUT, data);
     }
 
     @Override
@@ -310,21 +310,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         data[0] = userOrdinal;
         data[1] = (byte)(enable ? 0x01 : 0x00);
 
-        try {
-            Thread.sleep(DELAY);
-            os.write(preparePacket(this.plantCode, ElkronCommand.ENABLE_DISABLE_USER, data));
-            Thread.sleep(DELAY);
-            if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
-
-            Thread.sleep(DELAY);
-            os.write(preparePacket(this.plantCode, ElkronCommand.SEND));
-            Thread.sleep(DELAY);
-            if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
-        } catch (IOException e) {
-            logger.error("Communication error", e);
-        } catch (InterruptedException e) {
-            logger.error("Interruption error", e);
-        }
+        sendCommand(ElkronCommand.ENABLE_DISABLE_USER, data);
     }
 
     private byte[] getData(ElkronCommand cmd)

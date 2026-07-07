@@ -151,4 +151,5 @@ public interface ElkrommFacade
     Reader[] getReaders();
     SMSs getSMSs();
     TimeProgrammer getTimeProgrammer();
+    void armDisarmSectors(byte partitions, byte armingMask);
 }
