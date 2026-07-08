@@ -27,6 +27,10 @@ public class ElkrommFacadeTest {
             assertTrue(false);
         } catch (AssertionError e) {
             // Wrong status (not connected)
+        } catch (ElkrommException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            assertTrue(false);
         }
 
         try {
@@ -42,6 +46,10 @@ public class ElkrommFacadeTest {
             assertTrue(false);
         } catch (AssertionError e) {
             // Wrong status (not logged in)
+        } catch (ElkrommException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            assertTrue(false);
         }
 
         try {
@@ -69,6 +77,10 @@ public class ElkrommFacadeTest {
             assertTrue(false);
         } catch (AssertionError e) {
             // Wrong status (not connected)
+        } catch (ElkrommException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            assertTrue(false);
         }
 
         try {
@@ -84,6 +96,10 @@ public class ElkrommFacadeTest {
             assertTrue(false);
         } catch (AssertionError e) {
             // Wrong status (not logged in)
+        } catch (ElkrommException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            assertTrue(false);
         }
 
         try {

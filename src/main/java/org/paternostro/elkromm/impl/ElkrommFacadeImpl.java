@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.paternostro.elkromm.ElkrommException;
 import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.ElkrommUtils;
@@ -69,7 +70,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     }
 
     @Override
-    public void connect()
+    public void connect() throws ElkrommException
     {
         if (status != Status.ST_DISCONNECTED) throw new AssertionError("Wrong status");
 
@@ -80,11 +81,12 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             status = Status.ST_CONNECTED;
         } catch (IOException e) {
             logger.error("Communication error", e);
+            throw new ElkrommException("Communication error", e);
         }
     }
 
     @Override
-    public void disconnect()
+    public void disconnect() throws ElkrommException
     {
         if (status == Status.ST_DISCONNECTED) return;
 
@@ -95,11 +97,12 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             s.close();
         } catch (IOException e) {
             logger.error("Communication error", e);
+            throw new ElkrommException("Communication error", e);
         }
     }
 
     @Override
-    public void login(int plantCode, int technicalCode)
+    public void login(int plantCode, int technicalCode) throws ElkrommException
     {
         if (status == Status.ST_LOGGED_IN) return;
         if (status != Status.ST_CONNECTED) throw new AssertionError("Wrong status");
@@ -122,18 +125,20 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             Thread.sleep(DELAY);
             if (is.read() != BYTE_ACK) throw new AssertionError("No ACK received");
 
-            ping();
-
             status = Status.ST_LOGGED_IN;
+
+            ping();
         } catch (IOException e) {
             logger.error("Communication error", e);
+            throw new ElkrommException("Communication error", e);
         } catch (InterruptedException e) {
             logger.error("Interruption error", e);
+            throw new ElkrommException("Interruption error", e);
         }
     }
 
     @Override
-    public void ping()
+    public void ping() throws ElkrommException
     {
         if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
 
@@ -144,13 +149,15 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
         } catch (IOException e) {
             logger.error("Communication error", e);
+            throw new ElkrommException("Communication error", e);
         } catch (InterruptedException e) {
             logger.error("Interruption error", e);
+            throw new ElkrommException("Interruption error", e);
         }
     }
 
     @Override
-    public AreasAndPartitions getAreasAndPartitions()
+    public AreasAndPartitions getAreasAndPartitions() throws ElkrommException
     {
         byte[]  data = getData(ElkronCommand.PARTITIONS_AND_AREAS);
 
@@ -158,7 +165,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     }
 
     @Override
-    public SystemStatus getSystemStatus()
+    public SystemStatus getSystemStatus() throws ElkrommException
     {
         byte[]      data = getData(ElkronCommand.SYSTEM_STATUS);
 
@@ -166,7 +173,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     }
 
     @Override
-    public void armDisarmSector(Partition partition, boolean arm)
+    public void armDisarmSector(Partition partition, boolean arm) throws ElkrommException
     {
         if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
 
@@ -177,7 +184,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     }
 
     @Override
-    public void armDisarmSectors(byte partitions, byte armingMask)
+    public void armDisarmSectors(byte partitions, byte armingMask) throws ElkrommException
     {
         if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
 
@@ -187,7 +194,8 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         sendCommand(ElkronCommand.ARM_DISARM_SECTOR, data);
     }
 
-    private void sendCommand(ElkronCommand command, byte[] data) throws AssertionError {
+    private void sendCommand(ElkronCommand command, byte[] data) throws AssertionError, ElkrommException
+    {
         try {
             Thread.sleep(DELAY);
             os.write(preparePacket(this.plantCode, command, data));
@@ -197,13 +205,15 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             ping();
         } catch (IOException e) {
             logger.error("Communication error", e);
+            throw new ElkrommException("Communication error", e);
         } catch (InterruptedException e) {
             logger.error("Interruption error", e);
+            throw new ElkrommException("Interruption error", e);
         }
     }
 
     @Override
-    public Map<InputStatus,List<Integer>> getInputStatus()
+    public Map<InputStatus,List<Integer>> getInputStatus() throws ElkrommException
     {
         Map<InputStatus,List<Integer>>  retval = new HashMap<>();
         byte[]                          data = getData(ElkronCommand.INPUT_STATUS);
@@ -228,7 +238,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     }
 
     @Override
-    public void excludeIncludeInput(byte inputOrdinal, boolean exclude)
+    public void excludeIncludeInput(byte inputOrdinal, boolean exclude) throws ElkrommException
     {
         if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
 
@@ -241,7 +251,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     }
 
     @Override
-    public PeripheralUnits getPeripheralUnitsAddresses()
+    public PeripheralUnits getPeripheralUnitsAddresses() throws ElkrommException
     {
         byte[]  data = getData(ElkronCommand.PERIPHERAL_UNITS_ADDRESSES);
 
@@ -249,7 +259,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     }
 
     @Override
-    public Checksums getChecksums()
+    public Checksums getChecksums() throws ElkrommException
     {
         byte[]  data = getData(ElkronCommand.CHECKSUM);
         
@@ -257,7 +267,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     }
 
     @Override
-    public Credential[] getUsers()
+    public Credential[] getUsers() throws ElkrommException
     {
         byte[]  data = getData(ElkronCommand.USERS);
 
@@ -265,7 +275,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     }
 
     @Override
-    public Credential[] getKeys()
+    public Credential[] getKeys() throws ElkrommException
     {
         byte[]      data = getData(ElkronCommand.KEYS);
 
@@ -273,7 +283,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     }
 
     @Override
-    public Expansion[] getExpansions()
+    public Expansion[] getExpansions() throws ElkrommException
     {
         byte[]          data = getData(ElkronCommand.EXPANSIONS);
 
@@ -281,7 +291,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     }
 
     @Override
-    public boolean[] getUserEnablings()
+    public boolean[] getUserEnablings() throws ElkrommException
     {
         boolean[]   retval = new boolean[MAX_CREDENTIALS];
         byte[]      data = getData(ElkronCommand.USER_ENABLINGS);
@@ -295,7 +305,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     }
 
     @Override
-    public void enableDisableUser(byte userOrdinal, boolean enable)
+    public void enableDisableUser(byte userOrdinal, boolean enable) throws ElkrommException
     {
         if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
 
@@ -307,7 +317,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         sendCommand(ElkronCommand.ENABLE_DISABLE_USER, data);
     }
 
-    private byte[] getData(ElkronCommand cmd)
+    private byte[] getData(ElkronCommand cmd) throws ElkrommException
     {
         if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
 
@@ -323,14 +333,16 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             ping();
         } catch (IOException e) {
             logger.error("Communication error", e);
+            throw new ElkrommException("Communication error", e);
         } catch (InterruptedException e) {
             logger.error("Interruption error", e);
+            throw new ElkrommException("Interruption error", e);
         }
 
         return data;
     }
 
-    public void logout()
+    public void logout() throws ElkrommException
     {
         if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
 
@@ -343,8 +355,10 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             status = Status.ST_CONNECTED;
         } catch (IOException e) {
             logger.error("Communication error", e);
+            throw new ElkrommException("Communication error", e);
         } catch (InterruptedException e) {
             logger.error("Interruption error", e);
+            throw new ElkrommException("Interruption error", e);
         }
     }
 
@@ -529,56 +543,64 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     }
 
     @Override
-    public Keyboard[] getKeyboards() {
+    public Keyboard[] getKeyboards() throws ElkrommException
+    {
         byte[]      data = getData(ElkronCommand.KEYPADS);
 
         return ElkrommFactory.getFactory().getKeyboardsSerializer().deserialize(data);
     }
 
     @Override
-    public ParametersEnablings getParametersEnablings() {
+    public ParametersEnablings getParametersEnablings() throws ElkrommException
+    {
         byte[]      data = getData(ElkronCommand.PARAMETERS_ENABLINGS);
 
         return ElkrommFactory.getFactory().getParametersEnablingsSerializer().deserialize(data);
     }
 
     @Override
-    public PhoneNumbersSendingCodes getPhoneNumbersSendingCodes() {
+    public PhoneNumbersSendingCodes getPhoneNumbersSendingCodes() throws ElkrommException
+    {
         byte[]      data = getData(ElkronCommand.PHONE_NUMBERS);
 
         return ElkrommFactory.getFactory().getPhoneNumbersSendingCodesSerializer().deserialize(data);
     }
 
     @Override
-    public PhoneParameters getPhoneParameters() {
+    public PhoneParameters getPhoneParameters() throws ElkrommException
+    {
         byte[]      data = getData(ElkronCommand.PHONE_PARAMETERS);
 
         return ElkrommFactory.getFactory().getPhoneParametersSerializer().deserialize(data);
     }
 
     @Override
-    public PSTNGSM getPSTNGSM() {
+    public PSTNGSM getPSTNGSM() throws ElkrommException
+    {
         byte[]      data = getData(ElkronCommand.PSTN_GSM);
 
         return ElkrommFactory.getFactory().getPSTNGSMSerializer().deserialize(data);
     }
 
     @Override
-    public Reader[] getReaders() {
+    public Reader[] getReaders() throws ElkrommException
+    {
         byte[]      data = getData(ElkronCommand.READERS);
 
         return ElkrommFactory.getFactory().getReadersSerializer().deserialize(data);
     }
 
     @Override
-    public SMSs getSMSs() {
+    public SMSs getSMSs() throws ElkrommException
+    {
         byte[]      data = getData(ElkronCommand.SMS);
 
         return ElkrommFactory.getFactory().getSMSsSerializer().deserialize(data);
     }
 
     @Override
-    public TimeProgrammer getTimeProgrammer() {
+    public TimeProgrammer getTimeProgrammer() throws ElkrommException
+    {
         byte[]      data = getData(ElkronCommand.TIME_PROGRAMMER);
 
         return ElkrommFactory.getFactory().getTimeProgrammerSerializer().deserialize(data);
