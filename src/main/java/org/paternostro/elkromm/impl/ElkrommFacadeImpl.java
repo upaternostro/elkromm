@@ -177,8 +177,6 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     @Override
     public void armDisarmSector(Partition partition, boolean arm) throws ElkrommException
     {
-        if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
-
         PartitionArming pa = new PartitionArming(partition.getValue(), arm ? partition.getValue() : 0x00);
         byte[]          data = ElkrommFactory.getFactory().getPartitionArmingSerializer().serialize(pa);
 
@@ -188,8 +186,6 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     @Override
     public void armDisarmSectors(byte partitions, byte armingMask) throws ElkrommException
     {
-        if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
-
         PartitionArming pa = new PartitionArming(partitions, armingMask);
         byte[]          data = ElkrommFactory.getFactory().getPartitionArmingSerializer().serialize(pa);
 
@@ -198,6 +194,8 @@ public class ElkrommFacadeImpl implements ElkrommFacade
 
     private void sendCommand(ElkronCommand command, byte[] data) throws AssertionError, ElkrommException
     {
+        if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
+
         try {
             Thread.sleep(DELAY);
             os.write(preparePacket(this.plantCode, command, data));
@@ -242,8 +240,6 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     @Override
     public void excludeIncludeInput(byte inputOrdinal, boolean exclude) throws ElkrommException
     {
-        if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
-
         ExcludeIncludeInput eii = new ExcludeIncludeInput(inputOrdinal, exclude);
         byte[]              data = ElkrommFactory.getFactory().getExcludeIncludeInputSerializer().serialize(eii);
 
@@ -307,8 +303,6 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     @Override
     public void enableDisableUser(byte userOrdinal, boolean enable) throws ElkrommException
     {
-        if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
-
         EnableDisableUser   edu = new EnableDisableUser(userOrdinal, enable);
         byte[]              data = ElkrommFactory.getFactory().getEnableDisableUserSerializer().serialize(edu);
 
