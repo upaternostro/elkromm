@@ -122,10 +122,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             Thread.sleep(DELAY);
             if (is.read() != BYTE_ACK) throw new AssertionError("No ACK received");
 
-            Thread.sleep(DELAY);
-            os.write(preparePacket(this.plantCode, ElkronCommand.SEND));
-            Thread.sleep(DELAY);
-            if (getNextDeescapedByte(is) != BYTE_SYN) throw new AssertionError("No SYN received");
+            ping();
 
             status = Status.ST_LOGGED_IN;
         } catch (IOException e) {
@@ -197,10 +194,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             Thread.sleep(DELAY);
             if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
 
-            Thread.sleep(DELAY);
-            os.write(preparePacket(this.plantCode, ElkronCommand.SEND));
-            Thread.sleep(DELAY);
-            if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
+            ping();
         } catch (IOException e) {
             logger.error("Communication error", e);
         } catch (InterruptedException e) {
@@ -326,10 +320,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
             data = readPacket(this.plantCode, is, os);
 
-            Thread.sleep(DELAY);
-            os.write(preparePacket(this.plantCode, ElkronCommand.SEND));
-            Thread.sleep(DELAY);
-            if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
+            ping();
         } catch (IOException e) {
             logger.error("Communication error", e);
         } catch (InterruptedException e) {
