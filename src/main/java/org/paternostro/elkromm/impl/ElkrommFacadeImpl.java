@@ -19,6 +19,8 @@ import org.paternostro.elkromm.ElkronCommand;
 import org.paternostro.elkromm.dto.AreasAndPartitions;
 import org.paternostro.elkromm.dto.Checksums;
 import org.paternostro.elkromm.dto.Credential;
+import org.paternostro.elkromm.dto.EnableDisableUser;
+import org.paternostro.elkromm.dto.ExcludeIncludeInput;
 import org.paternostro.elkromm.dto.Expansion;
 import org.paternostro.elkromm.dto.Keyboard;
 import org.paternostro.elkromm.dto.PSTNGSM;
@@ -242,10 +244,8 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     {
         if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
 
-        byte[] data = new byte[2];
-
-        data[0] = inputOrdinal;
-        data[1] = (byte)(exclude ? 0x01 : 0x00);
+        ExcludeIncludeInput eii = new ExcludeIncludeInput(inputOrdinal, exclude);
+        byte[]              data = ElkrommFactory.getFactory().getExcludeIncludeInputSerializer().serialize(eii);
 
         sendCommand(ElkronCommand.EXCLUDE_INCLUDE_INPUT, data);
     }
@@ -309,10 +309,8 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     {
         if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
 
-        byte[] data = new byte[2];
-
-        data[0] = userOrdinal;
-        data[1] = (byte)(enable ? 0x01 : 0x00);
+        EnableDisableUser   edu = new EnableDisableUser(userOrdinal, enable);
+        byte[]              data = ElkrommFactory.getFactory().getEnableDisableUserSerializer().serialize(edu);
 
         sendCommand(ElkronCommand.ENABLE_DISABLE_USER, data);
     }

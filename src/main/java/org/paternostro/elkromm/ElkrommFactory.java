@@ -12,6 +12,8 @@ import org.paternostro.elkromm.serializer.Checksums;
 import org.paternostro.elkromm.serializer.Commands;
 import org.paternostro.elkromm.serializer.DayClassCommands;
 import org.paternostro.elkromm.serializer.ElkrommSerializer;
+import org.paternostro.elkromm.serializer.EnableDisableUser;
+import org.paternostro.elkromm.serializer.ExcludeIncludeInput;
 import org.paternostro.elkromm.serializer.Expansions;
 import org.paternostro.elkromm.serializer.Input;
 import org.paternostro.elkromm.serializer.Keyboards;
@@ -167,6 +169,12 @@ public class ElkrommFactory {
 
     public static final String PARTITION_ARMING_CLASS               = "org.paternostro.elkromm.ElkrommFactory.PartitionArming.class";
     public static final String PARTITION_ARMING_DEFAULT             = "org.paternostro.elkromm.serializer.PartitionArming";
+
+    public static final String ENABLE_DISABLE_USER_CLASS            = "org.paternostro.elkromm.ElkrommFactory.EnableDisableUser.class";
+    public static final String ENABLE_DISABLE_USER_DEFAULT          = "org.paternostro.elkromm.serializer.EnableDisableUser";
+
+    public static final String EXCLUDE_INCLUDE_INPUT_CLASS          = "org.paternostro.elkromm.ElkrommFactory.ExcludeIncludeInput.class";
+    public static final String EXCLUDE_INCLUDE_INPUT_DEFAULT        = "org.paternostro.elkromm.serializer.ExcludeIncludeInput";
 
     private Properties  properties;
 
@@ -381,5 +389,17 @@ public class ElkrommFactory {
     public ElkrommSerializer<org.paternostro.elkromm.dto.PartitionArming> getPartitionArmingSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.PartitionArming>)getSerializer(PARTITION_ARMING_CLASS, PARTITION_ARMING_DEFAULT, PartitionArming.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    public ElkrommSerializer<org.paternostro.elkromm.dto.EnableDisableUser> getEnableDisableUserSerializer()
+    {
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.EnableDisableUser>)getSerializer(ENABLE_DISABLE_USER_CLASS, ENABLE_DISABLE_USER_DEFAULT, EnableDisableUser.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    public ElkrommSerializer<org.paternostro.elkromm.dto.ExcludeIncludeInput> getExcludeIncludeInputSerializer()
+    {
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.ExcludeIncludeInput>)getSerializer(EXCLUDE_INCLUDE_INPUT_CLASS, EXCLUDE_INCLUDE_INPUT_DEFAULT, ExcludeIncludeInput.class);
     }
 }
