@@ -3,7 +3,6 @@ package org.paternostro.elkromm.packet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import org.paternostro.elkromm.ElkrommException;
@@ -182,7 +181,10 @@ public class ElkrommPacket {
     }
 
     public static ElkrommPacket packetFactoryAllocate(ElkronCommand cmd, int plantCode12, int plantCode34, int numPkts, int pktProgr, int dataLen, byte[] data) throws ElkrommException {
-        if (cmd.getPacketClass() == null) return new ElkrommPacket(ElkrommPacket.Direction.FROM_CLIENT, plantCode12, plantCode34, numPkts, pktProgr, dataLen, cmd.getValue(), data);
+        if (cmd.getPacketClass() == null) {
+            logger.warn("Allocating GENERIC for: " + cmd);
+            return new ElkrommPacket(ElkrommPacket.Direction.FROM_CLIENT, plantCode12, plantCode34, numPkts, pktProgr, dataLen, cmd.getValue(), data);
+        }
 
         ElkrommPacket   retval;
         Class<?>[]      constructorParametersClasses = new Class<?>[6];
@@ -195,11 +197,12 @@ public class ElkrommPacket {
         constructorParametersClasses[4] = int.class;
         constructorParametersClasses[5] = byte[].class;
 
-        constructorParametersValues[0] = Integer.valueOf(plantCode12);
-        constructorParametersValues[1] = Integer.valueOf(plantCode34);
-        constructorParametersValues[2] = Integer.valueOf(numPkts);
-        constructorParametersValues[3] = Integer.valueOf(pktProgr);
-        constructorParametersValues[4] = Integer.valueOf(dataLen);
+        // Let's Java box these ints
+        constructorParametersValues[0] = plantCode12;
+        constructorParametersValues[1] = plantCode34;
+        constructorParametersValues[2] = numPkts;
+        constructorParametersValues[3] = pktProgr;
+        constructorParametersValues[4] = dataLen;
         constructorParametersValues[5] = data;
         
         try {
