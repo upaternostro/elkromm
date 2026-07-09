@@ -3,6 +3,8 @@ package org.paternostro.elkromm.packet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import org.paternostro.elkromm.ElkrommException;
 import org.paternostro.elkromm.ElkrommFacade;
@@ -179,112 +181,33 @@ public class ElkrommPacket {
         PS_ETX
     }
 
-    // FIXME: find a better way
-    public static ElkrommPacket packetFactoryAllocate(ElkronCommand cmd, int plantCode12, int plantCode34, int numPkts, int pktProgr, int dataLen, byte[] data) {
-        ElkrommPacket retval;
+    public static ElkrommPacket packetFactoryAllocate(ElkronCommand cmd, int plantCode12, int plantCode34, int numPkts, int pktProgr, int dataLen, byte[] data) throws ElkrommException {
+        if (cmd.getPacketClass() == null) return new ElkrommPacket(ElkrommPacket.Direction.FROM_CLIENT, plantCode12, plantCode34, numPkts, pktProgr, dataLen, cmd.getValue(), data);
 
-        switch (cmd) {
-            case HELLO:
-                logger.debug("Allocating HELLO for: " + cmd);
-                retval = new Hello(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case LOGIN:
-                logger.debug("Allocating LOGIN for: " + cmd);
-                retval = new Login(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case SEND:
-                logger.debug("Allocating SEND for: " + cmd);
-                retval = new Send(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case LOGOUT:
-                logger.debug("Allocating LOGOUT for: " + cmd);
-                retval = new Logout(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case PARTITIONS_AND_AREAS:
-                logger.debug("Allocating PARTITIONS_AND_AREAS for: " + cmd);
-                retval = new AreasAndPartitions(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case SYSTEM_STATUS:
-                logger.debug("Allocating SYSTEM_STATUS for: " + cmd);
-                retval = new SystemStatus(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case ARM_DISARM_SECTOR:
-                logger.debug("Allocating ARM_DISARM_SECTOR for: " + cmd);
-                retval = new ArmDisarmSector(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case INPUT_STATUS:
-                logger.debug("Allocating INPUT_STATUS for: " + cmd);
-                retval = new InputStatus(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case EXPANSIONS:
-                logger.debug("Allocating EXPANSIONS for: " + cmd);
-                retval = new Expansions(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case EXCLUDE_INCLUDE_INPUT:
-                logger.debug("Allocating EXCLUDE_INCLUDE_INPUT for: " + cmd);
-                retval = new ExcludeIncludeInput(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case PERIPHERAL_UNITS_ADDRESSES:
-                logger.debug("Allocating PERIPHERAL_UNITS_ADDRESSES for: " + cmd);
-                retval = new PeripheralUnitsAddresses(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case CHECKSUM:
-                logger.debug("Allocating CHECKSUM for: " + cmd);
-                retval = new Checksums(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case USERS:
-                logger.debug("Allocating USERS for: " + cmd);
-                retval = new Users(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case KEYS:
-                logger.debug("Allocating KEYS for: " + cmd);
-                retval = new Keys(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case PARAMETERS_ENABLINGS:
-                logger.debug("Allocating PARAMETERS_ENABLINGS for: " + cmd);
-                retval = new ParametersEnablings(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case USER_ENABLINGS:
-                logger.debug("Allocating USER_ENABLINGS for: " + cmd);
-                retval = new UserEnablings(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case PHONE_NUMBERS:
-                logger.debug("Allocating PHONE_NUMBERS for: " + cmd);
-                retval = new PhoneNumbers(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case PHONE_PARAMETERS:
-                logger.debug("Allocating PHONE_PARAMETERS for: " + cmd);
-                retval = new PhoneParameters(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case PSTN_GSM:
-                logger.debug("Allocating PSTN_GSM for: " + cmd);
-                retval = new PSTNGSM(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case SMS:
-                logger.debug("Allocating SMS for: " + cmd);
-                retval = new SMS(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case C200B:
-                logger.debug("Allocating C200B for: " + cmd);
-                retval = new C200bParameters(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case TIME_PROGRAMMER:
-                logger.debug("Allocating TIME_PROGRAMMER for: " + cmd);
-                retval = new TimeProgrammer(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            case ENABLE_DISABLE_USER:
-                logger.debug("Allocating ENABLE_DISABLE_USER for: " + cmd);
-                retval = new EnableDisableUser(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            
-            case SET_PARAMETERS_ENABLINGS:
-                logger.debug("Allocating SET_PARAMETERS_ENABLINGS for: " + cmd);
-                retval = new SetParametersEnablings(plantCode12, plantCode34, numPkts, pktProgr, dataLen, data);
-                break;
-            default:
-                logger.debug("Allocating GENERIC for: " + cmd);
-                retval = new ElkrommPacket(ElkrommPacket.Direction.FROM_CLIENT, plantCode12, plantCode34, numPkts, pktProgr, dataLen, cmd.getValue(), data);
-                break;
+        ElkrommPacket   retval;
+        Class<?>[]      constructorParametersClasses = new Class<?>[6];
+        Object[]        constructorParametersValues = new Object[6];
+
+        constructorParametersClasses[0] = int.class;
+        constructorParametersClasses[1] = int.class;
+        constructorParametersClasses[2] = int.class;
+        constructorParametersClasses[3] = int.class;
+        constructorParametersClasses[4] = int.class;
+        constructorParametersClasses[5] = byte[].class;
+
+        constructorParametersValues[0] = Integer.valueOf(plantCode12);
+        constructorParametersValues[1] = Integer.valueOf(plantCode34);
+        constructorParametersValues[2] = Integer.valueOf(numPkts);
+        constructorParametersValues[3] = Integer.valueOf(pktProgr);
+        constructorParametersValues[4] = Integer.valueOf(dataLen);
+        constructorParametersValues[5] = data;
+        
+        try {
+            retval = cmd.getPacketClass().getConstructor(constructorParametersClasses).newInstance(constructorParametersValues);
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
+            logger.error("Error allocating packet for: " + cmd, e);
+            throw new ElkrommException("Error allocating packet for: " + cmd, e);
         }
 
         return retval;
