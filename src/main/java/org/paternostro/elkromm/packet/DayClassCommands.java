@@ -1,0 +1,13 @@
+package org.paternostro.elkromm.packet;
+
+import org.paternostro.elkromm.ElkronCommand;
+
+public class DayClassCommands extends ElkrommPacket {
+    public DayClassCommands(int plantCode12, int plantCode34, int totalPackets, int index, int dataLength, byte[] data) {
+        super(Direction.FROM_CLIENT, plantCode12, plantCode34, totalPackets, index, dataLength, ElkronCommand.DAY_CLASS_CMDS.getValue(), data);
+
+        assert totalPackets == 0 : "DayClassCommands: totalPackets: expected 0, found " + totalPackets;
+        assert index == 0 : "DayClassCommands: index: expected 0, found " + index;
+        assert dataLength == 41 && data != null && data.length == dataLength : "DayClassCommands: data: mismatch in data length";
+    }
+}

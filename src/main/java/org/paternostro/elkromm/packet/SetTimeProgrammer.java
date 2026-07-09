@@ -1,0 +1,13 @@
+package org.paternostro.elkromm.packet;
+
+import org.paternostro.elkromm.ElkronCommand;
+
+public class SetTimeProgrammer extends ElkrommPacket {
+    public SetTimeProgrammer(int plantCode12, int plantCode34, int totalPackets, int index, int dataLength, byte[] data) {
+        super(Direction.FROM_CLIENT, plantCode12, plantCode34, totalPackets, index, dataLength, ElkronCommand.SET_TIME_PROGRAMMER.getValue(), data);
+
+        assert totalPackets == 0 : "SetTimeProgrammer: totalPackets: expected 0, found " + totalPackets;
+        assert index == 0 : "SetTimeProgrammer: index: expected 0, found " + index;
+        assert dataLength == 131 && data != null && data.length == dataLength : "SetTimeProgrammer: data: mismatch in data length";
+    }
+}

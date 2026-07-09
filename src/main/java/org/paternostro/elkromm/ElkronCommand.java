@@ -4,12 +4,14 @@ import org.paternostro.elkromm.packet.AreasAndPartitions;
 import org.paternostro.elkromm.packet.ArmDisarmSector;
 import org.paternostro.elkromm.packet.C200bParameters;
 import org.paternostro.elkromm.packet.Checksums;
+import org.paternostro.elkromm.packet.DayClassCommands;
 import org.paternostro.elkromm.packet.ElkrommPacket;
 import org.paternostro.elkromm.packet.EnableDisableUser;
 import org.paternostro.elkromm.packet.ExcludeIncludeInput;
 import org.paternostro.elkromm.packet.Expansions;
 import org.paternostro.elkromm.packet.Hello;
 import org.paternostro.elkromm.packet.InputStatus;
+import org.paternostro.elkromm.packet.Keypads;
 import org.paternostro.elkromm.packet.Keys;
 import org.paternostro.elkromm.packet.Login;
 import org.paternostro.elkromm.packet.Logout;
@@ -18,8 +20,21 @@ import org.paternostro.elkromm.packet.ParametersEnablings;
 import org.paternostro.elkromm.packet.PeripheralUnitsAddresses;
 import org.paternostro.elkromm.packet.PhoneNumbers;
 import org.paternostro.elkromm.packet.PhoneParameters;
+import org.paternostro.elkromm.packet.Reader;
+import org.paternostro.elkromm.packet.Readers;
+import org.paternostro.elkromm.packet.SMSProgramming;
 import org.paternostro.elkromm.packet.Send;
+import org.paternostro.elkromm.packet.SetAreasAndPartitions;
+import org.paternostro.elkromm.packet.SetC200bParameters;
+import org.paternostro.elkromm.packet.SetKeys;
+import org.paternostro.elkromm.packet.SetPSTNGSM;
 import org.paternostro.elkromm.packet.SetParametersEnablings;
+import org.paternostro.elkromm.packet.SetPhoneNumbers;
+import org.paternostro.elkromm.packet.SetPhoneParameters;
+import org.paternostro.elkromm.packet.SetReaders;
+import org.paternostro.elkromm.packet.SetSMS;
+import org.paternostro.elkromm.packet.SetTimeProgrammer;
+import org.paternostro.elkromm.packet.SetUsers;
 import org.paternostro.elkromm.packet.SystemStatus;
 import org.paternostro.elkromm.packet.TimeProgrammer;
 import org.paternostro.elkromm.packet.UserEnablings;
@@ -56,29 +71,29 @@ public enum ElkronCommand {
     
     CONTROL_PANEL_PROGRAMMING(0x91, null), // FIXME: MISSING
     USER_PROGRAMMING(0x95, null), // FIXME: MISSING
-    SET_PARAMETERS_ENABLINGS(0x96, SetParametersEnablings.class), // FIXME: sicuri che ne serva uno doverso per SET?
+    SET_PARAMETERS_ENABLINGS(0x96, SetParametersEnablings.class),
 
-    SET_TIME_PROGRAMMER(0xe4, null), // FIXME: MISSING
-    SET_PARTITIONS_AND_AREAS(0xe5, null), // FIXME: MISSING
-    SET_PHONE_PARAMETERS(0xe6, null), // FIXME: MISSING
-    SET_PHONE_NUMBERS(0xe7, null), // FIXME: MISSING
-    SET_C200B(0xe8, null), // FIXME: MISSING
-    SET_SMS(0xe9, null), // FIXME: MISSING
-    SET_PSTN_GSM(0xea, null), // FIXME: MISSING
-    SET_USERS(0xeb, null), // FIXME: MISSING
-    SET_KEYS(0xec, null), // FIXME: MISSING
+    SET_TIME_PROGRAMMER(0xe4, SetTimeProgrammer.class),
+    SET_PARTITIONS_AND_AREAS(0xe5, SetAreasAndPartitions.class),
+    SET_PHONE_PARAMETERS(0xe6, SetPhoneParameters.class),
+    SET_PHONE_NUMBERS(0xe7, SetPhoneNumbers.class),
+    SET_C200B(0xe8, SetC200bParameters.class),
+    SET_SMS(0xe9, SetSMS.class),
+    SET_PSTN_GSM(0xea, SetPSTNGSM.class),
+    SET_USERS(0xeb, SetUsers.class),
+    SET_KEYS(0xec, SetKeys.class),
 
-    SMS_PROGRAMMING(0xa0, null), // FIXME: MISSING // No block checksum!
+    SMS_PROGRAMMING(0xa0, SMSProgramming.class), // No block checksum!
     KEYPAD_PROGRAMMING(0x92, null), // FIXME: MISSING // No block checksum!
     EXPANSIONS_PROGRAMMING(0xe1, null), // FIXME: MISSING
     KEYBOARD_PROGRAMMING(0xe2, null), // FIXME: MISSING
     
-    KEYPADS(0x52, null), // FIXME: MISSING
-    READERS(0x53, null), // FIXME: MISSING
-    READER_PROGRAMMING(0x93, null), // FIXME: MISSING
-    SET_READERS(0xe3, null), // FIXME: MISSING
+    KEYPADS(0x52, Keypads.class),
+    READERS(0x53, Readers.class),
+    READER_PROGRAMMING(0x93, Reader.class), // No block checksum!
+    SET_READERS(0xe3, SetReaders.class),
     
-    DAY_CLASS_CMDS(0xa1, null); // FIXME: MISSING // No Block checksum!
+    DAY_CLASS_CMDS(0xa1, DayClassCommands.class); // No block checksum!
 
     protected int                               value;
     protected Class<? extends ElkrommPacket>    packetClass;
