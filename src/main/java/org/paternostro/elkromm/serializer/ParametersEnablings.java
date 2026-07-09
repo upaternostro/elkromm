@@ -14,7 +14,7 @@ public class ParametersEnablings implements ElkrommSerializer<org.paternostro.el
     public byte[] serialize(org.paternostro.elkromm.dto.ParametersEnablings obj) {
         byte[]  data = new byte[length()];
 
-        // byte 5, 7 and 9 contains the same value
+        // byte 5, 7 and 9 contain the same value
         data[ 5] = 
         data[ 7] = 
         data[ 9] = obj.getBulgarTime().getValue();
