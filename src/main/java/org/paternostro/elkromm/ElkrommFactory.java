@@ -214,7 +214,7 @@ public class ElkrommFactory {
         return retval;
     }
 
-    private ElkrommSerializer<?> getSerializer(String key, String defaultClass, Class<?> serializerClass)
+    private ElkrommSerializer<?> getSerializer(String key, String defaultClass, Class<? extends ElkrommSerializer<?>> serializerClass)
     {
         ElkrommSerializer<?>    retval = null;
         String                  className = properties.getProperty(key, defaultClass);
@@ -230,7 +230,7 @@ public class ElkrommFactory {
         } finally {
             if (retval == null) {
                 try {
-                    retval = (ElkrommSerializer<?>)serializerClass.newInstance();
+                    retval = serializerClass.newInstance();
                 } catch (InstantiationException|IllegalAccessException e) {
                     logger.error("Class " + serializerClass.getName() + " cannot be instantiated!", e);
                 }
