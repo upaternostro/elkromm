@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.paternostro.elkromm.ElkrommException;
 import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.ElkronCommand;
@@ -289,7 +290,7 @@ public class ElkrommPacket {
         return retval;
     }
 
-    public static ElkrommPacket deserialize(InputStream is) throws IOException {
+    public static ElkrommPacket deserialize(InputStream is) throws ElkrommException {
         PacketStatus    packetStatus = PacketStatus.PS_NONE;
         int             inputData,
                         dataIndex = 0,
@@ -304,110 +305,115 @@ public class ElkrommPacket {
         byte[]          data = null;
         ElkrommPacket   retval = null;
 
-        while ((inputData = is.read()) != -1) { // Read data until the client closes the connection
-            if (inputData == ElkrommFacade.BYTE_DC1) {
-                if ((inputData = is.read()) == -1) {
-                    break; // End of stream reached
+        try {
+            while ((inputData = is.read()) != -1) { // Read data until the client closes the connection
+                if (inputData == ElkrommFacade.BYTE_DC1) {
+                    if ((inputData = is.read()) == -1) {
+                        break; // End of stream reached
+                    }
+                    // else: deescaped!
                 }
-                // else: deescaped!
-            }
 
-            switch (packetStatus) {
-                case PS_NONE:
-                    // FIXME: qui può arrivare anche 21 (NAK)
-                    if (inputData == ElkrommFacade.BYTE_SOH) {
-                        packetStatus = PacketStatus.PS_SOH;
-                    } else {
-                        logger.warn("Unexpected byte received: " + inputData + " in status: " + packetStatus);
-                        throw new IOException("Unexpected byte received: " + inputData);
-                    }
-                    break;
-                case PS_SOH:
-                    // first two digits of plant code
-                    plantCode12 = (byte)inputData;
-                    packetStatus = PacketStatus.PS_55_1;
-                    break;
-                case PS_55_1:
-                    // second two digits of plant code
-                    plantCode34 = (byte)inputData;
-                    packetStatus = PacketStatus.PS_55_2;
-                    break;
-                case PS_55_2:
-                    numPkts = (byte)inputData;
-                    packetStatus = PacketStatus.PS_NUM_PKTS;
-                    break;
-                case PS_NUM_PKTS:
-                    pktProgr = (byte)inputData;
-                    packetStatus = PacketStatus.PS_PKT_PROGR;
-                    break;
-                case PS_PKT_PROGR:
-                    dataLen = (byte)inputData;
-                    dataToRead = inputData & 0xFF;
-
-                    // if (dataToRead > 0 && dataToRead <= ElkrommFacade.MAX_DATA_LENGTH) {
-                        data = new byte[dataToRead];
-                        dataIndex = 0;
-                    // }
-                    
-                    packetStatus = PacketStatus.PS_DATA_LEN;
-                    break;
-                case PS_DATA_LEN:
-                    if (inputData == 0x00) {
-                        packetStatus = PacketStatus.PS_00;
-                    } else {
-                        logger.warn("Unexpected byte received: " + inputData + " in status: " + packetStatus);
-                        throw new IOException("Unexpected byte received: " + inputData);
-                    }
-                    break;
-                case PS_00:
-                    cmd = inputData;
-                    logger.debug(String.format("Command received: 0x%02x enum value: %s", cmd, ElkronCommand.valueOf(cmd)));
-                    packetStatus = PacketStatus.PS_CMD;
-                    break;
-                case PS_CMD:
-                    if (dataIndex < dataToRead) {
-                        data[dataIndex++] = (byte)inputData;
-                        break;
-                    } else {
-                        packetStatus = PacketStatus.PS_DATA;
-                        // Fallthrough
-                    }
-                case PS_DATA:
-                    checksum = inputData << 8;
-                    packetStatus = PacketStatus.PS_CKSUM_1;
-                    break;
-                case PS_CKSUM_1:
-                    checksum |= inputData;
-                    packetStatus = PacketStatus.PS_CKSUM_2;
-                    break;
-                case PS_CKSUM_2:
-                    if (inputData == ElkrommFacade.BYTE_ETX) {
-                        packetStatus = PacketStatus.PS_ETX;
-                        // Handle complete packet here
-                        retval = packetFactoryAllocate(ElkronCommand.valueOf(cmd), plantCode12, plantCode34, numPkts, pktProgr, dataLen & 0xFF, data);
-                        
-                        int expected = retval.computeChecksum(retval.buildInnerArrayWOChecksum());
-
-                        if (checksum != expected) {
-                            // Wrong checksum received
-                            logger.warn("Unexpected checksum received: " + checksum + " expected: " + expected);
-                            ElkrommUtils.dumpPayload(ElkronCommand.valueOf(cmd), data);
-                            throw new IOException("Unexpected checksum received: " + checksum);
+                switch (packetStatus) {
+                    case PS_NONE:
+                        // FIXME: qui può arrivare anche 21 (NAK)
+                        if (inputData == ElkrommFacade.BYTE_SOH) {
+                            packetStatus = PacketStatus.PS_SOH;
+                        } else {
+                            logger.warn("Unexpected byte received: " + inputData + " in status: " + packetStatus);
+                            throw new ElkrommException("Unexpected byte received: " + inputData);
                         }
+                        break;
+                    case PS_SOH:
+                        // first two digits of plant code
+                        plantCode12 = (byte)inputData;
+                        packetStatus = PacketStatus.PS_55_1;
+                        break;
+                    case PS_55_1:
+                        // second two digits of plant code
+                        plantCode34 = (byte)inputData;
+                        packetStatus = PacketStatus.PS_55_2;
+                        break;
+                    case PS_55_2:
+                        numPkts = (byte)inputData;
+                        packetStatus = PacketStatus.PS_NUM_PKTS;
+                        break;
+                    case PS_NUM_PKTS:
+                        pktProgr = (byte)inputData;
+                        packetStatus = PacketStatus.PS_PKT_PROGR;
+                        break;
+                    case PS_PKT_PROGR:
+                        dataLen = (byte)inputData;
+                        dataToRead = inputData & 0xFF;
 
-                        return retval;
-                    } else {
-                        logger.warn("Unexpected byte received: " + inputData + " in status: " + packetStatus);
-                        throw new IOException("Unexpected byte received: " + inputData);
-                    }
-                    // Unreachable
-                    // break;
-                case PS_ETX:
-                default:
-                    // should never reach here, as we should have already handled the complete packet
-                    logger.warn("Unexpected packet status: " + packetStatus);
-                    throw new IOException("Unexpected packet status: " + packetStatus);
+                        // if (dataToRead > 0 && dataToRead <= ElkrommFacade.MAX_DATA_LENGTH) {
+                            data = new byte[dataToRead];
+                            dataIndex = 0;
+                        // }
+                        
+                        packetStatus = PacketStatus.PS_DATA_LEN;
+                        break;
+                    case PS_DATA_LEN:
+                        if (inputData == 0x00) {
+                            packetStatus = PacketStatus.PS_00;
+                        } else {
+                            logger.warn("Unexpected byte received: " + inputData + " in status: " + packetStatus);
+                            throw new ElkrommException("Unexpected byte received: " + inputData);
+                        }
+                        break;
+                    case PS_00:
+                        cmd = inputData;
+                        logger.debug(String.format("Command received: 0x%02x enum value: %s", cmd, ElkronCommand.valueOf(cmd)));
+                        packetStatus = PacketStatus.PS_CMD;
+                        break;
+                    case PS_CMD:
+                        if (dataIndex < dataToRead) {
+                            data[dataIndex++] = (byte)inputData;
+                            break;
+                        } else {
+                            packetStatus = PacketStatus.PS_DATA;
+                            // Fallthrough
+                        }
+                    case PS_DATA:
+                        checksum = inputData << 8;
+                        packetStatus = PacketStatus.PS_CKSUM_1;
+                        break;
+                    case PS_CKSUM_1:
+                        checksum |= inputData;
+                        packetStatus = PacketStatus.PS_CKSUM_2;
+                        break;
+                    case PS_CKSUM_2:
+                        if (inputData == ElkrommFacade.BYTE_ETX) {
+                            packetStatus = PacketStatus.PS_ETX;
+                            // Handle complete packet here
+                            retval = packetFactoryAllocate(ElkronCommand.valueOf(cmd), plantCode12, plantCode34, numPkts, pktProgr, dataLen & 0xFF, data);
+                            
+                            int expected = retval.computeChecksum(retval.buildInnerArrayWOChecksum());
+
+                            if (checksum != expected) {
+                                // Wrong checksum received
+                                logger.warn("Unexpected checksum received: " + checksum + " expected: " + expected);
+                                ElkrommUtils.dumpPayload(ElkronCommand.valueOf(cmd), data);
+                                throw new ElkrommException("Unexpected checksum received: " + checksum);
+                            }
+
+                            return retval;
+                        } else {
+                            logger.warn("Unexpected byte received: " + inputData + " in status: " + packetStatus);
+                            throw new ElkrommException("Unexpected byte received: " + inputData);
+                        }
+                        // Unreachable
+                        // break;
+                    case PS_ETX:
+                    default:
+                        // should never reach here, as we should have already handled the complete packet
+                        logger.warn("Unexpected packet status: " + packetStatus);
+                        throw new ElkrommException("Unexpected packet status: " + packetStatus);
+                }
             }
+        } catch (IOException e) {
+            logger.error("Exception reading data", e);
+            throw new ElkrommException("Exception reading data", e);
         }
 
         return retval;
