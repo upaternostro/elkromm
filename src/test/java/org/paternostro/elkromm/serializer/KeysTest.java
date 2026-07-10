@@ -14,7 +14,7 @@ public class KeysTest {
         Key[]  keys = new Key[ElkrommFacade.MAX_CREDENTIALS];
 
         for (int i = 0; i < ElkrommFacade.MAX_CREDENTIALS; i++) {
-            keys[i] = new Key(i+1, "Key " + (i + 1), Credential.Enabling.DISABLED, ElkrommUtils.unpackPartitions((byte)i));
+            keys[i] = new Key(i+1, "Key " + (i + 1), Credential.Enabling.DISABLED, Key.Specialization.KS_CHANGE_PARTITION_STATUS, ElkrommUtils.unpackPartitions((byte)i));
         }
 
         byte[]  data = ElkrommFactory.getFactory().getKeysSerializer().serialize(keys);

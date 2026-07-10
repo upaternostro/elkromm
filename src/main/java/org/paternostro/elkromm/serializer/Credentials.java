@@ -11,7 +11,7 @@ public abstract class Credentials implements ElkrommSerializer<Credential[]>
         byte[]  data = new byte[length()];
 
         for (int i = 0; i < obj.length; i++) {
-            data[i*26] = obj[i].getEnabling().getValue();
+            data[i*26] = obj[i].getEnablingValue();
             data[i*26 + 1] = ElkrommUtils.packPartitions(obj[i].getAssociatedPartitions());
             ElkrommUtils.setText(data, 2 + i*26, obj[i].getName(), 24); // nome dell'utente i-esimo
         }
@@ -28,13 +28,13 @@ public abstract class Credentials implements ElkrommSerializer<Credential[]>
         Credential[]  retval = new Credential[ElkrommFacade.MAX_CREDENTIALS];
 
         for (byte i = 0; i < ElkrommFacade.MAX_CREDENTIALS; i++) {
-            retval[i] = allocateCredential(i + 1, ElkrommUtils.getText(data, 2 + i*26, 24), Credential.Enabling.valueOf(data[i*26]), ElkrommUtils.unpackPartitions(data[i*26 + 1]));
+            retval[i] = allocateCredential(i + 1, ElkrommUtils.getText(data, 2 + i*26, 24), data[i*26], ElkrommUtils.unpackPartitions(data[i*26 + 1]));
         }
 
         return retval;
     }
 
-    protected Credential allocateCredential(int ordinal, String name, Credential.Enabling enabling, boolean[] associatedPartitions)
+    protected Credential allocateCredential(int ordinal, String name, byte enabling, boolean[] associatedPartitions)
     {
         throw new UnsupportedOperationException();
     }

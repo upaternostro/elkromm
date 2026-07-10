@@ -74,6 +74,11 @@ public abstract class Credential implements Serializable, Comparable<Credential>
         this.name = name;
     }
 
+    public byte getEnablingValue()
+    {
+        return enabling.getValue();
+    }
+
     public Enabling getEnabling()
     {
         return enabling;
