@@ -11,6 +11,7 @@ import org.paternostro.elkromm.packet.ExcludeIncludeInput;
 import org.paternostro.elkromm.packet.Expansions;
 import org.paternostro.elkromm.packet.Hello;
 import org.paternostro.elkromm.packet.InputStatus;
+import org.paternostro.elkromm.packet.KeyProgramming;
 import org.paternostro.elkromm.packet.Keypads;
 import org.paternostro.elkromm.packet.Keys;
 import org.paternostro.elkromm.packet.Login;
@@ -37,6 +38,7 @@ import org.paternostro.elkromm.packet.SetTimeProgrammer;
 import org.paternostro.elkromm.packet.SetUsers;
 import org.paternostro.elkromm.packet.SystemStatus;
 import org.paternostro.elkromm.packet.TimeProgrammer;
+import org.paternostro.elkromm.packet.UserProgramming;
 import org.paternostro.elkromm.packet.UserEnablings;
 import org.paternostro.elkromm.packet.Users;
 
@@ -70,7 +72,7 @@ public enum ElkronCommand {
     EVENT_LOG(0x70, null), // FIXME: MISSING    
     
     CONTROL_PANEL_PROGRAMMING(0x91, null), // FIXME: MISSING
-    USER_PROGRAMMING(0x95, null), // FIXME: MISSING
+    USER_PROGRAMMING(0x95, UserProgramming.class), // No block checksum!
     SET_PARAMETERS_ENABLINGS(0x96, SetParametersEnablings.class),
 
     SET_TIME_PROGRAMMER(0xe4, SetTimeProgrammer.class),
@@ -91,6 +93,7 @@ public enum ElkronCommand {
     KEYPADS(0x52, Keypads.class),
     READERS(0x53, Readers.class),
     READER_PROGRAMMING(0x93, Reader.class), // No block checksum!
+    KEY_PROGRAMMING(0xa3, KeyProgramming.class), // No block checksum!
     SET_READERS(0xe3, SetReaders.class),
     
     DAY_CLASS_CMDS(0xa1, DayClassCommands.class); // No block checksum!

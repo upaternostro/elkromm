@@ -16,6 +16,7 @@ import org.paternostro.elkromm.serializer.EnableDisableUser;
 import org.paternostro.elkromm.serializer.ExcludeIncludeInput;
 import org.paternostro.elkromm.serializer.Expansions;
 import org.paternostro.elkromm.serializer.Input;
+import org.paternostro.elkromm.serializer.Key;
 import org.paternostro.elkromm.serializer.Keyboards;
 import org.paternostro.elkromm.serializer.Keys;
 import org.paternostro.elkromm.serializer.Output;
@@ -30,9 +31,12 @@ import org.paternostro.elkromm.serializer.Reader;
 import org.paternostro.elkromm.serializer.Readers;
 import org.paternostro.elkromm.serializer.SMS;
 import org.paternostro.elkromm.serializer.SMSs;
+import org.paternostro.elkromm.serializer.SingleKey;
 import org.paternostro.elkromm.serializer.SingleSMS;
+import org.paternostro.elkromm.serializer.SingleUser;
 import org.paternostro.elkromm.serializer.SystemStatus;
 import org.paternostro.elkromm.serializer.TimeProgrammer;
+import org.paternostro.elkromm.serializer.User;
 import org.paternostro.elkromm.serializer.Users;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -175,6 +179,18 @@ public class ElkrommFactory {
 
     public static final String EXCLUDE_INCLUDE_INPUT_CLASS          = "org.paternostro.elkromm.ElkrommFactory.ExcludeIncludeInput.class";
     public static final String EXCLUDE_INCLUDE_INPUT_DEFAULT        = "org.paternostro.elkromm.serializer.ExcludeIncludeInput";
+
+    public static final String USER_CLASS                           = "org.paternostro.elkromm.ElkrommFactory.User.class";
+    public static final String USER_DEFAULT                         = "org.paternostro.elkromm.serializer.User";
+
+    public static final String KEY_CLASS                            = "org.paternostro.elkromm.ElkrommFactory.Key.class";
+    public static final String KEY_DEFAULT                          = "org.paternostro.elkromm.serializer.Key";
+
+    public static final String SINGLE_USER_CLASS                    = "org.paternostro.elkromm.ElkrommFactory.SingleUser.class";
+    public static final String SINGLE_USER_DEFAULT                  = "org.paternostro.elkromm.serializer.SingleUser";
+
+    public static final String SINGLE_KEY_CLASS                     = "org.paternostro.elkromm.ElkrommFactory.SingleKey.class";
+    public static final String SINGLE_KEY_DEFAULT                   = "org.paternostro.elkromm.serializer.SingleKey";
 
     private Properties  properties;
 
@@ -401,5 +417,30 @@ public class ElkrommFactory {
     public ElkrommSerializer<org.paternostro.elkromm.dto.ExcludeIncludeInput> getExcludeIncludeInputSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.ExcludeIncludeInput>)getSerializer(EXCLUDE_INCLUDE_INPUT_CLASS, EXCLUDE_INCLUDE_INPUT_DEFAULT, ExcludeIncludeInput.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    public ElkrommSerializer<org.paternostro.elkromm.dto.Credential> getUserSerializer()
+    {
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.Credential>)getSerializer(USER_CLASS, USER_DEFAULT, User.class);
+
+    }
+
+    @SuppressWarnings("unchecked")
+    public ElkrommSerializer<org.paternostro.elkromm.dto.Credential> getKeySerializer()
+    {
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.Credential>)getSerializer(KEY_CLASS, KEY_DEFAULT, Key.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    public ElkrommSerializer<org.paternostro.elkromm.dto.SingleCredential> getSingleUserSerializer()
+    {
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.SingleCredential>)getSerializer(SINGLE_USER_CLASS, SINGLE_USER_DEFAULT, SingleUser.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    public ElkrommSerializer<org.paternostro.elkromm.dto.SingleCredential> getSingleKeySerializer()
+    {
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.SingleCredential>)getSerializer(SINGLE_KEY_CLASS, SINGLE_KEY_DEFAULT, SingleKey.class);
     }
 }
