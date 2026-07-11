@@ -12,6 +12,7 @@ import org.paternostro.elkromm.packet.Expansions;
 import org.paternostro.elkromm.packet.Hello;
 import org.paternostro.elkromm.packet.InputStatus;
 import org.paternostro.elkromm.packet.KeyProgramming;
+import org.paternostro.elkromm.packet.KeypadProgramming;
 import org.paternostro.elkromm.packet.Keypads;
 import org.paternostro.elkromm.packet.Keys;
 import org.paternostro.elkromm.packet.Login;
@@ -86,7 +87,7 @@ public enum ElkronCommand {
     SET_KEYS(0xec, SetKeys.class),
 
     SMS_PROGRAMMING(0xa0, SMSProgramming.class), // No block checksum!
-    KEYPAD_PROGRAMMING(0x92, null), // FIXME: MISSING // No block checksum!
+    KEYPAD_PROGRAMMING(0x92, KeypadProgramming.class), // No block checksum!
     EXPANSIONS_PROGRAMMING(0xe1, null), // FIXME: MISSING
     KEYBOARD_PROGRAMMING(0xe2, null), // FIXME: MISSING
     
