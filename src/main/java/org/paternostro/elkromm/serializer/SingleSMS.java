@@ -40,6 +40,6 @@ public class SingleSMS implements ElkrommSerializer<org.paternostro.elkromm.dto.
     @Override
     public int length()
     {
-        return 41;
+        return SMS_SIZE + 1;
     }
 }
