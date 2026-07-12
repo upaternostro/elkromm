@@ -20,6 +20,7 @@ import org.paternostro.elkromm.serializer.Key;
 import org.paternostro.elkromm.serializer.Keyboard;
 import org.paternostro.elkromm.serializer.Keyboards;
 import org.paternostro.elkromm.serializer.Keys;
+import org.paternostro.elkromm.serializer.Login;
 import org.paternostro.elkromm.serializer.Output;
 import org.paternostro.elkromm.serializer.PSTNGSM;
 import org.paternostro.elkromm.serializer.ParametersEnablings;
@@ -199,6 +200,9 @@ public class ElkrommFactory {
 
     public static final String SINGLE_KEYBOARD_CLASS                = "org.paternostro.elkromm.ElkrommFactory.SingleKeyboard.class";
     public static final String SINGLE_KEYBOARD_DEFAULT              = "org.paternostro.elkromm.serializer.SingleKeyboard";
+
+    public static final String LOGIN_CLASS                          = "org.paternostro.elkromm.ElkrommFactory.Login.class";
+    public static final String LOGIN_DEFAULT                        = "org.paternostro.elkromm.serializer.Login";
 
     private Properties  properties;
 
@@ -462,5 +466,11 @@ public class ElkrommFactory {
     public ElkrommSerializer<org.paternostro.elkromm.dto.SingleKeyboard> getSingleKeyboardSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.SingleKeyboard>)getSerializer(SINGLE_KEYBOARD_CLASS, SINGLE_KEYBOARD_DEFAULT, SingleKeyboard.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    public ElkrommSerializer<org.paternostro.elkromm.dto.Login> getLoginSerializer()
+    {
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.Login>)getSerializer(LOGIN_CLASS, LOGIN_DEFAULT, Login.class);
     }
 }
