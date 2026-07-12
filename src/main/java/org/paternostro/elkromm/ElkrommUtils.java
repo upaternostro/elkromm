@@ -249,6 +249,17 @@ public class ElkrommUtils
         outputStream.flush();
     }
     
+    public static byte[] listToArray(List<Byte> list)
+    {
+        byte[] retval = new byte[list.size()];
+
+        for (int i = 0; i < retval.length; i++) {
+            retval[i] = list.get(i);
+        }
+
+        return retval;
+    }
+
     // Source - https://stackoverflow.com/a/9855338
     // Posted by maybeWeCouldStealAVan, modified by community. See post 'Timeline' for change history
     // Retrieved 2026-03-27, License - CC BY-SA 4.0
