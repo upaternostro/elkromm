@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.paternostro.elkromm.ElkrommException;
 import org.paternostro.elkromm.ElkrommFacade;
@@ -340,6 +345,46 @@ public class ElkrommPacket {
         } catch (IOException e) {
             logger.error("Exception reading data", e);
             throw new ElkrommException("Exception reading data", e);
+        }
+
+        return retval;
+    }
+
+    public byte[] cachePayload(Map<ElkronCommand, SortedSet<ElkrommPacket>> cmdPayloads) {
+        byte[]                      retval = null;
+        SortedSet<ElkrommPacket>    payloads = cmdPayloads.get(this.getCommand());
+
+        if (payloads == null) {
+            cmdPayloads.put(this.getCommand(), payloads = new TreeSet<>(new Comparator<ElkrommPacket>() {
+                @Override
+                public int compare(ElkrommPacket p1, ElkrommPacket p2) {
+                    return Integer.compare(p1.getIndex(), p2.getIndex());
+                }
+            }));
+        }
+
+        payloads.add(this);
+
+        if (payloads.size() == this.getTotalPackets() + 1) {
+            int     totalLength = 0;
+
+            for (Iterator<ElkrommPacket> it = payloads.iterator(); it.hasNext(); ) {
+                totalLength += it.next().getDataLength();
+            }
+
+            int     offset = 0;
+
+            retval = new byte[totalLength];
+
+            for (Iterator<ElkrommPacket> it = payloads.iterator(); it.hasNext(); ) {
+                ElkrommPacket p = it.next();
+                System.arraycopy(p.getData(), 0, retval, offset, p.getDataLength());
+                offset += p.getDataLength();
+            }
+
+            if (logger.isDebugEnabled()) ElkrommUtils.dumpPayload(this.getCommand(), retval);
+            
+            cmdPayloads.remove(this.getCommand());
         }
 
         return retval;
