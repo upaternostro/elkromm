@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.util.Properties;
 
 import org.paternostro.elkromm.impl.ElkrommFacadeImpl;
+import org.paternostro.elkromm.impl.PacketQueueImpl;
 import org.paternostro.elkromm.serializer.AreasAndPartitions;
 import org.paternostro.elkromm.serializer.C200bParameters;
 import org.paternostro.elkromm.serializer.Checksums;
@@ -200,6 +201,9 @@ public class ElkrommFactory {
 
     public static final String SINGLE_KEYBOARD_CLASS                = "org.paternostro.elkromm.ElkrommFactory.SingleKeyboard.class";
     public static final String SINGLE_KEYBOARD_DEFAULT              = "org.paternostro.elkromm.serializer.SingleKeyboard";
+
+    public static final String PACKET_QUEUE_CLASS                   = "org.paternostro.elkromm.ElkrommFactory.PacketQueue.class";
+    public static final String PACKET_QUEUE_DEFAULT                 = "org.paternostro.elkromm.impl.PacketQueueImpl";
 
     public static final String LOGIN_CLASS                          = "org.paternostro.elkromm.ElkrommFactory.Login.class";
     public static final String LOGIN_DEFAULT                        = "org.paternostro.elkromm.serializer.Login";
@@ -472,5 +476,29 @@ public class ElkrommFactory {
     public ElkrommSerializer<org.paternostro.elkromm.dto.Login> getLoginSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.Login>)getSerializer(LOGIN_CLASS, LOGIN_DEFAULT, Login.class);
+    }
+
+    public PacketQueue getPacketQueue()
+    {
+        PacketQueue retval = null;
+        String      className = properties.getProperty(PACKET_QUEUE_CLASS, PACKET_QUEUE_DEFAULT);
+
+        try {
+            retval = (PacketQueue)Class.forName(className).newInstance();
+        } catch (ClassNotFoundException e) {
+            logger.warn("Class " + className + " not found, using defaults", e);
+            retval = new PacketQueueImpl();
+        } catch (InstantiationException e) {
+            logger.warn("Class " + className + " instantiation error, using defaults", e);
+            retval = new PacketQueueImpl();
+        } catch (IllegalAccessException e) {
+            logger.warn("Class " + className + " instantiation error, using defaults", e);
+            retval = new PacketQueueImpl();
+        } catch (ClassCastException e) {
+            logger.warn("Cannot cast class " + className + " to ElkrommFactory, using defaults", e);
+            retval = new PacketQueueImpl();
+        }
+
+        return retval;
     }
 }
