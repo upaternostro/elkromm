@@ -11,4 +11,8 @@ public class Hello extends ElkrommPacket {
         assert dataLength == 0 : "Hello: dataLength: expected 0, found " + dataLength;
         assert dataLength == 0 && (data == null || data.length == 0) : "Hello: data: mismatch in data length";
     }
+
+    public Hello(int plantCode12, int plantCode34) {
+        super(Direction.FROM_CLIENT, plantCode12, plantCode34, 0, 0, 0, ElkronCommand.HELLO.getValue(), null);
+    }
 }

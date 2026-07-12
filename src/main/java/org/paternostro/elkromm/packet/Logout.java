@@ -11,4 +11,8 @@ public class Logout extends ElkrommPacket {
         assert dataLength == 0 : "Logout: dataLength: expected 0, found " + dataLength;
         assert dataLength == 0 && (data == null || data.length == 0) : "Logout: data: mismatch in data length";
     }
+
+    public Logout(int plantCode12, int plantCode34) {
+        super(Direction.FROM_CLIENT, plantCode12, plantCode34, 0, 0, 0, ElkronCommand.LOGOUT.getValue(), null);
+    }
 }

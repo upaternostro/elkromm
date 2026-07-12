@@ -11,4 +11,8 @@ public class Send extends ElkrommPacket {
         assert dataLength == 0 : "Send: dataLength: expected 0, found " + dataLength;
         assert dataLength == 0 && (data == null || data.length == 0) : "Send: data: mismatch in data length";
     }
+
+    public Send(int plantCode12, int plantCode34) {
+        super(Direction.FROM_CLIENT, plantCode12, plantCode34, 0, 0, 0, ElkronCommand.SEND.getValue(), null);
+    }
 }
