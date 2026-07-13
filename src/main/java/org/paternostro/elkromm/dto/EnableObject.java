@@ -21,7 +21,6 @@ public abstract class EnableObject implements Serializable {
 
     public void setOrdinal(byte ordinal) {
         checkOrdinal(ordinal);
-        // if (!Partition.isValid(ordinal)) throw new IllegalArgumentException("Wrong partitions value");
         this.ordinal = ordinal;
     }
 
