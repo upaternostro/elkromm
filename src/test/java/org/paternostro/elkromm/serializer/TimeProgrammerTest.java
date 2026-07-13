@@ -17,15 +17,15 @@ public class TimeProgrammerTest {
         DayClass[]  dayClasses = { DayClass.DCCDC_WORKING_DAY, DayClass.DCCDC_WORKING_DAY, DayClass.DCCDC_WORKING_DAY, DayClass.DCCDC_WORKING_DAY, DayClass.DCCDC_WORKING_DAY, DayClass.DCCDC_PRE_HOLIDAY, DayClass.DCCDC_HOLIDAY };
 
         for (int i = 0; i < workingDayCommands.length; i++) {
-            workingDayCommands[i] = new Command(i % 2 == 0 ? Action.CA_ENABLE : Action.CA_DISABLE, (byte)i , i % 2 == 0 ? ObjectType.COT_SECTORS : ObjectType.COT_USER, (byte)(23 - i), (byte)(59 - i));
+            workingDayCommands[i] = new Command(i % 2 == 0 ? Action.CA_ENABLE : Action.CA_DISABLE, (byte)(i + 1), i % 2 == 0 ? ObjectType.COT_SECTORS : ObjectType.COT_USER, (byte)(23 - i), (byte)(59 - i));
         }
 
         for (int i = 0; i < preHolidayDayCommands.length; i++) {
-            preHolidayDayCommands[i] = new Command(i % 2 == 0 ? Action.CA_DISABLE : Action.CA_ENABLE, (byte)i , i % 2 == 0 ? ObjectType.COT_USER : ObjectType.COT_SECTORS, (byte)i, (byte)i);
+            preHolidayDayCommands[i] = new Command(i % 2 == 0 ? Action.CA_DISABLE : Action.CA_ENABLE, (byte)(i + 1), i % 2 == 0 ? ObjectType.COT_USER : ObjectType.COT_SECTORS, (byte)i, (byte)i);
         }
 
         for (int i = 0; i < holidayDayCommands.length; i++) {
-            holidayDayCommands[i] = new Command(i % 2 == 0 ? Action.CA_ENABLE : Action.CA_DISABLE, (byte)i , i % 2 == 0 ? ObjectType.COT_SECTORS : ObjectType.COT_USER, (byte)(23 - i), (byte)(59 - i));
+            holidayDayCommands[i] = new Command(i % 2 == 0 ? Action.CA_ENABLE : Action.CA_DISABLE, (byte)(i + 1), i % 2 == 0 ? ObjectType.COT_SECTORS : ObjectType.COT_USER, (byte)(23 - i), (byte)(59 - i));
         }
 
         org.paternostro.elkromm.dto.TimeProgrammer  timeProgrammer = new org.paternostro.elkromm.dto.TimeProgrammer(workingDayCommands, preHolidayDayCommands, holidayDayCommands, dayClasses);

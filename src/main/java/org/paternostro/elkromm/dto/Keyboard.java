@@ -122,7 +122,7 @@ public class Keyboard implements Serializable, Comparable<Keyboard>
 
     public void setAddress(int address)
     {
-        if (address < 1) throw new IllegalArgumentException("Wrong address " + address + ", expected greater than 0");
+        if (address < 1 || address > ElkrommFacade.MAX_KEYPADS) throw new IllegalArgumentException("Wrong address value, expected between 1 and " + ElkrommFacade.MAX_KEYPADS + ", found " + address);
 
         this.address = address;
     }
@@ -187,11 +187,6 @@ public class Keyboard implements Serializable, Comparable<Keyboard>
         this.associatedPartitions = Arrays.copyOf(associatedPartitions, ElkrommFacade.MAX_PARTITIONS);
     }
 
-    public String getName()
-    {
-        return name;
-    }
-
     public byte getAudioFeatures()
     {
         return audioFeatures;
@@ -202,6 +197,11 @@ public class Keyboard implements Serializable, Comparable<Keyboard>
         if (!AudioFeatures.isValid(audioFeatures)) throw new IllegalArgumentException(String.format("Invalid audio features bitmap 0x%02x", audioFeatures));
 
         this.audioFeatures = audioFeatures;
+    }
+
+    public String getName()
+    {
+        return name;
     }
 
     public void setName(String name)

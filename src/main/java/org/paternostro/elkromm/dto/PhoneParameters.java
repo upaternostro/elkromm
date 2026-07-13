@@ -2,6 +2,8 @@ package org.paternostro.elkromm.dto;
 
 import java.io.Serializable;
 
+import org.paternostro.elkromm.ElkrommFacade;
+
 public class PhoneParameters implements Serializable {
     public enum Enabling {
         PPE_DISABLED(0x00),
@@ -234,7 +236,7 @@ public class PhoneParameters implements Serializable {
     }
 
     public void setCyclicTestCallPhoneNumber(byte cyclicTestCallPhoneNumber) {
-        if (cyclicTestCallPhoneNumber < 1 || cyclicTestCallPhoneNumber > 12) throw new IllegalArgumentException("Wrong cyclicTestCallPhoneNumber, expected between 1 and 12, found " + cyclicTestCallPhoneNumber);
+        if (cyclicTestCallPhoneNumber < 1 || cyclicTestCallPhoneNumber > ElkrommFacade.MAX_PHONE_NUMBERS) throw new IllegalArgumentException("Wrong cyclicTestCallPhoneNumber, expected between 1 and " + ElkrommFacade.MAX_PHONE_NUMBERS + ", found " + cyclicTestCallPhoneNumber);
 
         this.cyclicTestCallPhoneNumber = cyclicTestCallPhoneNumber;
     }

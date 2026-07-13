@@ -96,6 +96,8 @@ public class C200bParameters implements Serializable {
     }
 
     public void setInputCode(int index, byte code) {
+        if (index < 0 || index >= this.inputCodes.length) throw new IllegalArgumentException("Wrong index " + index + ", expected value between 0 and " + (this.inputCodes.length - 1));
+
         this.inputCodes[index] = code;
     }
 }

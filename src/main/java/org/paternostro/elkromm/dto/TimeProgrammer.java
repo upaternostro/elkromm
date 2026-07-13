@@ -2,6 +2,7 @@ package org.paternostro.elkromm.dto;
 
 import java.io.Serializable;
 
+import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.dto.DayClassCommands.DayClass;
 
 public class TimeProgrammer implements Serializable
@@ -25,7 +26,7 @@ public class TimeProgrammer implements Serializable
 
     public void setWorkingDaysCommands(Command[] workingDaysCommands) {
         if (workingDaysCommands == null) throw new IllegalArgumentException("Missing mandatory workingDaysCommands");
-        if (workingDaysCommands.length != 8) throw new IllegalArgumentException("Wrong workingDaysCommands length");
+        if (workingDaysCommands.length != ElkrommFacade.NUM_COMMANDS) throw new IllegalArgumentException("Wrong workingDaysCommands length");
 
         this.workingDaysCommands = workingDaysCommands;
     }
@@ -36,7 +37,7 @@ public class TimeProgrammer implements Serializable
 
     public void setPreHolidayDaysCommands(Command[] preHolidayDaysCommands) {
         if (preHolidayDaysCommands == null) throw new IllegalArgumentException("Missing mandatory preHolidayDaysCommands");
-        if (preHolidayDaysCommands.length != 8) throw new IllegalArgumentException("Wrong preHolidayDaysCommands length");
+        if (preHolidayDaysCommands.length != ElkrommFacade.NUM_COMMANDS) throw new IllegalArgumentException("Wrong preHolidayDaysCommands length");
 
         this.preHolidayDaysCommands = preHolidayDaysCommands;
     }
@@ -47,7 +48,7 @@ public class TimeProgrammer implements Serializable
 
     public void setHolidayDaysCommands(Command[] holidayDaysCommands) {
         if (holidayDaysCommands == null) throw new IllegalArgumentException("Missing mandatory holidayDaysCommands");
-        if (holidayDaysCommands.length != 8) throw new IllegalArgumentException("Wrong holidayDaysCommands length");
+        if (holidayDaysCommands.length != ElkrommFacade.NUM_COMMANDS) throw new IllegalArgumentException("Wrong holidayDaysCommands length");
 
         this.holidayDaysCommands = holidayDaysCommands;
     }

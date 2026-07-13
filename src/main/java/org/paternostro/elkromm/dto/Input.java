@@ -294,7 +294,7 @@ public class Input implements Serializable, Comparable<Input>
 
     public void setLogicNumber(int logicNumber)
     {
-        if (logicNumber < 1) throw new IllegalArgumentException("Wrong logic number " + logicNumber + ", expected greater than 0");
+        if (logicNumber < 1 || logicNumber > ElkrommFacade.MAX_LOGICAL_INPUTS) throw new IllegalArgumentException("Wrong logic number value, expected between 1 and " + ElkrommFacade.MAX_LOGICAL_INPUTS + ", found " + logicNumber);
 
         this.logicNumber = logicNumber;
     }

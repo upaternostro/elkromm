@@ -1,6 +1,9 @@
 package org.paternostro.elkromm.dto;
 
 import java.io.Serializable;
+import java.util.Arrays;
+
+import org.paternostro.elkromm.ElkrommFacade;
 
 public class DayClassCommands implements Serializable, Comparable<DayClassCommands>
 {
@@ -55,14 +58,14 @@ public class DayClassCommands implements Serializable, Comparable<DayClassComman
     }
 
     public Command[] getCommands() {
-        return commands;
+        return Arrays.copyOf(commands, ElkrommFacade.NUM_COMMANDS);
     }
 
     public void setCommands(Command[] commands) {
         if (commands == null) throw new IllegalArgumentException("Missing mandatory commands");
-        if (commands.length != 8) throw new IllegalArgumentException("Wrong commands length");
+        if (commands.length == 0) throw new IllegalArgumentException("Empty commands array");
 
-        this.commands = commands;
+        this.commands = Arrays.copyOf(commands, ElkrommFacade.NUM_COMMANDS);
     }
 
     @Override

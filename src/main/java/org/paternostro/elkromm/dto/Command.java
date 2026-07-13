@@ -2,6 +2,8 @@ package org.paternostro.elkromm.dto;
 
 import java.io.Serializable;
 
+import org.paternostro.elkromm.ElkrommFacade;
+
 public class Command implements Serializable {
     public enum Action {
         CA_NONE(0x00),
@@ -94,6 +96,8 @@ public class Command implements Serializable {
     }
 
     public void setObject(byte object) {
+        if (object < 1 || object >= ElkrommFacade.MAX_CREDENTIALS) throw new IllegalArgumentException("Wrong object " + object + ", expected value between 1 and " + ElkrommFacade.MAX_CREDENTIALS);
+
         this.object = object;
     }
 

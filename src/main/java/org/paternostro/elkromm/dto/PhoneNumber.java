@@ -12,7 +12,7 @@ public class PhoneNumber implements Serializable {
     public enum Type {
         PNT_PSTN(0x00),
         PNT_GSM(0x01),
-        PNT_LSN(0x02);
+        PNT_LAN(0x02);
 
         private byte value;
 
@@ -140,7 +140,8 @@ public class PhoneNumber implements Serializable {
     }
 
     public void setPhoneNumber(String phoneNumber) {
-        if (phoneNumber != null && !phoneNumber.matches("^[0-9]{0,28}$")) throw new IllegalArgumentException("Wrong phone number " + phoneNumber);
+        // FIXME: IP addresses in phone numbers!
+        if (phoneNumber != null && !phoneNumber.matches("^([0-9]{0,28}|[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}:[0-9]{1,5})$")) throw new IllegalArgumentException("Wrong phone number " + phoneNumber);
         
         this.phoneNumber = phoneNumber;
     }

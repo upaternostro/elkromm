@@ -48,6 +48,7 @@ public interface ElkrommFacade
     public static final int MAX_DATA_LENGTH = 140;
     public static final int NAME_LENGTH = 24;
     public static final int SMS_LENGTH = 40;
+    public static final int NUM_COMMANDS = 8;
 
     public static final byte BYTE_SOH = 0x01;
     public static final byte BYTE_ETX = 0x03;

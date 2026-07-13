@@ -18,7 +18,7 @@ public class SingleCredential implements Serializable {
     }
 
     public void setIndex(byte index) {
-        if (index < 1 || index > 32) throw new IllegalArgumentException("Wrong index " + index + ", expected between 1 and " + ElkrommFacade.MAX_CREDENTIALS);
+        if (index < 1 || index > ElkrommFacade.MAX_CREDENTIALS) throw new IllegalArgumentException("Wrong index " + index + ", expected between 1 and " + ElkrommFacade.MAX_CREDENTIALS);
 
         this.index = index;
     }

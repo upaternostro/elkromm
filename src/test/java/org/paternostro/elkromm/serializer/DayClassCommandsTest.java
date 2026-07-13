@@ -14,7 +14,7 @@ public class DayClassCommandsTest {
         Command[]   commands = new Command[8];
 
         for (int i = 0; i < commands.length; i++) {
-            commands[i] = new Command(i % 2 == 0 ? Action.CA_ENABLE : Action.CA_DISABLE, (byte)i , i % 2 == 0 ? ObjectType.COT_SECTORS : ObjectType.COT_USER, (byte)(23 - i), (byte)(59 - i));
+            commands[i] = new Command(i % 2 == 0 ? Action.CA_ENABLE : Action.CA_DISABLE, (byte)(i + 1) , i % 2 == 0 ? ObjectType.COT_SECTORS : ObjectType.COT_USER, (byte)(23 - i), (byte)(59 - i));
         }
 
         org.paternostro.elkromm.dto.DayClassCommands    dayClassCommands = new org.paternostro.elkromm.dto.DayClassCommands(DayClass.DCCDC_HOLIDAY, commands);
