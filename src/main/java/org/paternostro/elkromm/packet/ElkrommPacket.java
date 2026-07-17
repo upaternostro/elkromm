@@ -40,7 +40,7 @@ public class ElkrommPacket {
         assert index >= 0 && index <= totalPackets : "ElkrommPacket: index: expected [0," + totalPackets + "], found " + index;
         assert dataLength >= 0 && dataLength < 256 : "ElkrommPacket: dataLength: expected [0,255], found " + dataLength;
         assert command > 0 && command < 256 : "ElkrommPacket: command: expected [1,255], found " + command;
-        assert (dataLength == 0 && (data == null || data.length == 0)) || (dataLength > 0 && data != null && data.length == dataLength) : "ElkrommPacket: data: mismatch in data length";
+        assert (dataLength == 0 && (data == null || data.length == 0)) || (dataLength > 0 && data != null && data.length == dataLength) : "ElkrommPacket: data: mismatch in data length, expected: " + dataLength + ", got: " + (data == null ? "null" : data.length);
         
         this.direction      = direction;
         this.plantCode12    = plantCode12;
