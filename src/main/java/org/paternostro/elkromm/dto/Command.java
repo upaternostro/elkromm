@@ -96,7 +96,7 @@ public class Command implements Serializable {
     }
 
     public void setObject(byte object) {
-        if (object < 1 || object >= ElkrommFacade.MAX_CREDENTIALS) throw new IllegalArgumentException("Wrong object " + object + ", expected value between 1 and " + ElkrommFacade.MAX_CREDENTIALS);
+        if (object < 0 || object >= ElkrommFacade.MAX_CREDENTIALS) throw new IllegalArgumentException("Wrong object " + object + ", expected value between 0 and " + ElkrommFacade.MAX_CREDENTIALS);
 
         this.object = object;
     }
