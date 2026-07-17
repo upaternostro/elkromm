@@ -43,6 +43,7 @@ import org.paternostro.elkromm.serializer.TimeProgrammer;
 import org.paternostro.elkromm.serializer.User;
 import org.paternostro.elkromm.serializer.UserEnablings;
 import org.paternostro.elkromm.serializer.Users;
+import org.paternostro.mock.ipc.Endpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -224,8 +225,7 @@ public class ElkrommFactory {
         this.properties = properties;
     }
 
-    public ElkrommFacade getElkrommFacade(InetAddress inetAddr, int port, int plantCode)
-    {
+    private ElkrommFacade allocateElkrommFacade() {
         ElkrommFacade   retval = null;
         String          className = properties.getProperty(FACADE_CLASS, FACADE_DEFAULT);
 
@@ -244,8 +244,23 @@ public class ElkrommFactory {
             logger.warn("Cannot cast class " + className + " to ElkrommFactory, using defaults", e);
             retval = new ElkrommFacadeImpl();
         }
+        return retval;
+    }
+
+    public ElkrommFacade getElkrommFacade(InetAddress inetAddr, int port, int plantCode) throws IOException
+    {
+        ElkrommFacade retval = allocateElkrommFacade();
 
         retval.init(inetAddr, port, plantCode);
+
+        return retval;
+    }
+
+    public ElkrommFacade getElkrommFacade(Endpoint endpoint, int plantCode)
+    {
+        ElkrommFacade retval = allocateElkrommFacade();
+
+        retval.init(endpoint, plantCode);
 
         return retval;
     }

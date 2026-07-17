@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +42,8 @@ import org.paternostro.elkromm.packet.ElkrommPacket;
 import org.paternostro.elkromm.packet.Hello;
 import org.paternostro.elkromm.packet.Logout;
 import org.paternostro.elkromm.packet.Send;
+import org.paternostro.mock.ipc.Endpoint;
+import org.paternostro.mock.ipc.EndpointFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,10 +56,8 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     private Status  status;
     private PacketQueue packetQueue;
     private Map<ElkronCommand, SortedSet<ElkrommPacket>> cmdPayloads;
-    private InetAddress inetAddr;
-    private int port;
+    private Endpoint endpoint;
     private List<Byte> bcdPlantCode;
-    private Socket s;
     private InputStream is;
     private OutputStream os;
 
@@ -69,12 +68,22 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         this.cmdPayloads = new HashMap<>();
     }
 
-    public void init(InetAddress inetAddr, int port, int plantCode)
+    @Override
+    public void init(InetAddress inetAddr, int port, int plantCode) throws IOException
     {
         if (status != Status.ST_NOT_INITIALIZED) throw new AssertionError("Wrong status");
         
-        this.inetAddr = inetAddr;
-        this.port = port;
+        this.endpoint = EndpointFactory.getFactory().getSocketEndpoint(inetAddr, port);
+        this.status = Status.ST_DISCONNECTED;
+        this.bcdPlantCode = ElkrommUtils.bcd(plantCode, 4);
+    }
+
+    @Override
+    public void init(Endpoint endpoint, int plantCode)
+    {
+        if (status != Status.ST_NOT_INITIALIZED) throw new AssertionError("Wrong status");
+        
+        this.endpoint = endpoint;
         this.status = Status.ST_DISCONNECTED;
         this.bcdPlantCode = ElkrommUtils.bcd(plantCode, 4);
     }
@@ -88,12 +97,14 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     @Override
     public void connect() throws ElkrommException
     {
-        if (status != Status.ST_DISCONNECTED) throw new AssertionError("Wrong status");
+        if (status == Status.ST_NOT_INITIALIZED) throw new AssertionError("Wrong status");
+        if (status == Status.ST_LOGGED_IN) logout();
+        if (status != Status.ST_DISCONNECTED) return;
 
         try {
-            s = new Socket(inetAddr, port);
-            is = s.getInputStream();
-            os = s.getOutputStream();
+            endpoint.connect();
+            is = endpoint.getInputStream();
+            os = endpoint.getOutputStream();
             status = Status.ST_CONNECTED;
         } catch (IOException e) {
             logger.error("Communication error", e);
@@ -108,9 +119,9 @@ public class ElkrommFacadeImpl implements ElkrommFacade
 
         try {
             status = Status.ST_DISCONNECTED;
-            os.close();
-            is.close();
-            s.close();
+            // os.close();
+            // is.close();
+            endpoint.close();
         } catch (IOException e) {
             logger.error("Communication error", e);
             throw new ElkrommException("Communication error", e);
@@ -234,9 +245,9 @@ public class ElkrommFacadeImpl implements ElkrommFacade
 
             for (int i = 0; i < data.length; i++) {
                 if (status == ElkrommFacade.InputStatus.IS_ALL ||
-                        (status == ElkrommFacade.InputStatus.IS_CLOSED && (data[i] & ElkrommFacade.InputStatus.IS_OPEN.getBitMask()) == 0) ||
+                        (status == ElkrommFacade.InputStatus.IS_CLOSED && data[i] == 0x00) ||
                         (data[i] & status.getBitMask()) != 0) {
-                    inputs.add(i);
+                    inputs.add(i + 1);
                 }
             }
 
@@ -349,7 +360,8 @@ public class ElkrommFacadeImpl implements ElkrommFacade
 
     public void logout() throws ElkrommException
     {
-        if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
+        if (status == Status.ST_NOT_INITIALIZED) throw new AssertionError("Wrong status");
+        if (status != Status.ST_LOGGED_IN) return;
 
         try {
             Thread.sleep(DELAY);

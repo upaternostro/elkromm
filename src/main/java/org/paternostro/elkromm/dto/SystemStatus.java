@@ -26,6 +26,11 @@ public class SystemStatus implements Serializable
         this.activePartitions = Arrays.copyOf(activePartitions, ElkrommFacade.MAX_PARTITIONS);
     }
 
+    public void setPartitionArming(ElkrommFacade.Partition partition, boolean arming)
+    {
+        this.activePartitions[partition.ordinal() - 1] = arming;
+    }
+
     @Override
     public String toString()
     {

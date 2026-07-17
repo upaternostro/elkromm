@@ -4,6 +4,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+
 import org.junit.Test;
 import org.paternostro.elkromm.impl.MyElkrommFacadeImpl;
 
@@ -31,7 +33,7 @@ public class ElkrommFactoryTest {
     }
 
     @Test
-    public void testFacade() {
+    public void testFacade() throws IOException {
         ElkrommFactory factory = ElkrommFactory.getFactory();
 
         assertNotNull(factory);

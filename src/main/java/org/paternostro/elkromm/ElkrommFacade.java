@@ -1,5 +1,6 @@
 package org.paternostro.elkromm;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import org.paternostro.elkromm.dto.SingleKeyboard;
 import org.paternostro.elkromm.dto.SingleSMS;
 import org.paternostro.elkromm.dto.SystemStatus;
 import org.paternostro.elkromm.dto.TimeProgrammer;
+import org.paternostro.mock.ipc.Endpoint;
 
 public interface ElkrommFacade
 {
@@ -149,7 +151,8 @@ public interface ElkrommFacade
         }
     }
 
-    void init(InetAddress inetAddr, int port, int plantCode);
+    void init(InetAddress inetAddr, int port, int plantCode) throws IOException;
+    void init(Endpoint endpoint, int plantCode);
     Status getStatus();
     void connect() throws ElkrommException;
     void disconnect() throws ElkrommException;
