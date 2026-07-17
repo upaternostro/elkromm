@@ -18,8 +18,10 @@ import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.ElkronCommand;
 import org.paternostro.elkromm.PacketQueue;
 import org.paternostro.elkromm.dto.AreasAndPartitions;
+import org.paternostro.elkromm.dto.C200bParameters;
 import org.paternostro.elkromm.dto.Checksums;
 import org.paternostro.elkromm.dto.Credential;
+import org.paternostro.elkromm.dto.DayClassCommands;
 import org.paternostro.elkromm.dto.EnableDisableUser;
 import org.paternostro.elkromm.dto.ExcludeIncludeInput;
 import org.paternostro.elkromm.dto.Expansion;
@@ -33,6 +35,8 @@ import org.paternostro.elkromm.dto.PhoneNumbersSendingCodes;
 import org.paternostro.elkromm.dto.PhoneParameters;
 import org.paternostro.elkromm.dto.Reader;
 import org.paternostro.elkromm.dto.SMSs;
+import org.paternostro.elkromm.dto.SingleKeyboard;
+import org.paternostro.elkromm.dto.SingleSMS;
 import org.paternostro.elkromm.dto.SystemStatus;
 import org.paternostro.elkromm.dto.TimeProgrammer;
 import org.paternostro.elkromm.packet.ElkrommPacket;
@@ -425,5 +429,91 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         byte[]      data = getData(ElkronCommand.TIME_PROGRAMMER);
 
         return ElkrommFactory.getFactory().getTimeProgrammerSerializer().deserialize(data);
+    }
+
+    @Override
+    public C200bParameters getC200bParameters() throws ElkrommException
+    {
+        byte[]      data = getData(ElkronCommand.C200B);
+
+        return ElkrommFactory.getFactory().getC200bParametersSerializer().deserialize(data);
+    }
+
+    @Override
+    public void setParametersEnablings(ParametersEnablings parametersEnablings) throws ElkrommException
+    {
+        sendCommand(ElkronCommand.SET_PARAMETERS_ENABLINGS, ElkrommFactory.getFactory().getParametersEnablingsSerializer().serialize(parametersEnablings));
+    }
+
+    @Override
+    public void setAreasAndPartitions(AreasAndPartitions areasAndPartitions) throws ElkrommException
+    {
+        sendCommand(ElkronCommand.SET_PARTITIONS_AND_AREAS, ElkrommFactory.getFactory().getAreasAndPartitionsSerializer().serialize(areasAndPartitions));
+    }
+
+    @Override
+    public void setPhoneParameters(PhoneParameters phoneParameters) throws ElkrommException
+    {
+        sendCommand(ElkronCommand.SET_PHONE_PARAMETERS, ElkrommFactory.getFactory().getPhoneParametersSerializer().serialize(phoneParameters));
+    }
+
+    @Override
+    public void setPhoneNumbersSendingCodes(PhoneNumbersSendingCodes phoneNumbersSendingCodes) throws ElkrommException
+    {
+        sendCommand(ElkronCommand.SET_PHONE_NUMBERS, ElkrommFactory.getFactory().getPhoneNumbersSendingCodesSerializer().serialize(phoneNumbersSendingCodes));
+    }
+
+    @Override
+    public void setC200bParameters(C200bParameters c200bParameters) throws ElkrommException
+    {
+        sendCommand(ElkronCommand.SET_C200B, ElkrommFactory.getFactory().getC200bParametersSerializer().serialize(c200bParameters));
+    }
+
+    @Override
+    public void setSMSs(SMSs sMSs) throws ElkrommException
+    {
+        sendCommand(ElkronCommand.SET_SMS, ElkrommFactory.getFactory().getSMSsSerializer().serialize(sMSs));
+    }
+
+    @Override
+    public void setPSTNGSM(PSTNGSM pSTNGSM) throws ElkrommException {
+        sendCommand(ElkronCommand.SET_PSTN_GSM, ElkrommFactory.getFactory().getPSTNGSMSerializer().serialize(pSTNGSM));
+    }
+
+    @Override
+    public void setUsers(Credential[] users) throws ElkrommException
+    {
+        sendCommand(ElkronCommand.SET_USERS, ElkrommFactory.getFactory().getUsersSerializer().serialize(users));
+    }
+
+    @Override
+    public void setKeys(Credential[] keys) throws ElkrommException
+    {
+        sendCommand(ElkronCommand.SET_KEYS, ElkrommFactory.getFactory().getKeysSerializer().serialize(keys));
+    }
+
+    @Override
+    public void setSMS(SingleSMS sMS) throws ElkrommException
+    {
+        sendCommand(ElkronCommand.SMS_PROGRAMMING, ElkrommFactory.getFactory().getSingleSMSSerializer().serialize(sMS));
+    }
+
+    @Override
+    public void setKeyboard(SingleKeyboard keyboard) throws ElkrommException
+    {
+        sendCommand(ElkronCommand.KEYPAD_PROGRAMMING, ElkrommFactory.getFactory().getSingleKeyboardSerializer().serialize(keyboard));
+    }
+
+    @Override
+    public void setReader(Reader reader) throws ElkrommException
+    {
+        // FIXME: da provare!?!?
+        sendCommand(ElkronCommand.READER_PROGRAMMING, ElkrommFactory.getFactory().getReaderSerializer().serialize(reader));
+    }
+
+    @Override
+    public void setDayClassCommands(DayClassCommands dayClassCommands) throws ElkrommException
+    {
+        sendCommand(ElkronCommand.DAY_CLASS_CMDS, ElkrommFactory.getFactory().getDayClassCommandsSerializer().serialize(dayClassCommands));
     }
 }

@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.paternostro.elkromm.dto.AreasAndPartitions;
+import org.paternostro.elkromm.dto.C200bParameters;
 import org.paternostro.elkromm.dto.Checksums;
 import org.paternostro.elkromm.dto.Credential;
+import org.paternostro.elkromm.dto.DayClassCommands;
 import org.paternostro.elkromm.dto.Expansion;
 import org.paternostro.elkromm.dto.Keyboard;
 import org.paternostro.elkromm.dto.PSTNGSM;
@@ -16,6 +18,8 @@ import org.paternostro.elkromm.dto.PhoneNumbersSendingCodes;
 import org.paternostro.elkromm.dto.PhoneParameters;
 import org.paternostro.elkromm.dto.Reader;
 import org.paternostro.elkromm.dto.SMSs;
+import org.paternostro.elkromm.dto.SingleKeyboard;
+import org.paternostro.elkromm.dto.SingleSMS;
 import org.paternostro.elkromm.dto.SystemStatus;
 import org.paternostro.elkromm.dto.TimeProgrammer;
 
@@ -151,6 +155,21 @@ public interface ElkrommFacade
     PSTNGSM getPSTNGSM() throws ElkrommException;
     Reader[] getReaders() throws ElkrommException;
     SMSs getSMSs() throws ElkrommException;
+    C200bParameters getC200bParameters() throws ElkrommException;
     TimeProgrammer getTimeProgrammer() throws ElkrommException;
     void armDisarmSectors(byte partitions, byte armingMask) throws ElkrommException;
+    // setters
+    void setParametersEnablings(ParametersEnablings parametersEnablings) throws ElkrommException;
+    void setAreasAndPartitions(AreasAndPartitions areasAndPartitions) throws ElkrommException;
+    void setPhoneParameters(PhoneParameters phoneParameters) throws ElkrommException;
+    void setPhoneNumbersSendingCodes(PhoneNumbersSendingCodes phoneNumbersSendingCodes) throws ElkrommException;
+    void setC200bParameters(C200bParameters c200bParameters) throws ElkrommException;
+    void setSMSs(SMSs sMSs) throws ElkrommException;
+    void setPSTNGSM(PSTNGSM pSTNGSM) throws ElkrommException;
+    void setUsers(Credential[] users) throws ElkrommException;
+    void setKeys(Credential[] keys) throws ElkrommException;
+    void setSMS(SingleSMS sMS) throws ElkrommException;
+    void setKeyboard(SingleKeyboard keyboard) throws ElkrommException;
+    void setReader(Reader reader) throws ElkrommException;
+    void setDayClassCommands(DayClassCommands dayClassCommands) throws ElkrommException;
 }
