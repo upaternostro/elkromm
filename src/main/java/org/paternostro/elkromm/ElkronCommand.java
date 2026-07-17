@@ -51,7 +51,7 @@ public enum ElkronCommand {
     PARTITIONS_AND_AREAS(0x55, AreasAndPartitions.class),
     SYSTEM_STATUS(0x80, SystemStatus.class),
     ARM_DISARM_SECTOR(0x81, ArmDisarmSector.class),
-    INPUT_STATUS(0x84, InputStatus.class),
+    INPUT_STATUS(0x84, InputStatus.class), // No block checksum!
     EXPANSIONS(0x51, Expansions.class),
     EXCLUDE_INCLUDE_INPUT(0x83, ExcludeIncludeInput.class),
     PERIPHERAL_UNITS_ADDRESSES(0x62, PeripheralUnitsAddresses.class), // No block checksum!
