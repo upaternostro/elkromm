@@ -41,6 +41,7 @@ import org.paternostro.elkromm.serializer.SingleUser;
 import org.paternostro.elkromm.serializer.SystemStatus;
 import org.paternostro.elkromm.serializer.TimeProgrammer;
 import org.paternostro.elkromm.serializer.User;
+import org.paternostro.elkromm.serializer.UserEnablings;
 import org.paternostro.elkromm.serializer.Users;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -207,6 +208,9 @@ public class ElkrommFactory {
 
     public static final String LOGIN_CLASS                          = "org.paternostro.elkromm.ElkrommFactory.Login.class";
     public static final String LOGIN_DEFAULT                        = "org.paternostro.elkromm.serializer.Login";
+
+    public static final String USER_ENABLINGS_CLASS                 = "org.paternostro.elkromm.ElkrommFactory.UserEnablings.class";
+    public static final String USER_ENABLINGS_DEFAULT               = "org.paternostro.elkromm.serializer.UserEnablings";
 
     private Properties  properties;
 
@@ -476,6 +480,12 @@ public class ElkrommFactory {
     public ElkrommSerializer<org.paternostro.elkromm.dto.Login> getLoginSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.Login>)getSerializer(LOGIN_CLASS, LOGIN_DEFAULT, Login.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    public ElkrommSerializer<org.paternostro.elkromm.dto.UserEnablings> getUserEnablingsSerializer()
+    {
+        return (ElkrommSerializer<org.paternostro.elkromm.dto.UserEnablings>)getSerializer(USER_ENABLINGS_CLASS, USER_ENABLINGS_DEFAULT, UserEnablings.class);
     }
 
     public PacketQueue getPacketQueue()
