@@ -106,14 +106,16 @@ public interface ElkrommFacade
         }
     }
 
+    // bitmask!
     enum InputStatus {
         IS_CLOSED(0x00), // WARNING: not a real bit mask! To select a closed input, search for a not open one ;)
+        IS_TAMPER(0x01),
         IS_OPEN(0x02),
-        IS_ALARMED(0x04),
+        IS_ALARM_MEMORY(0x04),
+        IS_TAMPER_MEMORY(0x08),
         IS_EXCLUDED(0x10),
-        IS_ALL(0xff);   // hack to be always true ;)
-
-        // FIXME: missing states: TAMPER, TAMPER_MEMORY, TEMPORARY_EXCLUDED
+        IS_TEMPORARY_EXCLUDED(0x20),
+        IS_ALL(0x3f);   // hack to be always true ;)
 
         private byte bitMask;
 
@@ -125,6 +127,25 @@ public interface ElkrommFacade
         public byte getBitMask()
         {
             return bitMask;
+        }
+
+        public static InputStatus valueOf(byte value)
+        {
+            for (InputStatus pivot : InputStatus.values()) {
+                if (pivot.getBitMask() == value) {
+                    return pivot;
+                }
+            }
+
+            return null;
+        }
+
+        public static boolean is(byte value, InputStatus status) {
+            return (value & status.getBitMask()) != 0;
+        }
+
+        public static boolean isValid(byte bitmask) {
+            return (bitmask & ((IS_ALL.getBitMask() ^ 0xFF) & 0xFF)) == 0;
         }
     }
 
