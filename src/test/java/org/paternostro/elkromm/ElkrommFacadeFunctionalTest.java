@@ -365,7 +365,115 @@ public class ElkrommFacadeFunctionalTest {
         assertTrue(userEnablings[1]);
     }
 
-    // v0.3 APIs
+    @Test
+    public void testKeyboards() throws ElkrommException {
+        Keyboard[]  keyboards = facade.getKeyboards();
+
+        assertNotNull(keyboards);
+        assertTrue(keyboards.length > 0);
+        assertNotNull(keyboards[0].getName());
+    }
+
+    @Test
+    public void testParametersEnablings() throws ElkrommException {
+        ParametersEnablings pe = facade.getParametersEnablings();
+
+        assertNotNull(pe);
+        assertNotNull(pe.getLan());
+    }
+
+    @Test
+    public void testPhoneNumbersSendingCodes() throws ElkrommException {
+        PhoneNumbersSendingCodes pnsc = facade.getPhoneNumbersSendingCodes();
+
+        assertNotNull(pnsc);
+        assertNotNull(pnsc.getPhoneNumbers());
+    }
+
+    @Test
+    public void testPhoneParameters() throws ElkrommException {
+        PhoneParameters pp = facade.getPhoneParameters();
+
+        assertNotNull(pp);
+        assertNotNull(pp.getCallDelay());
+    }
+
+    @Test
+    public void testPSTNGSM() throws ElkrommException {
+        PSTNGSM pSTNGSM = facade.getPSTNGSM();
+
+        assertNotNull(pSTNGSM);
+        assertNotNull(pSTNGSM.getCountry());
+        assertNotNull(pSTNGSM.getEnableGSM());
+        assertNotNull(pSTNGSM.getEnablePSTN());
+    }
+
+    @Test
+    public void testReaders() throws ElkrommException {
+        Reader[]    reader = facade.getReaders();
+
+        assertNotNull(reader);
+    }
+
+    @Test
+    public void testSMSs() throws ElkrommException {
+        SMSs    sMSs = facade.getSMSs();
+
+        assertNotNull(sMSs);
+        assertNotNull(sMSs.getSMSs());
+        assertNotNull(sMSs.getSMSs()[0]);
+        assertNotNull(sMSs.getSMSs()[0].getText());
+    }
+
+    @Test
+    public void testC200bParameters() throws ElkrommException {
+        C200bParameters c200bParameters = facade.getC200bParameters();
+
+        assertNotNull(c200bParameters);
+        assertNotNull(c200bParameters.getEventCodes());
+        assertNotNull(c200bParameters.getInputCodes());
+    }
+
+    @Test
+    public void testTimeProgrammer() throws ElkrommException {
+        TimeProgrammer   timeProgrammer = facade.getTimeProgrammer();
+
+        assertNotNull(timeProgrammer);
+        assertNotNull(timeProgrammer.getDayClasses());
+        assertNotNull(timeProgrammer.getWorkingDaysCommands());
+        assertNotNull(timeProgrammer.getWorkingDaysCommands()[0]);
+        assertNotNull(timeProgrammer.getPreHolidayDaysCommands());
+        assertNotNull(timeProgrammer.getPreHolidayDaysCommands()[0]);
+        assertNotNull(timeProgrammer.getHolidayDaysCommands());
+        assertNotNull(timeProgrammer.getHolidayDaysCommands()[0]);
+    }
+
+    @Test
+    public void testArmDisarmSectors() throws ElkrommException {
+        SystemStatus    status = facade.getSystemStatus();
+
+        assertNotNull(status);
+        assertNotNull(status.getActivePartitions());
+        assertTrue(!status.getActivePartitions()[0]);
+
+        facade.armDisarmSectors(ElkrommFacade.Partition.P_ONE.getValue(), ElkrommFacade.Partition.P_ONE.getValue());
+
+        status = facade.getSystemStatus();
+
+        assertNotNull(status);
+        assertNotNull(status.getActivePartitions());
+        assertTrue(status.getActivePartitions()[0]);
+
+        facade.armDisarmSectors(ElkrommFacade.Partition.P_ONE.getValue(), (byte)0);
+
+        status = facade.getSystemStatus();
+
+        assertNotNull(status);
+        assertNotNull(status.getActivePartitions());
+        assertTrue(!status.getActivePartitions()[0]);
+    }
+
+    // setters
 
     @AfterClass
     public static void shutdownTests() throws UnknownHostException
