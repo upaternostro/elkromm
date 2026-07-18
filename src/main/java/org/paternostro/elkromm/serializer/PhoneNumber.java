@@ -19,7 +19,22 @@ public class PhoneNumber implements ElkrommSerializer<org.paternostro.elkromm.dt
         byte    bcdByte = 0;
 
         for (char pivot : obj.getPhoneNumber().toCharArray()) {
-            if ((value = Character.getNumericValue(pivot)) < 0 || value > 9) throw new IllegalStateException("Wrong digit " + pivot);
+            if (obj.getType() == Type.PNT_LAN) {
+                // In generale gli IP sono 001B002B003B004C00005 (attivo se tipo = LAN)
+                switch (pivot) {
+                    case '.':
+                        value = 0x0B;
+                        break;
+                    case ':':
+                        value = 0x0C;
+                        break;
+                    default:
+                        if ((value = Character.getNumericValue(pivot)) < 0 || value > 9) throw new IllegalStateException("Wrong digit " + pivot);
+                        break;
+                }
+            } else {
+                if ((value = Character.getNumericValue(pivot)) < 0 || value > 9) throw new IllegalStateException("Wrong digit " + pivot);
+            }
 
             if (index % 2 == 0) {
                 bcdByte = (byte)(value << 4); // FIXME: *10?
@@ -56,13 +71,16 @@ public class PhoneNumber implements ElkrommSerializer<org.paternostro.elkromm.dt
         if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
 
         int             index = 0;
-        int             value;
+        int             temp;
+        char            value;
         StringBuffer    sb = new StringBuffer();
 
         while (index < ElkrommFacade.PHONE_NUMBER_LENGTH) {
-            value = data[index / 2];
+            temp = data[index / 2];
 
-            if (value < 0) value += 256;
+            if (temp < 0) temp += 256;
+
+            value = Character.toChars(temp)[0];
 
             if (index % 2 == 0) {
                 value >>= 4;
@@ -70,7 +88,19 @@ public class PhoneNumber implements ElkrommSerializer<org.paternostro.elkromm.dt
                 value &= 0x0F;
             }
 
-            if (value != 0x0F) sb.append(value);
+            switch (value) {
+                case 0x0B:
+                    value = '.';
+                    break;
+                case 0x0C:
+                    value = ':';
+                    break;
+                default:
+                    value += 0x30;
+                    break;
+            }
+
+            if (value != 0x3F) sb.append(Character.toChars(value)[0]);
 
             index++;
         }
