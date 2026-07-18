@@ -239,6 +239,7 @@ public class ClientConnection extends Thread {
                         userEn.setEnabling(edu.isEnabled() ? Enabling.ENABLED : Enabling.DISABLED);
                     }
 
+                    this.model.computeChecksum();
                     break;
                 default:
                     break;
