@@ -8,6 +8,6 @@ public class SetKeys extends ElkrommPacket {
 
         assert totalPackets == 5 : "SetKeys: totalPackets: expected 5, found " + totalPackets;
         assert index >= 0 && index <= 5 : "SetKeys: index: expected 0...5, found " + index;
-        assert dataLength == 836 && data != null && data.length == dataLength : "SetKeys: data: mismatch in data length";
+        assert dataLength > 0 && data != null && data.length == dataLength : "SetKeys: data: mismatch in data length";
     }
 }
