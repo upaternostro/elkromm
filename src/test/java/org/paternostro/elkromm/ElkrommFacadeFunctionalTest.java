@@ -486,12 +486,12 @@ public class ElkrommFacadeFunctionalTest {
             assertTrue(false);
         }
         
-        // try {
-        //     facade.disconnect();
-        // } catch (Exception e) {
-        //     // TODO Auto-generated catch block
-        //     e.printStackTrace();
-        //     assertTrue(false);
-        // }
+        try {
+            facade.disconnect();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            assertTrue(false);
+        }
     }
 }
