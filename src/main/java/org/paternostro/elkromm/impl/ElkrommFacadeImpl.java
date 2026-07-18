@@ -215,7 +215,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
 
         try {
-            packetQueue.enqueuePayload(ElkrommPacket.packetFactoryAllocate(command, bcdPlantCode.get(0), bcdPlantCode.get(1), 0, 0, data == null ? 0 : data.length, data), data);
+            packetQueue.enqueuePayload(command, bcdPlantCode.get(0), bcdPlantCode.get(1), data);
 
             while (!packetQueue.isEmpty()) {
                 Thread.sleep(DELAY);

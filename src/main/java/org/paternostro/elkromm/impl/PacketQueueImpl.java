@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import org.paternostro.elkromm.ElkrommException;
 import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommUtils;
+import org.paternostro.elkromm.ElkronCommand;
 import org.paternostro.elkromm.PacketQueue;
 import org.paternostro.elkromm.packet.ElkrommPacket;
 import org.slf4j.Logger;
@@ -16,11 +17,11 @@ public class PacketQueueImpl extends LinkedList<ElkrommPacket> implements Packet
     public static final Logger logger = LoggerFactory.getLogger(PacketQueueImpl.class);
 
     @Override
-    public void enqueuePayload(ElkrommPacket packet, byte[] payload) throws ElkrommException
+    public void enqueuePayload(ElkronCommand command, byte plantCode12, byte plantCode34, byte[] payload) throws ElkrommException
     {
         byte[]  payloadPart;
 
-        if (logger.isDebugEnabled()) ElkrommUtils.dumpPayload(packet.getCommand(), payload);
+        if (logger.isDebugEnabled()) ElkrommUtils.dumpPayload(command, payload);
 
         // split payload
         int totalPackets = ((payload == null ? 0 : payload.length) - 1) / ElkrommFacade.MAX_DATA_LENGTH; // numero di pacchetti totali (base 0), meno uno perché 140 byte entrano tutti nel primo pacchetto
@@ -37,7 +38,7 @@ public class PacketQueueImpl extends LinkedList<ElkrommPacket> implements Packet
             while (index <= totalPackets) {
                 to = Math.min(from + ElkrommFacade.MAX_DATA_LENGTH, payload == null ? 0 : payload.length);
                 payloadPart = payload != null ? Arrays.copyOfRange(payload, from, to) : null;
-                add(ElkrommPacket.packetFactoryAllocate(packet.getCommand(), packet.getPlantCode12(), packet.getPlantCode34(), totalPackets, index, payload == null ? 0 : payloadPart.length, payloadPart));
+                add(ElkrommPacket.packetFactoryAllocate(command, plantCode12, plantCode34, totalPackets, index, payload == null ? 0 : payloadPart.length, payloadPart));
                 from = to;
                 index++;
             }
