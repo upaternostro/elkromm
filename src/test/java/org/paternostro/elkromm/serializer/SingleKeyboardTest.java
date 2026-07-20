@@ -3,6 +3,7 @@ package org.paternostro.elkromm.serializer;
 import org.junit.Test;
 import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommFactory;
+import org.paternostro.elkromm.ElkrommTestUtils;
 import org.paternostro.elkromm.dto.Input;
 import org.paternostro.elkromm.dto.Keyboard;
 import org.paternostro.elkromm.dto.SingleKeyboard;
@@ -27,8 +28,8 @@ public class SingleKeyboardTest {
         assert singleKeyboard.getKeyboard().getAddress() == singleKeyboard2.getKeyboard().getAddress() : "Expected address " + singleKeyboard.getKeyboard().getAddress() + " got " + singleKeyboard2.getKeyboard().getAddress();
         assert singleKeyboard.getKeyboard().getVersion().equals(singleKeyboard2.getKeyboard().getVersion()) : "Expected version " + singleKeyboard.getKeyboard().getVersion() + " got " + singleKeyboard2.getKeyboard().getVersion();
 
-        testInput(singleKeyboard.getKeyboard().getFirstInput(), singleKeyboard2.getKeyboard().getFirstInput());
-        testInput(singleKeyboard.getKeyboard().getSecondInput(), singleKeyboard2.getKeyboard().getSecondInput());
+        ElkrommTestUtils.testInput(singleKeyboard.getKeyboard().getFirstInput(), singleKeyboard2.getKeyboard().getFirstInput());
+        ElkrommTestUtils.testInput(singleKeyboard.getKeyboard().getSecondInput(), singleKeyboard2.getKeyboard().getSecondInput());
         
         assert singleKeyboard.getKeyboard().getEnablings() == singleKeyboard2.getKeyboard().getEnablings();
 
@@ -38,18 +39,5 @@ public class SingleKeyboardTest {
 
         assert singleKeyboard.getKeyboard().getAudioFeatures() == singleKeyboard2.getKeyboard().getAudioFeatures();
         assert singleKeyboard.getKeyboard().getName().equals(singleKeyboard2.getKeyboard().getName()) : "Expected name " + singleKeyboard.getKeyboard().getName() + " got " + singleKeyboard2.getKeyboard().getName();
-    }
-
-    private void testInput(Input input, Input input2)
-    {
-        assert input.getLogicNumber() == input2.getLogicNumber();
-        assert input.getConfiguration() == input2.getConfiguration();
-        assert input.getSpecialization() == input2.getSpecialization();
-
-        for (int k = 0; k < ElkrommFacade.MAX_PARTITIONS; k++) {
-            assert input.getAssociatedPartitions()[k] == input2.getAssociatedPartitions()[k];
-        }
-
-        assert input.getName().equals(input2.getName());
     }
 }

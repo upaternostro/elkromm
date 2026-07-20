@@ -3,6 +3,7 @@ package org.paternostro.elkromm.serializer;
 import org.junit.Test;
 import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommFactory;
+import org.paternostro.elkromm.ElkrommTestUtils;
 import org.paternostro.elkromm.dto.Input;
 import org.paternostro.elkromm.dto.Reader;
 
@@ -25,8 +26,8 @@ public class ReaderTest {
 
         assert reader.getAddress() == reader2.getAddress() : "Expected address " + reader.getAddress() + " got " + reader2.getAddress();
 
-        testInput(reader.getFirstInput(), reader2.getFirstInput());
-        testInput(reader.getSecondInput(), reader2.getSecondInput());
+        ElkrommTestUtils.testInput(reader.getFirstInput(), reader2.getFirstInput());
+        ElkrommTestUtils.testInput(reader.getSecondInput(), reader2.getSecondInput());
         
         assert reader.getLed1() == reader2.getLed1();
         assert reader.getLed2() == reader2.getLed2();
@@ -34,18 +35,5 @@ public class ReaderTest {
         assert reader.getLed4() == reader2.getLed4();
         assert reader.getEnablings() == reader2.getEnablings();
         assert reader.getName().equals(reader2.getName()) : "Expected name " + reader.getName() + " got " + reader2.getName();
-    }
-
-    private void testInput(Input input, Input input2)
-    {
-        assert input.getLogicNumber() == input2.getLogicNumber();
-        assert input.getConfiguration() == input2.getConfiguration();
-        assert input.getSpecialization() == input2.getSpecialization();
-
-        for (int k = 0; k < ElkrommFacade.MAX_PARTITIONS; k++) {
-            assert input.getAssociatedPartitions()[k] == input2.getAssociatedPartitions()[k];
-        }
-
-        assert input.getName().equals(input2.getName());
     }
 }

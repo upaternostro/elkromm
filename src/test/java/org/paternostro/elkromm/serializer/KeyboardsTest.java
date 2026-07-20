@@ -3,6 +3,7 @@ package org.paternostro.elkromm.serializer;
 import org.junit.Test;
 import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommFactory;
+import org.paternostro.elkromm.ElkrommTestUtils;
 import org.paternostro.elkromm.dto.Input;
 import org.paternostro.elkromm.dto.Keyboard;
 
@@ -32,8 +33,8 @@ public class KeyboardsTest {
             assert keyboards[i].getAddress() == keyboards2[i].getAddress() : "Expected address " + keyboards[i].getAddress() + " got " + keyboards2[i].getAddress();
             assert keyboards[i].getVersion().equals(keyboards2[i].getVersion()) : "Expected version " + keyboards[i].getVersion() + " got " + keyboards2[i].getVersion();
 
-            testInput(keyboards[i].getFirstInput(), keyboards2[i].getFirstInput());
-            testInput(keyboards[i].getSecondInput(), keyboards2[i].getSecondInput());
+            ElkrommTestUtils.testInput(keyboards[i].getFirstInput(), keyboards2[i].getFirstInput());
+            ElkrommTestUtils.testInput(keyboards[i].getSecondInput(), keyboards2[i].getSecondInput());
             
             assert keyboards[i].getEnablings() == keyboards2[i].getEnablings();
 
@@ -44,18 +45,5 @@ public class KeyboardsTest {
             assert keyboards[i].getAudioFeatures() == keyboards2[i].getAudioFeatures();
             assert keyboards[i].getName().equals(keyboards2[i].getName()) : "Expected name " + keyboards[i].getName() + " got " + keyboards2[i].getName();
         }
-    }
-
-    private void testInput(Input input, Input input2)
-    {
-        assert input.getLogicNumber() == input2.getLogicNumber();
-        assert input.getConfiguration() == input2.getConfiguration();
-        assert input.getSpecialization() == input2.getSpecialization();
-
-        for (int k = 0; k < ElkrommFacade.MAX_PARTITIONS; k++) {
-            assert input.getAssociatedPartitions()[k] == input2.getAssociatedPartitions()[k];
-        }
-
-        assert input.getName().equals(input2.getName());
     }
 }
