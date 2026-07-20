@@ -28,7 +28,7 @@ public class PSTNGSM implements ElkrommSerializer<org.paternostro.elkromm.dto.PS
         data[11] = obj.getEnableIncomingSMS().getValue();
         
         int offset = 12;
-        for (byte pivot : ElkrommUtils.bcd(obj.getGSMPin(), 6)) {
+        for (byte pivot : ElkrommUtils.bcd(obj.getGSMPin(), 3)) {
             data[offset++] = pivot;
         }
 
