@@ -8,6 +8,6 @@ public class SetSMS extends ElkrommPacket {
 
         assert totalPackets == 2 && dataLength > 0 : "SetSMS: totalPackets: expected 2, found " + totalPackets;
         assert index >= 0 && index <= 2 : "SetSMS: index: expected 0...2, found " + index;
-        assert dataLength == 364 && data != null && data.length == dataLength : "SetSMS: data: mismatch in data length";
+        assert dataLength > 0 && data != null && data.length == dataLength : "SetSMS: data: mismatch in data length";
     }
 }
