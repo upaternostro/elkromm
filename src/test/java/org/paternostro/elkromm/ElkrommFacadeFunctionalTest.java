@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -17,17 +18,27 @@ import org.paternostro.elkromm.ElkrommFacade.Status;
 import org.paternostro.elkromm.dto.AreasAndPartitions;
 import org.paternostro.elkromm.dto.C200bParameters;
 import org.paternostro.elkromm.dto.Checksums;
+import org.paternostro.elkromm.dto.Command;
 import org.paternostro.elkromm.dto.Credential;
+import org.paternostro.elkromm.dto.DayClassCommands;
 import org.paternostro.elkromm.dto.Expansion;
+import org.paternostro.elkromm.dto.Input;
 import org.paternostro.elkromm.dto.Key;
 import org.paternostro.elkromm.dto.Keyboard;
 import org.paternostro.elkromm.dto.PSTNGSM;
+import org.paternostro.elkromm.dto.PSTNGSM.Enabling;
 import org.paternostro.elkromm.dto.ParametersEnablings;
 import org.paternostro.elkromm.dto.PeripheralUnits;
+import org.paternostro.elkromm.dto.PhoneNumber;
 import org.paternostro.elkromm.dto.PhoneNumbersSendingCodes;
 import org.paternostro.elkromm.dto.PhoneParameters;
+import org.paternostro.elkromm.dto.PhoneParameters.ReturnCall;
 import org.paternostro.elkromm.dto.Reader;
+import org.paternostro.elkromm.dto.SMS;
 import org.paternostro.elkromm.dto.SMSs;
+import org.paternostro.elkromm.dto.SMSs.SMSIndex;
+import org.paternostro.elkromm.dto.SingleKeyboard;
+import org.paternostro.elkromm.dto.SingleSMS;
 import org.paternostro.elkromm.dto.SystemStatus;
 import org.paternostro.elkromm.dto.TimeProgrammer;
 import org.paternostro.elkromm.dto.User;
@@ -473,7 +484,363 @@ public class ElkrommFacadeFunctionalTest {
         assertTrue(!status.getActivePartitions()[0]);
     }
 
-    // setters
+    @Test
+    public void testSetParametersEnablings() throws ElkrommException {
+        ParametersEnablings pe = facade.getParametersEnablings();
+
+        assertNotNull(pe);
+
+        byte                oldHelp = pe.getHelp();
+        byte                newHelp = (byte)(ParametersEnablings.Help.PEH_ENABLE.getValue() | 0x05);
+
+        pe.setHelp(newHelp);
+        facade.setParametersEnablings(pe);
+        pe = facade.getParametersEnablings();
+        assertNotNull(pe);
+        assertTrue(pe.getHelp() == newHelp);
+        pe.setHelp(oldHelp);
+        facade.setParametersEnablings(pe);
+        pe = facade.getParametersEnablings();
+        assertNotNull(pe);
+        assertTrue(pe.getHelp() == oldHelp);
+    }
+
+    @Test
+    public void testSetAreasAndPartitions() throws ElkrommException {
+        AreasAndPartitions  ap = facade.getAreasAndPartitions();
+
+        assertNotNull(ap);
+        assertNotNull(ap.getPartition(1));
+
+        String              oldName = ap.getPartition(1).getName();
+
+        ap.getPartition(1).setName("a name");
+        facade.setAreasAndPartitions(ap);
+        ap = facade.getAreasAndPartitions();
+        assertNotNull(ap);
+        assertNotNull(ap.getPartition(1));
+        assertTrue("a name".equals(ap.getPartition(1).getName()));
+        ap.getPartition(1).setName(oldName);
+        facade.setAreasAndPartitions(ap);
+        ap = facade.getAreasAndPartitions();
+        assertNotNull(ap);
+        assertNotNull(ap.getPartition(1));
+        if (oldName != null) assertTrue(oldName.equals(ap.getPartition(1).getName()));
+    }
+
+    @Test
+    public void testSetPhoneParameters() throws ElkrommException {
+        PhoneParameters pp = facade.getPhoneParameters();
+
+        assertNotNull(pp);
+        assertNotNull(pp.getReturnCall());
+
+        ReturnCall      oldReturnCall = pp.getReturnCall();
+
+        pp.setReturnCall(PhoneParameters.ReturnCall.PPRC_TYPE_B);
+        facade.setPhoneParameters(pp);
+        pp = facade.getPhoneParameters();
+        assertNotNull(pp);
+        assertNotNull(pp.getReturnCall());
+        assertTrue(pp.getReturnCall() == PhoneParameters.ReturnCall.PPRC_TYPE_B);
+        pp.setReturnCall(oldReturnCall);
+        facade.setPhoneParameters(pp);
+        pp = facade.getPhoneParameters();
+        assertNotNull(pp);
+        assertNotNull(pp.getReturnCall());
+        assertTrue(pp.getReturnCall() == oldReturnCall);
+    }
+
+    @Test
+    public void testSetPhoneNumbersSendingCodes() throws ElkrommException {
+        PhoneNumbersSendingCodes    pnsc = facade.getPhoneNumbersSendingCodes();
+
+        assertNotNull(pnsc);
+        assertNotNull(pnsc.getPhoneNumbers());
+        assertTrue(pnsc.getPhoneNumbers().length > 0);
+
+        PhoneNumber[]               phoneNumbers = pnsc.getPhoneNumbers();
+        PhoneNumber                 oldPhoneNumber = phoneNumbers[0];
+        PhoneNumber.Event[]         events = { PhoneNumber.Event.PNSCE_BURGLAR_ALARM };
+
+        phoneNumbers[0] = new PhoneNumber("001.002.003.004:00005", ElkrommUtils.unpackPartitions((byte)0x01), PhoneNumber.Type.PNT_LAN, PhoneNumber.SendingMode.PNSM_MODEM, events);
+        pnsc.setPhoneNumbers(phoneNumbers);
+        facade.setPhoneNumbersSendingCodes(pnsc);
+        pnsc = facade.getPhoneNumbersSendingCodes();
+        assertNotNull(pnsc);
+        assertNotNull(pnsc.getPhoneNumbers());
+        assertTrue(pnsc.getPhoneNumbers().length > 0);
+        assertNotNull(pnsc.getPhoneNumbers()[0]);
+        assertTrue("001.002.003.004:00005".equals(pnsc.getPhoneNumbers()[0].getPhoneNumber()));
+        assertTrue(ElkrommUtils.packPartitions(pnsc.getPhoneNumbers()[0].getAssociatedPartitions()) == 0x01);
+        assertTrue(pnsc.getPhoneNumbers()[0].getType() == PhoneNumber.Type.PNT_LAN);
+        assertTrue(pnsc.getPhoneNumbers()[0].getSendingMode() == PhoneNumber.SendingMode.PNSM_MODEM);
+
+        Iterator<PhoneNumber.Event> it = pnsc.getPhoneNumbers()[0].getAssignedEventsIterator();
+
+        assertNotNull(it);
+        assertTrue(it.hasNext());
+        assertTrue(it.next() == PhoneNumber.Event.PNSCE_BURGLAR_ALARM);
+        assertTrue(!it.hasNext());
+        phoneNumbers[0] = oldPhoneNumber;
+        pnsc.setPhoneNumbers(phoneNumbers);
+        facade.setPhoneNumbersSendingCodes(pnsc);
+        pnsc = facade.getPhoneNumbersSendingCodes();
+        assertNotNull(pnsc);
+        assertNotNull(pnsc.getPhoneNumbers());
+        assertTrue(pnsc.getPhoneNumbers().length > 0);
+    }
+
+    @Test
+    public void testSetC200bParameters() throws ElkrommException {
+        C200bParameters c200bParameters = facade.getC200bParameters();
+
+        assertNotNull(c200bParameters);
+        assertNotNull(c200bParameters.getInputCodes());
+
+        byte[]          inputCodes = c200bParameters.getInputCodes();
+
+        c200bParameters.setInputCode(1, (byte)0x42);
+        facade.setC200bParameters(c200bParameters);
+        c200bParameters = facade.getC200bParameters();
+        assertNotNull(c200bParameters);
+        assertNotNull(c200bParameters.getInputCodes());
+        assertTrue(c200bParameters.getInputCodes()[1] == 0x42);
+        c200bParameters.setInputCodes(inputCodes);
+        facade.setC200bParameters(c200bParameters);
+        c200bParameters = facade.getC200bParameters();
+        assertNotNull(c200bParameters);
+        assertNotNull(c200bParameters.getInputCodes());
+    }
+
+    @Test
+    public void testSetSMSs() throws ElkrommException {
+        SMSs    sMSs = facade.getSMSs();
+
+        assertNotNull(sMSs);
+        assertNotNull(sMSs.getSMSs());
+        assertTrue(sMSs.getSMSs().length > 0);
+
+        SMS[]   sMS = sMSs.getSMSs();
+        SMS     oldSMS = sMS[0];
+
+        sMS[0] = new SMS("a text");
+        sMSs.setSMSs(sMS);
+        facade.setSMSs(sMSs);
+        sMSs = facade.getSMSs();
+        assertNotNull(sMSs);
+        assertNotNull(sMSs.getSMSs());
+        assertTrue(sMSs.getSMSs().length > 0);
+        assertTrue("a text".equals(sMSs.getSMSs()[0].getText()));
+        sMS[0] = oldSMS;
+        sMSs.setSMSs(sMS);
+        facade.setSMSs(sMSs);
+        sMSs = facade.getSMSs();
+        assertNotNull(sMSs);
+        assertNotNull(sMSs.getSMSs());
+        assertTrue(sMSs.getSMSs().length > 0);
+    }
+
+    @Test
+    public void testSetPSTNGSM() throws ElkrommException {
+        PSTNGSM     pSTNGSM = facade.getPSTNGSM();
+
+        assertNotNull(pSTNGSM);
+
+        Enabling    oldEnableGSM = pSTNGSM.getEnableGSM();
+        int         oldPIN = pSTNGSM.getGSMPin();
+
+        pSTNGSM.setEnableGSM(PSTNGSM.Enabling.PGE_ENABLED);
+        pSTNGSM.setGSMPin(12345);
+        facade.setPSTNGSM(pSTNGSM);
+        pSTNGSM = facade.getPSTNGSM();
+        assertNotNull(pSTNGSM);
+        assertTrue(pSTNGSM.getEnableGSM() == PSTNGSM.Enabling.PGE_ENABLED);
+        assertEquals(12345, pSTNGSM.getGSMPin());
+        pSTNGSM.setEnableGSM(oldEnableGSM);
+        pSTNGSM.setGSMPin(oldPIN);
+        facade.setPSTNGSM(pSTNGSM);
+        pSTNGSM = facade.getPSTNGSM();
+        assertNotNull(pSTNGSM);
+    }
+
+    @Test
+    public void testSetUsers() throws ElkrommException {
+        Credential[]    users = facade.getUsers();
+
+        assertNotNull(users);
+        assertTrue(users.length > 0);
+
+        Credential      oldUser = users[2];
+
+        users[2] = new User(3, "Test user", Credential.Enabling.ENABLED, ElkrommUtils.unpackPartitions((byte)0x01));
+        facade.setUsers(users);
+        users = facade.getUsers();
+        assertNotNull(users);
+        assertTrue(users.length > 0);
+        assertEquals(3, users[2].getOrdinal());
+        assertEquals("Test user", users[2].getName());
+        assertEquals(Credential.Enabling.ENABLED, users[2].getEnabling());
+        assertEquals(0x01, ElkrommUtils.packPartitions(users[2].getAssociatedPartitions()));
+        users[2] = oldUser;
+        facade.setUsers(users);
+        users = facade.getUsers();
+        assertNotNull(users);
+        assertTrue(users.length > 0);
+    }
+
+    @Test
+    public void testSetKeys() throws ElkrommException {
+        Credential[]    keys = facade.getKeys();
+
+        assertNotNull(keys);
+        assertTrue(keys.length > 0);
+
+        Credential      oldKey = keys[2];
+
+        keys[2] = new Key(3, "Test user", Credential.Enabling.ENABLED, Key.Specialization.KS_CHANGE_PARTITION_STATUS, ElkrommUtils.unpackPartitions((byte)0x01));
+        facade.setKeys(keys);
+        keys = facade.getKeys();
+        assertNotNull(keys);
+        assertTrue(keys.length > 0);
+        assertEquals(3, keys[2].getOrdinal());
+        assertEquals("Test user", keys[2].getName());
+        assertEquals(Credential.Enabling.ENABLED, keys[2].getEnabling());
+        assertEquals(Key.Specialization.KS_CHANGE_PARTITION_STATUS, ((Key)keys[2]).getSpecialization());
+        assertEquals(0x01, ElkrommUtils.packPartitions(keys[2].getAssociatedPartitions()));
+        keys[2] = oldKey;
+        facade.setKeys(keys);
+        keys = facade.getKeys();
+        assertNotNull(keys);
+        assertTrue(keys.length > 0);
+    }
+
+    @Test
+    public void testSetSMS() throws ElkrommException {
+        SMSs        sMSs = facade.getSMSs();
+
+        assertNotNull(sMSs);
+        assertNotNull(sMSs.getSMSs());
+        assertTrue(sMSs.getSMSs().length > 0);
+
+        SMS[]       sMS = sMSs.getSMSs();
+        SMS         oldSMS = sMS[0];
+        SingleSMS   singleSMS = new SingleSMS(SMSIndex.valueOf(0), new SMS("a text"));
+
+        facade.setSMS(singleSMS);
+        sMSs = facade.getSMSs();
+        assertNotNull(sMSs);
+        assertNotNull(sMSs.getSMSs());
+        assertTrue(sMSs.getSMSs().length > 0);
+        assertTrue("a text".equals(sMSs.getSMSs()[0].getText()));
+        singleSMS.setSMS(oldSMS);
+        facade.setSMS(singleSMS);
+        sMSs = facade.getSMSs();
+        assertNotNull(sMSs);
+        assertNotNull(sMSs.getSMSs());
+        assertTrue(sMSs.getSMSs().length > 0);
+    }
+
+    @Test
+    public void testSetKeyboard() throws ElkrommException {
+        Keyboard[]      keyboards = facade.getKeyboards();
+
+        assertNotNull(keyboards);
+        assertTrue(keyboards.length > 0);
+
+        Keyboard        oldKeyboard = keyboards[0];
+        boolean[]       associatedPartitions = ElkrommUtils.unpackPartitions((byte)0x01);
+        SingleKeyboard  singleKeyboard = new SingleKeyboard((byte)1, new Keyboard(1, "2.71", 
+                                        new Input(1, Input.Configuration.IC_NORMALLY_CLOSED_DOUBLE_BALANCED, Input.Specialization.IS_WAY, Input.Sensitivity.IS_HIGH, Input.Flags.IF_EXCLUSION_ENABLED.getValue(), Input.Video.IV_CAMERA_3, associatedPartitions, "input 1", Input.Delay.ID_30_SECS),
+                                        new Input(2, Input.Configuration.IC_NORMALLY_CLOSED_BALANCED, Input.Specialization.IS_DELAYED, Input.Sensitivity.IS_HIGH, Input.Flags.IF_OR_SECTORS.getValue(), Input.Video.IV_CAMERA_2, associatedPartitions, "input 2", Input.Delay.ID_20_SECS),
+                                    Keyboard.Enablings.KE_ENTRY.getValue(), associatedPartitions, Keyboard.AudioFeatures.KA_NONE.getValue(), "Keyboard 1"));
+
+        facade.setKeyboard(singleKeyboard);
+        keyboards = facade.getKeyboards();
+        assertNotNull(keyboards);
+        assertTrue(keyboards.length > 0);
+        assertEquals(1, keyboards[0].getAddress());
+        assertEquals("2.71", keyboards[0].getVersion());
+        ElkrommTestUtils.testInput(singleKeyboard.getKeyboard().getFirstInput(), keyboards[0].getFirstInput());
+        ElkrommTestUtils.testInput(singleKeyboard.getKeyboard().getSecondInput(), keyboards[0].getSecondInput());
+        assertEquals(Keyboard.Enablings.KE_ENTRY.getValue(), keyboards[0].getEnablings());
+        assertEquals(0x01, ElkrommUtils.packPartitions(keyboards[0].getAssociatedPartitions()));
+        assertEquals(Keyboard.AudioFeatures.KA_NONE.getValue(), keyboards[0].getAudioFeatures());
+        assertEquals("Keyboard 1", keyboards[0].getName());
+        singleKeyboard.setKeyboard(oldKeyboard);
+        facade.setKeyboard(singleKeyboard);
+        keyboards = facade.getKeyboards();
+        assertNotNull(keyboards);
+        assertTrue(keyboards.length > 0);
+    }
+
+    @Test
+    public void testSetReader() throws ElkrommException {
+        Reader[]    readers = facade.getReaders();
+        
+        assertNotNull(readers);
+        assertTrue(readers.length > 0);
+
+        Reader      oldReader = readers[0];
+        boolean[]   associatedPartitions = ElkrommUtils.unpackPartitions((byte)0x01);
+        Reader      newReader = new Reader(1, 
+                                    new Input(1, Input.Configuration.IC_NORMALLY_CLOSED_DOUBLE_BALANCED, Input.Specialization.IS_WAY, Input.Sensitivity.IS_HIGH, Input.Flags.IF_EXCLUSION_ENABLED.getValue(), Input.Video.IV_CAMERA_3, associatedPartitions, "input 1", Input.Delay.ID_30_SECS),
+                                    new Input(2, Input.Configuration.IC_NORMALLY_CLOSED_BALANCED, Input.Specialization.IS_DELAYED, Input.Sensitivity.IS_HIGH, Input.Flags.IF_OR_SECTORS.getValue(), Input.Video.IV_CAMERA_2, associatedPartitions, "input 2", Input.Delay.ID_20_SECS),
+                                ElkrommFacade.Partition.P_ONE, ElkrommFacade.Partition.P_TWO, ElkrommFacade.Partition.P_THREE, ElkrommFacade.Partition.P_FOUR, Reader.Enablings.RE_MASKING.getValue(), "Reader 1");
+
+        facade.setReader(newReader);
+        readers = facade.getReaders();
+        assertNotNull(readers);
+        assertTrue(readers.length > 0);
+        assertEquals(1, readers[0].getAddress());
+        ElkrommTestUtils.testInput(newReader.getFirstInput(), readers[0].getFirstInput());
+        ElkrommTestUtils.testInput(newReader.getSecondInput(), readers[0].getSecondInput());
+        assertEquals(ElkrommFacade.Partition.P_ONE, readers[0].getLed1());
+        assertEquals(ElkrommFacade.Partition.P_TWO, readers[0].getLed2());
+        assertEquals(ElkrommFacade.Partition.P_THREE, readers[0].getLed3());
+        assertEquals(ElkrommFacade.Partition.P_FOUR, readers[0].getLed4());
+        assertEquals(Reader.Enablings.RE_MASKING.getValue(), readers[0].getEnablings());
+        assertEquals("Reader 1", readers[0].getName());
+        facade.setReader(oldReader);
+        readers = facade.getReaders();
+        assertNotNull(readers);
+        assertTrue(readers.length > 0);
+    }
+
+    @Test
+    public void testSetDayClassCommands() throws ElkrommException {
+        TimeProgrammer      timeProgrammer = facade.getTimeProgrammer();
+
+        assertNotNull(timeProgrammer);
+
+        Command[]           workingDaysCommands = timeProgrammer.getWorkingDaysCommands();
+
+        assertNotNull(workingDaysCommands);
+        assertTrue(workingDaysCommands.length > 0);
+
+        Command             oldCommand = workingDaysCommands[0];
+        Command             newCommand = new Command(Command.Action.CA_ENABLE, (byte)3, Command.ObjectType.COT_USER, (byte)12, (byte)34);
+
+        workingDaysCommands[0] = newCommand;
+        facade.setDayClassCommands(new DayClassCommands(DayClassCommands.DayClass.DCCDC_WORKING_DAY, workingDaysCommands));
+        timeProgrammer = facade.getTimeProgrammer();
+        assertNotNull(timeProgrammer);
+        workingDaysCommands = timeProgrammer.getWorkingDaysCommands();
+        assertNotNull(workingDaysCommands);
+        assertTrue(workingDaysCommands.length > 0);
+        assertEquals(newCommand.getAction(), workingDaysCommands[0].getAction());
+        assertEquals(newCommand.getObject(), workingDaysCommands[0].getObject());
+        assertEquals(newCommand.getObjectType(), workingDaysCommands[0].getObjectType());
+        assertEquals(newCommand.getHour(), workingDaysCommands[0].getHour());
+        assertEquals(newCommand.getMinute(), workingDaysCommands[0].getMinute());
+        workingDaysCommands[0] = oldCommand;
+        facade.setDayClassCommands(new DayClassCommands(DayClassCommands.DayClass.DCCDC_WORKING_DAY, workingDaysCommands));
+        timeProgrammer = facade.getTimeProgrammer();
+        assertNotNull(timeProgrammer);
+        workingDaysCommands = timeProgrammer.getWorkingDaysCommands();
+        assertNotNull(workingDaysCommands);
+        assertTrue(workingDaysCommands.length > 0);
+    }
 
     @AfterClass
     public static void shutdownTests() throws UnknownHostException
