@@ -854,6 +854,8 @@ public class ClientConnection extends Thread {
 // 0180: 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00   ........ ........ 
 // 0190: 00 00 00 00 ff ff 5b ff                            ....￿￿[￿ 
 // Checksum ffff5bff is valid
+
+// In generale gli IP sono 001B002B003B004C00005 (attivo se tipo = LAN)
                                 payload = ElkrommFactory.getFactory().getPhoneNumbersSendingCodesSerializer().serialize(model.getPhoneNumbers());
                                 enqueuePayload(packet, payload, packetQueue);
                                 break;
@@ -1132,6 +1134,7 @@ public class ClientConnection extends Thread {
                             case ARM_DISARM_SECTOR:
                             case EXCLUDE_INCLUDE_INPUT:
                             case ENABLE_DISABLE_USER:
+                            case KEYPAD_PROGRAMMING:
                                 // solo SYN
                                 processPayload(packet);
                                 break;
