@@ -27,9 +27,14 @@ public class PSTNGSM implements ElkrommSerializer<org.paternostro.elkromm.dto.PS
         data[10] = obj.getEnableGSMAnsweringMachine().getValue();
         data[11] = obj.getEnableIncomingSMS().getValue();
         
-        int offset = 12;
-        for (byte pivot : ElkrommUtils.bcd(obj.getGSMPin(), 3)) {
-            data[offset++] = pivot;
+        if (obj.getGSMPin() == -1) {
+            data[12] = data[13] = data[14] = (byte)0xff;
+        } else {
+            int offset = 12;
+
+            for (byte pivot : ElkrommUtils.bcd(obj.getGSMPin(), 3)) {
+                data[offset++] = pivot;
+            }
         }
 
         data[15] = obj.getExpirationMonth();
@@ -47,7 +52,7 @@ public class PSTNGSM implements ElkrommSerializer<org.paternostro.elkromm.dto.PS
         if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
         if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getLong(data, data.length - 4)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getLong(data, data.length - 4));
 
-        return new org.paternostro.elkromm.dto.PSTNGSM(Enabling.valueOf(data[0]), Country.valueOf(data[1]), PABXLocalAccessDigit.valueOf(data[4]), Enabling.valueOf(data[5]), Enabling.valueOf(data[6]), PSTNLineTestFrequency.valueOf(data[7]), PSTNAnsweringMachineRings.valueOf(data[8]), Enabling.valueOf(data[9]), Enabling.valueOf(data[10]), Enabling.valueOf(data[11]), ElkrommUtils.dcb(data, 12, 3), data[15], data[16]);
+        return new org.paternostro.elkromm.dto.PSTNGSM(Enabling.valueOf(data[0]), Country.valueOf(data[1]), PABXLocalAccessDigit.valueOf(data[4]), Enabling.valueOf(data[5]), Enabling.valueOf(data[6]), PSTNLineTestFrequency.valueOf(data[7]), PSTNAnsweringMachineRings.valueOf(data[8]), Enabling.valueOf(data[9]), Enabling.valueOf(data[10]), Enabling.valueOf(data[11]), data[12] == (byte)0xff && data[13] == (byte)0xff && data[14] == (byte)0xff ? -1 : ElkrommUtils.dcb(data, 12, 3), data[15], data[16]);
     }
 
     @Override

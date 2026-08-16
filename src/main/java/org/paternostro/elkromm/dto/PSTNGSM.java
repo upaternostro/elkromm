@@ -297,7 +297,7 @@ public class PSTNGSM implements Serializable {
     }
 
     public void setGSMPin(int gSMPin) {
-        if (gSMPin < 0 || gSMPin > 999999) throw new IllegalArgumentException("Wrong gSMPin, expected between 0 and 999999, found " + gSMPin);
+        if (gSMPin < -1 || gSMPin > 999999) throw new IllegalArgumentException("Wrong gSMPin, expected between -1 and 999999, found " + gSMPin);
         
         this.gSMPin = gSMPin;
     }
