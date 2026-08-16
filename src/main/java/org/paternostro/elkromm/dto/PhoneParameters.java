@@ -236,7 +236,7 @@ public class PhoneParameters implements Serializable {
     }
 
     public void setCyclicTestCallPhoneNumber(byte cyclicTestCallPhoneNumber) {
-        if (cyclicTestCallPhoneNumber < 1 || cyclicTestCallPhoneNumber > ElkrommFacade.MAX_PHONE_NUMBERS) throw new IllegalArgumentException("Wrong cyclicTestCallPhoneNumber, expected between 1 and " + ElkrommFacade.MAX_PHONE_NUMBERS + ", found " + cyclicTestCallPhoneNumber);
+        if (cyclicTestCallPhoneNumber < 0 || cyclicTestCallPhoneNumber > ElkrommFacade.MAX_PHONE_NUMBERS) throw new IllegalArgumentException("Wrong cyclicTestCallPhoneNumber, expected between 0 and " + ElkrommFacade.MAX_PHONE_NUMBERS + ", found " + cyclicTestCallPhoneNumber);
 
         this.cyclicTestCallPhoneNumber = cyclicTestCallPhoneNumber;
     }
