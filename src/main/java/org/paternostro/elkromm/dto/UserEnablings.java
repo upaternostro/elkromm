@@ -32,4 +32,11 @@ public class UserEnablings implements Serializable
 
         this.enablings[ordinal - 1] = enabled;
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{enablings=").append(Arrays.toString(enablings)).append("}");
+
+        return sb.toString();
+    }
 }

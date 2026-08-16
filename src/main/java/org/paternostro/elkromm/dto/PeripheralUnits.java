@@ -63,12 +63,10 @@ public class PeripheralUnits implements Serializable
     }
 
     @Override
-    public String toString()
-    {
-        return "PeripheralUnits{" +
-                "keypads=" + keypadsAddresses.size() +
-                ", readers=" + readersAddresses.size() +
-                ", expansions=" + expansionsAddresses.size() +
-                '}';
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{keypadsAddresses=").append(keypadsAddresses).append(", readersAddresses=").append(readersAddresses
+               ).append(", expansionsAddresses=").append(expansionsAddresses).append("}");
+        
+        return sb.toString();
     }
 }

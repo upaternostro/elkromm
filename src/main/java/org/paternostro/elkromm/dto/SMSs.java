@@ -44,4 +44,11 @@ public class SMSs implements Serializable {
     public void setSMSs(SMS[] sMSs) {
         this.sMSs = Arrays.copyOf(sMSs, ElkrommFacade.MAX_SMS);
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{sMSs=").append(Arrays.toString(sMSs)).append("}");
+
+        return sb.toString();
+    }
 }

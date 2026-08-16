@@ -105,12 +105,11 @@ public abstract class Credential implements Serializable, Comparable<Credential>
     }
 
     @Override
-    public String toString()
-    {
-        return "Credential{" +
-                " ordinal=" + ordinal +
-                " name='" + name + '\'' +
-                '}';
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{ordinal=").append(ordinal).append(", name=").append(name).append(", enabling=").append(enabling
+               ).append(", associatedPartitions=").append(Arrays.toString(associatedPartitions)).append("}");
+        
+        return sb.toString();
     }
 
     @Override

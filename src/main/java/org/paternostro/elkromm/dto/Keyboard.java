@@ -213,11 +213,11 @@ public class Keyboard implements Serializable, Comparable<Keyboard>
 
     @Override
     public String toString() {
-        return "Keyboard{" +
-                "name='" + name + '\'' +
-                ", address=" + address +
-                ", version='" + version + '\'' +
-                '}';
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{address=").append(address).append(", version=").append(version).append(", firstInput=").append(firstInput).append(", secondInput="
+               ).append(secondInput).append(", enablings=").append(enablings).append(", associatedPartitions="
+               ).append(Arrays.toString(associatedPartitions)).append(", audioFeatures=").append(audioFeatures).append(", name=").append(name).append("}");
+        
+        return sb.toString();
     }
 
     @Override

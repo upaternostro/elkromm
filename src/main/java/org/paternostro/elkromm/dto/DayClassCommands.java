@@ -72,4 +72,11 @@ public class DayClassCommands implements Serializable, Comparable<DayClassComman
     public int compareTo(DayClassCommands o) {
         return dayClass.compareTo(o.dayClass);
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{dayClass=").append(dayClass).append(", commands=").append(Arrays.toString(commands)).append("}");
+
+        return sb.toString();
+    }
 }

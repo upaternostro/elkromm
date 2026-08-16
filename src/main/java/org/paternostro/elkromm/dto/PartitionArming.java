@@ -32,4 +32,11 @@ public class PartitionArming implements Serializable {
 
         this.armStatus = armStatus;
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{partitions=").append(partitions).append(", armStatus=").append(armStatus).append("}");
+
+        return sb.toString();
+    }
 }

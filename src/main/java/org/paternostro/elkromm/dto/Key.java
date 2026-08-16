@@ -61,11 +61,13 @@ public class Key extends Credential
     }
 
     @Override
-    public String toString()
-    {
-        return "Key{" +
-                " ordinal=" + ordinal +
-                " name='" + name + '\'' +
-                '}';
+    public String toString() {
+        StringBuffer sb = new StringBuffer(super.toString());
+        
+        sb.setLength(sb.length() - 1);
+        sb.append(", specialization=").append(specialization).append("}");
+
+        return sb.toString();
     }
+
 }

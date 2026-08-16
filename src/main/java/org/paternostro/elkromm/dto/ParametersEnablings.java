@@ -479,4 +479,14 @@ public class ParametersEnablings implements Serializable {
         
         this.off = off;
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{bulgarTime=").append(bulgarTime).append(", emergencyTime=").append(emergencyTime).append(", preAlarmTime="
+               ).append(preAlarmTime).append(", alarmCount=").append(alarmCount).append(", powerLack=").append(powerLack).append(", play=").append(play
+               ).append(", help=").append(help).append(", lan=").append(lan).append(", timeProgrammer=").append(timeProgrammer).append(", notice=").append(notice
+               ).append(", dST=").append(dST).append(", on=").append(on).append(", off=").append(off).append("}");
+        
+        return sb.toString();
+    }
 }

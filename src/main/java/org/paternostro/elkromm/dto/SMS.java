@@ -21,4 +21,11 @@ public class SMS implements Serializable {
         
         this.text = text;
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{text=").append(text).append("}");
+
+        return sb.toString();
+    }
 }

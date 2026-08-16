@@ -6,13 +6,4 @@ public class User extends Credential
     {
         super(ordinal, name, enabling, associatedPartitions);
     }
-
-    @Override
-    public String toString()
-    {
-        return "User{" +
-                " ordinal=" + ordinal +
-                " name='" + name + '\'' +
-                '}';
-    }
 }

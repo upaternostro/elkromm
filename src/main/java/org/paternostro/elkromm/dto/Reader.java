@@ -171,10 +171,11 @@ public class Reader implements Serializable, Comparable<Reader>
 
     @Override
     public String toString() {
-        return "Reader{" +
-                "name='" + name + '\'' +
-                ", address=" + address +
-                '}';
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{address=").append(address).append(", firstInput=").append(firstInput).append(", secondInput=").append(secondInput).append(", led1="
+               ).append(led1).append(", led2=").append(led2).append(", led3=").append(led3).append(", led4=").append(led4).append(", enablings=").append(enablings).append(", name="
+               ).append(name).append("}");
+        
+        return sb.toString();
     }
 
     @Override

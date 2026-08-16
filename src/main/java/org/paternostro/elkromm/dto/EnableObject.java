@@ -31,4 +31,11 @@ public abstract class EnableObject implements Serializable {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{ordinal=").append(ordinal).append(", enabled=").append(enabled).append("}");
+
+        return sb.toString();
+    }
 }

@@ -1,6 +1,7 @@
 package org.paternostro.elkromm.dto;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.dto.DayClassCommands.DayClass;
@@ -62,5 +63,14 @@ public class TimeProgrammer implements Serializable
         if (dayClasses.length != 7) throw new IllegalArgumentException("Wrong dayClasses length");
 
         this.dayClasses = dayClasses;
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{workingDaysCommands=").append(Arrays.toString(workingDaysCommands)
+               ).append(", preHolidayDaysCommands=").append(Arrays.toString(preHolidayDaysCommands)).append(", holidayDaysCommands="
+               ).append(Arrays.toString(holidayDaysCommands)).append(", dayClasses=").append(Arrays.toString(dayClasses)).append("}");
+        
+        return sb.toString();
     }
 }

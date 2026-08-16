@@ -100,4 +100,11 @@ public class C200bParameters implements Serializable {
 
         this.inputCodes[index] = code;
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{eventCodes=").append(eventCodes).append(", inputCodes=").append(Arrays.toString(inputCodes)).append("}");
+
+        return sb.toString();
+    }
 }

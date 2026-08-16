@@ -55,12 +55,11 @@ public class Area implements Serializable, Comparable<Area>
     }
 
     @Override
-    public String toString()
-    {
-        return "Area{" +
-                "ordinal=" + ordinal +
-                ", name='" + name + '\'' +
-                '}';
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{ordinal=").append(ordinal).append(", name=").append(name).append(", associatedPartitions="
+               ).append(Arrays.toString(associatedPartitions)).append("}");
+
+        return sb.toString();
     }
 
     @Override

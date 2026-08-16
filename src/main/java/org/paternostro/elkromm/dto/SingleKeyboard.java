@@ -33,4 +33,11 @@ public class SingleKeyboard implements Serializable {
 
         this.keyboard = keyboard;
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{index=").append(index).append(", keyboard=").append(keyboard).append("}");
+
+        return sb.toString();
+    }
 }

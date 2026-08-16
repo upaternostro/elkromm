@@ -36,4 +36,11 @@ public class Login implements Serializable
 
         this.technicalCode = technicalCode;
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{plantCode=").append(plantCode).append(", technicalCode=").append(technicalCode).append("}");
+
+        return sb.toString();
+    }
 }

@@ -270,4 +270,15 @@ public class PhoneParameters implements Serializable {
         
         this.cyclicTestCallInterval = cyclicTestCallInterval;
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{callDelay=").append(callDelay).append(", returnCall=").append(returnCall).append(", remoteSurveillance="
+               ).append(remoteSurveillance).append(", voiceMessagesSendingMode=").append(voiceMessagesSendingMode
+               ).append(", cyclicTestCallFrequency=").append(cyclicTestCallFrequency).append(", cyclicTestCallPhoneNumber="
+               ).append(cyclicTestCallPhoneNumber).append(", cyclicTestCallHour=").append(cyclicTestCallHour).append(", cyclicTestCallMinute="
+               ).append(cyclicTestCallMinute).append(", cyclicTestCallInterval=").append(cyclicTestCallInterval).append("}");
+        
+        return sb.toString();
+    }
 }

@@ -32,17 +32,8 @@ public class SystemStatus implements Serializable
     }
 
     @Override
-    public String toString()
-    {
-        StringBuffer    sb = new StringBuffer("SystemStatus{");
-
-        sb.append(" activePartitions=[");
-        
-        for (boolean pivot : activePartitions) {
-            sb.append(pivot).append(", ");
-        }
-
-        sb.append("] }");
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{activePartitions=").append(Arrays.toString(activePartitions)).append("}");
 
         return sb.toString();
     }

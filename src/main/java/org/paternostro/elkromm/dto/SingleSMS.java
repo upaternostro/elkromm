@@ -32,4 +32,11 @@ public class SingleSMS implements Serializable {
 
         this.sMS = sMS;
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{index=").append(index).append(", sMS=").append(sMS).append("}");
+
+        return sb.toString();
+    }
 }

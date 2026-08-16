@@ -128,4 +128,12 @@ public class Command implements Serializable {
 
         this.minute = minute;
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{action=").append(action).append(", object=").append(object).append(", objectType=").append(objectType).append(", hour=").append(hour
+               ).append(", minute=").append(minute).append("}");
+        
+        return sb.toString();
+    }
 }

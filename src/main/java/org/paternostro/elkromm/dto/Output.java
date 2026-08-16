@@ -174,12 +174,10 @@ public class Output implements Serializable, Comparable<Output>
 
     @Override
     public String toString() {
-        return "Output{" +
-                "name='" + name + '\'' +
-                ", logicNumber=" + logicNumber +
-                ", type=" + type +
-                ", specialization=" + specialization +
-                '}';
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{logicNumber=").append(logicNumber).append(", type=").append(type).append(", associatedPartitions="
+               ).append(Arrays.toString(associatedPartitions)).append(", specialization=").append(specialization).append(", name=").append(name).append("}");
+        
+        return sb.toString();
     }
 
     @Override

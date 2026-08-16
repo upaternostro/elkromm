@@ -103,12 +103,11 @@ public class Partition implements Serializable, Comparable<Partition>
     }
 
     @Override
-    public String toString()
-    {
-        return "Partition{" +
-                "ordinal=" + ordinal +
-                ", name='" + name + '\'' +
-                '}';
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{ordinal=").append(ordinal).append(", name=").append(name).append(", vocalName=").append(vocalName).append(", type=").append(type
+               ).append(", entryDelay=").append(entryDelay).append(", exitDelay=").append(exitDelay).append("}");
+
+        return sb.toString();
     }
 
     @Override

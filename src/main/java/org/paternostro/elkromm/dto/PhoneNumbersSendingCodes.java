@@ -34,4 +34,11 @@ public class PhoneNumbersSendingCodes implements Serializable {
 
         return retval;
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{phoneNumbers=").append(Arrays.toString(phoneNumbers)).append("}");
+
+        return sb.toString();
+    }
 }

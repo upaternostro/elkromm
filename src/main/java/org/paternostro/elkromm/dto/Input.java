@@ -396,14 +396,13 @@ public class Input implements Serializable, Comparable<Input>
     }
 
     @Override
-    public String toString()
-    {
-        return "Input{" +
-                "name='" + name + '\'' +
-                ", logicNumber=" + logicNumber +
-                ", configuration=" + configuration +
-                ", specialization=" + specialization +
-                '}';
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{logicNumber=").append(logicNumber).append(", configuration=").append(configuration).append(", specialization="
+               ).append(specialization).append(", sensitivity=").append(sensitivity).append(", flags=").append(flags).append(", video=").append(video
+               ).append(", associatedPartitions=").append(Arrays.toString(associatedPartitions)).append(", name=").append(name).append(", delay="
+               ).append(delay).append("}");
+        
+        return sb.toString();
     }
 
     @Override

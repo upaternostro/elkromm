@@ -89,11 +89,10 @@ public class Expansion implements Serializable, Comparable<Expansion>
 
     @Override
     public String toString() {
-        return "Expansion{" +
-                "name='" + name + '\'' +
-                ", address=" + address +
-                ", version='" + version + '\'' +
-                '}';
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{address=").append(address).append(", version=").append(version).append(", inputs=").append(inputs).append(", outputs=").append(outputs
+               ).append(", name=").append(name).append("}");
+        
+        return sb.toString();
     }
 
     @Override

@@ -48,21 +48,7 @@ public class AreasAndPartitions implements Serializable
     @Override
     public String toString()
     {
-        StringBuffer    sb = new StringBuffer("AreasAndPartitions{areas=[");
-
-        for (Area area : areas) {
-            sb.append(area.toString()).append(",");
-        }
-
-        sb.setLength(sb.length() - 1);
-        sb.append("], partitions=[");
-
-        for (Partition partition : partitions) {
-            sb.append(partition.toString()).append(",");
-        }
-
-        sb.setLength(sb.length() - 1);
-        sb.append("]}");
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{areas=").append(areas).append(", partitions=").append(partitions).append("}");
 
         return sb.toString();
     }

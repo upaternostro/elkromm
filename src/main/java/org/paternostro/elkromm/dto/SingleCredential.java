@@ -32,4 +32,11 @@ public class SingleCredential implements Serializable {
 
         this.credential = credential;
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{index=").append(index).append(", credential=").append(credential).append("}");
+
+        return sb.toString();
+    }
 }

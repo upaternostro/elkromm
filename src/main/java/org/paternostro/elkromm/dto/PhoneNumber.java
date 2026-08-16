@@ -195,4 +195,13 @@ public class PhoneNumber implements Serializable {
     public void addAssignedEvent(Event assignedEvent) {
         this.assignedEvents.add(assignedEvent);
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{phoneNumber=").append(phoneNumber).append(", associatedPartitions="
+               ).append(Arrays.toString(associatedPartitions)).append(", type=").append(type).append(", sendingMode=").append(sendingMode
+               ).append(", assignedEvents=").append(assignedEvents).append("}");
+        
+        return sb.toString();
+    }
 }

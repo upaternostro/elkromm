@@ -164,22 +164,13 @@ public class Checksums implements Serializable
     }
 
     @Override
-    public String toString()
-    {
-        return "Checksums{" +
-                "nodes=" + nodes +
-                ", keypads=" + keypads +
-                ", readers=" + readers +
-                ", system=" + system +
-                ", timeProgrammer=" + timeProgrammer +
-                ", areasAndPartitions=" + areasAndPartitions +
-                ", telephoneParameters=" + telephoneParameters +
-                ", telephoneNumbers=" + telephoneNumbers +
-                ", events=" + events +
-                ", sms=" + sms +
-                ", pstnGsm=" + pstnGsm +
-                ", users=" + users +
-                ", keys=" + keys +
-                '}';
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{nodes=").append(nodes).append(", keypads=").append(keypads).append(", readers=").append(readers).append(", system=").append(system
+               ).append(", timeProgrammer=").append(timeProgrammer).append(", areasAndPartitions=").append(areasAndPartitions
+               ).append(", telephoneParameters=").append(telephoneParameters).append(", telephoneNumbers=").append(telephoneNumbers
+               ).append(", events=").append(events).append(", sms=").append(sms).append(", pstnGsm=").append(pstnGsm).append(", users=").append(users).append(", keys=").append(keys
+               ).append("}");
+        
+        return sb.toString();
     }
 }

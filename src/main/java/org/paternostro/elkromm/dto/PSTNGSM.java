@@ -321,4 +321,17 @@ public class PSTNGSM implements Serializable {
         
         this.expirationYear = expirationYear;
     }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{enablePSTN=").
+                append(enablePSTN).append(", country=").append(country).append(", pABXLocalAccessDigit="
+               ).append(pABXLocalAccessDigit).append(", toneControl=").append(toneControl).append(", answerControl=").append(answerControl
+               ).append(", pSTNLineTestFrequency=").append(pSTNLineTestFrequency).append(", pSTNAnsweringMachineRings="
+               ).append(pSTNAnsweringMachineRings).append(", enableGSM=").append(enableGSM).append(", enableGSMAnsweringMachine="
+               ).append(enableGSMAnsweringMachine).append(", enableIncomingSMS=").append(enableIncomingSMS).append(", gSMPin=").append(gSMPin
+               ).append(", expirationMonth=").append(expirationMonth).append(", expirationYear=").append(expirationYear).append("}");
+        
+        return sb.toString();
+    }
 }
