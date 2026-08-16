@@ -2,7 +2,12 @@ package org.paternostro.elkromm.dto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Spliterator;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class Expansion implements Serializable, Comparable<Expansion>
 {
@@ -85,6 +90,70 @@ public class Expansion implements Serializable, Comparable<Expansion>
         if (name == null) throw new IllegalArgumentException("Missing mandatory name");
 
         this.name = name;
+    }
+
+    public void forEachInput(Consumer<? super Input> action) {
+        inputs.forEach(action);
+    }
+
+    public boolean isInputsEmpty() {
+        return inputs.isEmpty();
+    }
+
+    public Iterator<Input> inputsIterator() {
+        return inputs.iterator();
+    }
+
+    public Stream<Input> inputsStream() {
+        return inputs.stream();
+    }
+
+    public Stream<Input> inputsParallelStream() {
+        return inputs.parallelStream();
+    }
+
+    public ListIterator<Input> inputsListIterator() {
+        return inputs.listIterator();
+    }
+
+    public ListIterator<Input> inputsListIterator(int index) {
+        return inputs.listIterator(index);
+    }
+
+    public Spliterator<Input> inputsSpliterator() {
+        return inputs.spliterator();
+    }
+
+    public void forEachOutput(Consumer<? super Output> action) {
+        outputs.forEach(action);
+    }
+
+    public boolean isOutputsEmpty() {
+        return outputs.isEmpty();
+    }
+
+    public Iterator<Output> outputsIterator() {
+        return outputs.iterator();
+    }
+
+    public Stream<Output> outputsStream() {
+        return outputs.stream();
+    }
+
+    public Stream<Output> outputsParallelStream() {
+        return outputs.parallelStream();
+    }
+
+    public ListIterator<Output> outputsListIterator() {
+        return outputs.listIterator();
+    }
+
+    public ListIterator<Output> outputsListIterator(int index) {
+        return outputs.listIterator(index);
+    }
+
+    public Spliterator<Output> outputsSpliterator() {
+        return outputs.spliterator();
     }
 
     @Override
