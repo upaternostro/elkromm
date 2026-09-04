@@ -161,6 +161,7 @@ public interface ElkrommFacade
     AreasAndPartitions getAreasAndPartitions() throws ElkrommException;
     SystemStatus getSystemStatus() throws ElkrommException;
     void armDisarmSector(Partition sector, boolean arm) throws ElkrommException;
+    byte[] getRawInputStatus() throws ElkrommException;
     Map<InputStatus,List<Integer>> getInputStatus() throws ElkrommException;
     void excludeIncludeInput(byte inputOrdinal, boolean exclude) throws ElkrommException;
     PeripheralUnits getPeripheralUnitsAddresses() throws ElkrommException;

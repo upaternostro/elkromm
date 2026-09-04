@@ -164,6 +164,14 @@ public class ElkrommFacadeFunctionalTest {
     }
 
     @Test
+    public void testRawInputStatus() throws ElkrommException {
+        byte[] inputStatus = facade.getRawInputStatus();
+
+        assertNotNull(inputStatus);
+        assertTrue(inputStatus.length > 0);
+    }
+
+    @Test
     public void testInputStatus() throws ElkrommException {
         Map<InputStatus, List<Integer>> inputStatus = facade.getInputStatus();
         List<Integer>                   inputs;

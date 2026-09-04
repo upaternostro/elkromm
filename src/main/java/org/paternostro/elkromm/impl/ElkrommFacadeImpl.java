@@ -235,6 +235,12 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     }
 
     @Override
+    public byte[] getRawInputStatus() throws ElkrommException
+    {
+        return getData(ElkronCommand.INPUT_STATUS);
+    }
+
+    @Override
     public Map<InputStatus,List<Integer>> getInputStatus() throws ElkrommException
     {
         Map<InputStatus,List<Integer>>  retval = new HashMap<>();
