@@ -38,9 +38,9 @@ This software is licensed under EUPL v1.2 or above. See [LICENSE.md](LICENSE.md)
 
 ## Usage
 
-The main entry point of this library is the `ElkromFacade` interface, that exposes all the methods this library manages.
+The main entry point of this library is the `ElkrommFacade` interface, that exposes all the methods this library manages.
 
-An instance of a concrete class implementing the `ElkromFacade` interface can be obtained through the `ElkromFactory` class.
+An instance of a concrete class implementing the `ElkrommFacade` interface can be obtained through the `ElkrommFactory` class.
 
 ## Compile
 
