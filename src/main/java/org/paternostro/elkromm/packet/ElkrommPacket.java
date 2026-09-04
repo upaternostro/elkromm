@@ -167,6 +167,7 @@ public class ElkrommPacket {
         os.write(ElkrommFacade.BYTE_SOH);
         os.write(escapeInnerArray());
         os.write(ElkrommFacade.BYTE_ETX);
+        os.flush();
     }
 
     protected enum PacketStatus {
