@@ -6,12 +6,16 @@ import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.dto.Expansion;
 import org.paternostro.elkromm.dto.Input;
 import org.paternostro.elkromm.dto.Output;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
  */
 public class Expansions implements ElkrommSerializer<Expansion[]>
 {
+    public static final Logger logger = LoggerFactory.getLogger(Expansions.class);
+
     public static final int EXPANSION_SIZE  = 559;
     public static final int INPUT_SIZE      = 38;
     public static final int OUTPUT_SIZE     = 37;
@@ -70,7 +74,7 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
         if (data.length % EXPANSION_SIZE != 4) throw new IllegalArgumentException("Wrong data size");
-        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getLong(data, data.length - 4)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getLong(data, data.length - 4));
+        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getLong(data, data.length - 4)) logger.warn("Wrong checksum, expected: 0x%08x found: 0x%08x delta: 0x%08x", ElkrommUtils.computeBlockChecksum(data), ElkrommUtils.getLong(data, data.length - 4), ElkrommUtils.getLong(data, data.length - 4) - ElkrommUtils.computeBlockChecksum(data));
 
         Expansion[]                 retval = new Expansion[(data.length - 4) / EXPANSION_SIZE];
         int                         offset;
