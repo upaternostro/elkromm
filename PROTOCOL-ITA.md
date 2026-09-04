@@ -41,36 +41,31 @@ I pacchetti contenenti dati sono così strutturati:
 Offset	| Carattere	| Significato
 --------|---------------|------------
 0	| 0x01		| SOH
-1	| 0x55		| ??? costante? Codice impianto?
-2	| 0x55		| ??? costante? Codice impianto?
+1	| 0x55		| Prime due cifre BCD del codice impianto
+2	| 0x55		| Terza e quarta cifra BCD del codice impianto
 3	| (variabile)	| numero dei pacchetti costituenti la sequenza
 4	| (variabile)	| progressivo del pacchetto nella sequenza
 5	| (variabile)	| lunghezza dei dati inviati
 6	| 0x00		| ??? costante?
-7	| (variabile)	| comando?
+7	| (variabile)	| comando
 8 → n	| (variabile)	| dati trasmessi (possono essere assenti se il byte di posizione 5 vale zero)
-n+1 → n+2	| (variabile)	| checksum big endian del pacchetto calcolato in modo che la somma di tutti i byte dall'offset 1 a n, sommato a questo checksum, fornisca 0x10000. In altre parole, il checksum è `0x10000 – SUM(offset1... offsetn)`
+n+1 → n+2	| (variabile)	| checksum big endian del pacchetto calcolato in modo che la somma di tutti i byte dall'offset 1 a n (quindi escludendo il SOH iniziale), sommato a questo checksum, fornisca 0x10000. In altre parole, il checksum è `0x10000 – SUM(offset1... offsetn)`
 n+3	| 0x03		| ETX
 
 Nota: il byte 3 e 4 valgono entrambi 0x00 se la risposta è contenuta in un solo pacchetto (max 140 (0x8c) byte di dati, al netto degli escape). Se viceversa i dati da trasmettere eccedono il massimo indicato, la risposta viene spezzata in più pacchetti, il byte 3 viene valorizzato con l'indice dl pacchetto massimo e il byte 4 con l'indice del pacchetto corrente (base 0). In altre parole, se la risposta è spezzata in 3 pacchetti, il byte 3 vale 0x02 ed il byte 4 rispettivamente 0x00, 0x01 e 0x02 per il primo, secondo e terzo pacchetto. Il ricevitore conferma la ricezione con un pacchetto di tipo 0x65 (SEND).
 
 Comandi riconosciuti:  
-` `  
 
 Comando	| Significato	| Dati		| Risposta centrale	| Note
 --------|---------------|---------------|-----------------------|-------
 0x60	| HELLO		| nessuno	| 0x06 (ACK)	
 0x49	| LOGIN		| codice impianto e codice installatore in BCD (rispettivamente 4 + 3 byte)	| 0x06 (ACK)	
 0x65	| SEND		| nessuno	| 0x16 (SYN) se non deve inviare nulla	| Hp: richiesta di invio dati
-	| 		| 		|
-	| 		| 		| oppure
-	| 		| 		|
-	| 		| 		| pacchetti dati successivi al primo
-	| 		| 		|
-	| 		| 		| ipotesi: eventi?
-0x62	| ADDRESSES?	| nessuno	| 0x16 (SYN) + pacchetto dati 0x62 contente il numero di tastiere (1 byte), i loro indirizzi, il numero di lettori (1 byte), i loro indirizzi, il numero di espansioni (1 byte) ed i loro indirizzi	| Hp: indirizzi delle periferiche?
-0x50	| CHECKSUM	| nessuno	| 0x16 (SYN) + pacchetto dati 0x50 13 long word (32 bit) dati di checksum big endian, rispettivamente: nodi, tastiere, inseritori, sistema, programmatore orario, aree settori, com tel, num tel, eventi, sms, pstn gsm, utenti, chiavi	
-0x84	| INPUT STATUS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x84 con un byte per ogni ingresso attivo (in ordine di indirizzo?). Il byte vale 0x00 se l'ingresso è chiuso, 0x02 se l'ingresso è aperto, 0x10 se l’ingresso è escluso, 0x04 in caso di memoria di allarme	
+ |	| 		| 		| oppure
+ |	| 		| 		| pacchetti dati successivi al primo	| ipotesi: eventi?
+0x62	| ADDRESSES	| nessuno	| 0x16 (SYN) + pacchetto dati 0x62 contente il numero di tastiere (1 byte), i loro indirizzi, il numero di lettori (1 byte), i loro indirizzi, il numero di espansioni (1 byte) ed i loro indirizzi	| indirizzi delle periferiche
+0x50	| CHECKSUM	| nessuno	| 0x16 (SYN) + pacchetto dati 0x50 13 long word (32 bit) dati di checksum big endian, rispettivamente: nodi, tastiere, inseritori, sistema, programmatore orario, aree settori, com tel, num tel, eventi, sms, pstn gsm, utenti, chiavi. Nota: i checksum sono contenuti nei rispettivi payload.
+0x84	| INPUT STATUS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x84 con un byte per ogni ingresso attivo (in ordine di indirizzo?). Il byte vale 0x00 se l'ingresso è chiuso, 0x02 se l'ingresso è aperto, 0x10 se l’ingresso è escluso, 0x04 in caso di memoria di allarme, ...
 0x63	| LOGOUT	| nessuno	| 0x16 (SYN)	
 0x55	| AREE & SETTORI	| nessuno	| 0x16 (SYN) + pacchetto dati 0x55 meglio descritto sotto	| Questi 4 comandi coprono il “blocco A”, che a differenza del “blocco B” non esiste come comando singolo
 0x5b	| UTENTI	| nessuno	| 0x16 (SYN) + pacchetto dati 0x5b meglio descritto sotto	
@@ -85,12 +80,17 @@ Comando	| Significato	| Dati		| Risposta centrale	| Note
 0x83	| EXCLUDE/INCLUDE INPUT	| due byte di dati, il primo indica il numero di ingresso, il secondo vale 0x01 (attenzione all’escape) per escludere l’ingresso, 0x00 per includerlo	| 0x16 (SYN)	
 0x87	| USER STATUS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x87 contenente 4 byte di dati con i flag che indicano l’attivazione degli utenti. Il primo byte contiene nell’MSB (0x80) lo stato dell’utente 0 (TECNICO), nel bit immediatamente successivo (0x40) lo stato dell’utente 1 (MASTER) e così via per gli altri bit. Il secondo byte indica gli stati degli utenti 8-15, il terzo 16-23 e l’ultimo 24-31	
 0x88	| ENABLE/DISABLE USER	| due byte di dati, il primo indica il numero di utente (base 1 = TECNICO), il secondo vale 0x01 (attenzione all’escape) per attivare l’utente, 0x00 per disattivarlo	| 0x16 (SYN)	
+0x57	| PHONE NUMBERS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x57
+0x56	| PHONE PARAMETERS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x56
+0x5a	| PSTN GSM	| nessuno	| 0x16 (SYN) + pacchetto dati 0x5a
+0x59	| SMS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x59
+0x58	| C200B	| nessuno	| 0x16 (SYN) + pacchetto dati 0x58
+0x54	| TIME PROGRAMMER	| nessuno	| 0x16 (SYN) + pacchetto dati 0x54
+0x8b	| KEY STATUS	| TBD	| TBD
 
-` `  
-` `  
 La centrale risponde con 0x06 (ACK) solo fintanto che non sia stato effettuato il login, compreso il pacchetto di login stesso. Hi-Connect quindi invia un SEND dopo il login per verificare che la risposta sia 0x16 (SYN). L'intera procedura di login è quindi costituita da tre pacchetti: HELLO, LOGIN, SEND. Se si invia il LOGIN senza HELLO, si ottiene in risposta 0x15 (NAK).
 
-Il software Hi-Connect continua ad inviare pacchetti di tipo SEND che mentre è in idle. Da tentativi empirici, è bene che questi pacchetti vengano inviati, altrimenti ad un certo punto la centrale inizia a rispondere NAK anche ai pacchetti corretti.
+Il software Hi-Connect continua ad inviare pacchetti di tipo SEND anche mentre è in idle (uno ogni 500 ms). Da tentativi empirici, è bene che questi pacchetti vengano inviati, altrimenti ad un certo punto la centrale inizia a rispondere NAK anche ai pacchetti corretti. Hp.: keepalive?
 
 La centrale risponde con 0x15 (NAK) nel caso in cui il pacchetto inviato da Hi-Connect contenga un checksum errato, o a fronte di altri errori (ad es. login non effettuato, sequenza di login errata).
 
@@ -391,7 +391,7 @@ Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
 Dati parametri:
 
 `00 00 00 00 00 01 01 01 01 01 00 00 00 00 05 00` *`11`* `03 55 55 55 55 `  
-`0a` *`11`* `03 # DST ottobre/marzo?`  
+`0a` *`11`* `03 # DST ottobre/marzo`  
 `01 0f 00`  
 `ff ff fe 82 # Checksum blocco`
 
@@ -656,3 +656,56 @@ Dati blocco B:
 `45 50 20 30 32 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 # EP 02`  
 `f2 16 `  
 `ff ff 2c af # Checksum blocco`
+
+## Keypads
+
+Dati delle tastiere.
+
+Dati keypads:
+
+`01 Address`
+`00`
+`30343130 Version`
+`000001090001`
+`2e2e2e202020202020202020202020202020202020202020`
+`0000000000ffff00`
+`000000090001`
+`2e2e2e202020202020202020202020202020202020202020`
+`0000000000ffff00`
+`06`
+`ff Settori associati`
+`06`
+`494e47524553534f00000000000000000000000000000000 Name`
+`b000`
+
+`02 Address`
+`00`
+`30323030 Version`
+`000001090001`
+`2e2e2e202020202020202020202020202020202020202020`
+`0000000000ffff00`
+`000000090001`
+`2e2e2e202020202020202020202020202020202020202020`
+`0000000000ffff00`
+`06`
+`ff Settori associati`
+`00`
+`474152414745000000000000000000000000000000000000 Name`
+`e500`
+
+`ffffe38b checksum blocco`
+
+# Keypad programming
+
+Scrittura parametri singola tastiera
+
+Dati keypad:
+
+Dumping KEYPAD_PROGRAMMING, payload size: 111
+0000: 01 00 30 34 31 30 00 00  01 09 00 01 2e 2e 2e 20   ..0410.. .......  
+0010: 20 20 20 20 20 20 20 20  20 20 20 20 20 20 20 20                     
+0020: 20 20 20 20 00 00 00 00  00 ff ff 00 00 00 00 09       .... .￿￿..... 
+0030: 00 01 2e 2e 2e 20 20 20  20 20 20 20 20 20 20 20   .....             
+0040: 20 20 20 20 20 20 20 20  20 20 00 00 00 00 00 ff              .....￿ 
+0050: ff 00 07 ff 06 49 4e 47  52 45 53 53 4f 00 00 00   ￿..￿.ING RESSO... 
+0060: 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00      ........ .......
