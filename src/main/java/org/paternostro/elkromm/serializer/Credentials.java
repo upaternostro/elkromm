@@ -6,6 +6,9 @@ import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.dto.Credential;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public abstract class Credentials implements ElkrommSerializer<Credential[]>
 {
     public static final int CREDENTIAL_SIZE = 1+1+ElkrommFacade.NAME_LENGTH;

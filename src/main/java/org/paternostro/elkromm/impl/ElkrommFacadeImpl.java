@@ -47,10 +47,27 @@ import org.paternostro.mock.ipc.EndpointFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Default {@link ElkrommFacade} implementation.
+ * <p>
+ * Talks to the panel (or emulator) over a {@link org.paternostro.mock.ipc.Endpoint},
+ * pacing every write/read with a short {@link #DELAY} to mirror Hi-Connect's
+ * own timing and avoid overrunning the panel's serial-derived interface.
+ * Individual {@code get*}/{@code set*} methods documented on
+ * {@link ElkrommFacade} are implemented here in terms of two private
+ * helpers, {@link #getData(ElkronCommand)} and
+ * {@link #sendCommand(ElkronCommand, byte[])}, that handle the
+ * request/response framing common to every read and write command
+ * respectively.
+ * <p>
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class ElkrommFacadeImpl implements ElkrommFacade
 {
+    /** Logger for connection lifecycle and communication errors. */
     public static final Logger logger = LoggerFactory.getLogger(ElkrommFacadeImpl.class);
 
+    /** Milliseconds paused before/after each write and after each read, mirroring Hi-Connect's own pacing. */
     public static final int DELAY = 100;
 
     private Status  status;
@@ -61,6 +78,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     private InputStream is;
     private OutputStream os;
 
+    /** Creates a new, {@link Status#ST_NOT_INITIALIZED} facade instance. */
     public ElkrommFacadeImpl()
     {
         this.status = Status.ST_NOT_INITIALIZED;
@@ -210,6 +228,17 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         sendCommand(ElkronCommand.ARM_DISARM_SECTOR, data);
     }
 
+    /**
+     * Sends a write-style command: enqueues {@code data} as one or more
+     * framed packets via {@link PacketQueue#enqueuePayload}, then writes,
+     * paces and acknowledges (SYN) each one in turn, {@link #ping()}-ing
+     * after each to match Hi-Connect's own protocol rhythm.
+     *
+     * @param command the command to send
+     * @param data the full payload to frame and send
+     * @throws AssertionError if not currently logged in, or if the panel does not reply with SYN
+     * @throws ElkrommException if a communication or threading error occurs
+     */
     private void sendCommand(ElkronCommand command, byte[] data) throws AssertionError, ElkrommException
     {
         if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
@@ -337,6 +366,18 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         sendCommand(ElkronCommand.ENABLE_DISABLE_USER, data);
     }
 
+    /**
+     * Sends a read-style command with no payload, then collects the
+     * response: one or more packets are received and cached (via
+     * {@link ElkrommPacket#cachePayload}) until the full multi-packet
+     * payload for {@code cmd} is complete, {@link #ping()}-ing between
+     * packets to match Hi-Connect's own protocol rhythm.
+     *
+     * @param cmd the read command to send
+     * @return the fully reassembled response payload
+     * @throws AssertionError if not currently logged in, or if the panel does not reply with SYN
+     * @throws ElkrommException if a communication or threading error occurs
+     */
     private byte[] getData(ElkronCommand cmd) throws ElkrommException
     {
         if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");

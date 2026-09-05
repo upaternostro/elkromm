@@ -3,6 +3,9 @@ package org.paternostro.elkromm.serializer;
 import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.dto.SMSs.SMSIndex;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class SingleSMS implements ElkrommSerializer<org.paternostro.elkromm.dto.SingleSMS>
 {
     public static final int SMS_SIZE  = 40;

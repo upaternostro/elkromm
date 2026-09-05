@@ -53,6 +53,9 @@ import org.paternostro.elkromm.dto.SystemStatus;
 import org.paternostro.elkromm.dto.TimeProgrammer;
 import org.paternostro.elkromm.dto.User;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class Model {
     private SystemStatus                systemStatus;
     private PeripheralUnits             peripheralUnits;

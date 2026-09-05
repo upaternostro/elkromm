@@ -47,15 +47,44 @@ import org.paternostro.mock.ipc.Endpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Pluggable factory for {@link ElkrommFacade}, {@link PacketQueue} and every
+ * {@link ElkrommSerializer} used by the library.
+ * <p>
+ * Every component this factory hands out can be overridden by dropping an
+ * {@code ElkrommFactory.properties} file on the classpath: each component has
+ * a {@code *_CLASS} property key (its default implementation class name is
+ * given by the matching {@code *_DEFAULT} constant) that, if present in the
+ * properties file, is instantiated instead via reflection. The factory itself
+ * can be swapped the same way, through {@link #CLASS_NAME_PROPERTY}. This
+ * allows advanced users to plug in alternative serializers or a custom
+ * {@link ElkrommFacade} implementation without touching library code.
+ * <p>
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class ElkrommFactory {
+    /** Logger shared by this factory and the components it instantiates by default. */
     public static final Logger logger = LoggerFactory.getLogger(ElkrommFactory.class);
 
+    /** Name of the optional classpath properties file used to override components. */
     public static final String PROPERTIES_FILE_NAME = "ElkrommFactory.properties";
+    /** Property key used to override the {@code ElkrommFactory} implementation class itself. */
     public static final String CLASS_NAME_PROPERTY  = "org.paternostro.elkromm.ElkrommFactory.class";
+    /** Default {@code ElkrommFactory} implementation class name. */
     public static final String CLASS_NAME_DEFAULT   = "org.paternostro.elkromm.ElkrommFactory";
 
     private static ElkrommFactory   singleton = null;
 
+    /**
+     * Returns the singleton factory instance, creating it on first call.
+     * <p>
+     * If {@code ElkrommFactory.properties} is present on the classpath and
+     * names an alternative implementation class via
+     * {@link #CLASS_NAME_PROPERTY}, that class is instantiated instead of
+     * this default implementation.
+     *
+     * @return the singleton factory instance
+     */
     public static ElkrommFactory getFactory()
     {
         ElkrommFactory   retval = singleton;
@@ -102,6 +131,14 @@ public class ElkrommFactory {
         return retval;
     }
 
+    /**
+     * The constants below come in {@code *_CLASS}/{@code *_DEFAULT} pairs,
+     * one pair per pluggable component (the {@link ElkrommFacade}
+     * implementation, then one {@link ElkrommSerializer} per DTO type). The
+     * {@code *_CLASS} constant is the properties-file key used to override
+     * the component; {@code *_DEFAULT} is the class name used when no
+     * override is configured. See the class-level documentation for details.
+     */
     public static final String FACADE_CLASS                         = "org.paternostro.elkromm.ElkrommFactory.ElkrommFacade.class";
     public static final String FACADE_DEFAULT                       = "org.paternostro.elkromm.impl.ElkrommFacadeImpl";
 
@@ -215,6 +252,7 @@ public class ElkrommFactory {
 
     private Properties  properties;
 
+    /** Creates a factory with no overrides configured. */
     protected ElkrommFactory()
     {
         this.properties = new Properties();
@@ -247,6 +285,16 @@ public class ElkrommFactory {
         return retval;
     }
 
+    /**
+     * Creates and initializes an {@link ElkrommFacade} connected to a real
+     * panel over TCP/IP.
+     *
+     * @param inetAddr address of the panel's LAN expansion board
+     * @param port TCP port the panel is listening on
+     * @param plantCode installer/plant identification code
+     * @return the initialized facade, not yet connected (see {@link ElkrommFacade#connect()})
+     * @throws IOException if the facade cannot be initialized
+     */
     public ElkrommFacade getElkrommFacade(InetAddress inetAddr, int port, int plantCode) throws IOException
     {
         ElkrommFacade retval = allocateElkrommFacade();
@@ -256,6 +304,15 @@ public class ElkrommFactory {
         return retval;
     }
 
+    /**
+     * Creates and initializes an {@link ElkrommFacade} around an
+     * already-built {@link Endpoint}, typically used to talk to the bundled
+     * emulator instead of a real panel.
+     *
+     * @param endpoint the endpoint to communicate through
+     * @param plantCode installer/plant identification code
+     * @return the initialized facade, not yet connected (see {@link ElkrommFacade#connect()})
+     */
     public ElkrommFacade getElkrommFacade(Endpoint endpoint, int plantCode)
     {
         ElkrommFacade retval = allocateElkrommFacade();
@@ -291,12 +348,24 @@ public class ElkrommFactory {
         return retval;
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.AreasAndPartitions}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.AreasAndPartitions> getAreasAndPartitionsSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.AreasAndPartitions>)getSerializer(AREAS_AND_PARTITIONS_CLASS, AREAS_AND_PARTITIONS_DEFAULT, AreasAndPartitions.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.Credential[]}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Credential[]> getUsersSerializer()
     {
@@ -304,156 +373,312 @@ public class ElkrommFactory {
 
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.Checksums}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Checksums> getChecksumsSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.Checksums>)getSerializer(CHECKSUMS_CLASS, CHECKSUMS_DEFAULT, Checksums.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.Credential[]}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Credential[]> getKeysSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.Credential[]>)getSerializer(KEYS_CLASS, KEYS_DEFAULT, Keys.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.Expansion[]}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Expansion[]> getExpansionsSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.Expansion[]>)getSerializer(EXPANSIONS_CLASS, EXPANSIONS_DEFAULT, Expansions.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.PeripheralUnits}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.PeripheralUnits> getPeripheralUnitsSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.PeripheralUnits>)getSerializer(PERIPHERAL_UNITS_CLASS, PERIPHERAL_UNITS_DEFAULT, PeripheralUnits.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.SystemStatus}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.SystemStatus> getSystemStatusSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.SystemStatus>)getSerializer(SYSTEM_STATUS_CLASS, SYSTEM_STATUS_DEFAULT, SystemStatus.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.Input}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Input> getInputSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.Input>)getSerializer(INPUT_CLASS, INPUT_DEFAULT, Input.class);
     }
     
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.Output}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Output> getOutputSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.Output>)getSerializer(OUTPUT_CLASS, OUTPUT_DEFAULT, Output.class);
     }
     
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.Keyboard[]}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Keyboard[]> getKeyboardsSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.Keyboard[]>)getSerializer(KEYBOARDS_CLASS, KEYBOARDS_DEFAULT, Keyboards.class);
     }
     
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.Reader}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Reader> getReaderSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.Reader>)getSerializer(READER_CLASS, READER_DEFAULT, Reader.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.Reader[]}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Reader[]> getReadersSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.Reader[]>)getSerializer(READERS_CLASS, READERS_DEFAULT, Readers.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.ParametersEnablings}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.ParametersEnablings> getParametersEnablingsSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.ParametersEnablings>)getSerializer(PARAMETERS_ENABLINGS_CLASS, PARAMETERS_ENABLINGS_DEFAULT, ParametersEnablings.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.Command[]}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Command[]> getCommandsSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.Command[]>)getSerializer(COMMANDS_CLASS, COMMANDS_DEFAULT, Commands.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.DayClassCommands}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.DayClassCommands> getDayClassCommandsSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.DayClassCommands>)getSerializer(DAY_CLASS_COMMANDS_CLASS, DAY_CLASS_COMMANDS_DEFAULT, DayClassCommands.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.TimeProgrammer}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.TimeProgrammer> getTimeProgrammerSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.TimeProgrammer>)getSerializer(TIME_PROGRAMMER_CLASS, TIME_PROGRAMMER_DEFAULT, TimeProgrammer.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.PhoneParameters}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.PhoneParameters> getPhoneParametersSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.PhoneParameters>)getSerializer(PHONE_PARAMETERS_CLASS, PHONE_PARAMETERS_DEFAULT, PhoneParameters.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.PSTNGSM}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.PSTNGSM> getPSTNGSMSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.PSTNGSM>)getSerializer(PSTN_GSM_CLASS, PSTN_GSM_DEFAULT, PSTNGSM.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.PhoneNumber}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumber> getPhoneNumberSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumber>)getSerializer(PHONE_NUMBER_CLASS, PHONE_NUMBER_DEFAULT, PhoneNumber.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.PhoneNumbersSendingCodes}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumbersSendingCodes> getPhoneNumbersSendingCodesSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumbersSendingCodes>)getSerializer(PHONE_NUMBERS_SENDING_CODES_CLASS, PHONE_NUMBERS_SENDING_CODES_DEFAULT, PhoneNumbersSendingCodes.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.SMS}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.SMS> getSMSSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.SMS>)getSerializer(SMS_CLASS, SMS_DEFAULT, SMS.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.SMSs}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.SMSs> getSMSsSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.SMSs>)getSerializer(SMSs_CLASS, SMSs_DEFAULT, SMSs.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.SingleSMS}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.SingleSMS> getSingleSMSSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.SingleSMS>)getSerializer(SINGLE_SMS_CLASS, SINGLE_SMS_DEFAULT, SingleSMS.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.C200bParameters}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.C200bParameters> getC200bParametersSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.C200bParameters>)getSerializer(C200B_PARAMETERS_CLASS, C200B_PARAMETERS_DEFAULT, C200bParameters.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.PartitionArming}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.PartitionArming> getPartitionArmingSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.PartitionArming>)getSerializer(PARTITION_ARMING_CLASS, PARTITION_ARMING_DEFAULT, PartitionArming.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.EnableDisableUser}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.EnableDisableUser> getEnableDisableUserSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.EnableDisableUser>)getSerializer(ENABLE_DISABLE_USER_CLASS, ENABLE_DISABLE_USER_DEFAULT, EnableDisableUser.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.ExcludeIncludeInput}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.ExcludeIncludeInput> getExcludeIncludeInputSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.ExcludeIncludeInput>)getSerializer(EXCLUDE_INCLUDE_INPUT_CLASS, EXCLUDE_INCLUDE_INPUT_DEFAULT, ExcludeIncludeInput.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.Credential}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Credential> getUserSerializer()
     {
@@ -461,48 +686,96 @@ public class ElkrommFactory {
 
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.Credential}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Credential> getKeySerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.Credential>)getSerializer(KEY_CLASS, KEY_DEFAULT, Key.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.SingleCredential}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.SingleCredential> getSingleUserSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.SingleCredential>)getSerializer(SINGLE_USER_CLASS, SINGLE_USER_DEFAULT, SingleUser.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.SingleCredential}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.SingleCredential> getSingleKeySerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.SingleCredential>)getSerializer(SINGLE_KEY_CLASS, SINGLE_KEY_DEFAULT, SingleKey.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.Keyboard}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Keyboard> getKeyboardSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.Keyboard>)getSerializer(KEYBOARD_CLASS, KEYBOARD_DEFAULT, Keyboard.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.SingleKeyboard}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.SingleKeyboard> getSingleKeyboardSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.SingleKeyboard>)getSerializer(SINGLE_KEYBOARD_CLASS, SINGLE_KEYBOARD_DEFAULT, SingleKeyboard.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.Login}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.Login> getLoginSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.Login>)getSerializer(LOGIN_CLASS, LOGIN_DEFAULT, Login.class);
     }
 
+    /**
+     * Returns the (possibly overridden, via the {@code Properties} passed to
+     * {@link #getFactory()}) serializer for {@link org.paternostro.elkromm.dto.UserEnablings}.
+     *
+     * @return the configured serializer
+     */
     @SuppressWarnings("unchecked")
     public ElkrommSerializer<org.paternostro.elkromm.dto.UserEnablings> getUserEnablingsSerializer()
     {
         return (ElkrommSerializer<org.paternostro.elkromm.dto.UserEnablings>)getSerializer(USER_ENABLINGS_CLASS, USER_ENABLINGS_DEFAULT, UserEnablings.class);
     }
 
+    /**
+     * Returns the (possibly overridden) {@link PacketQueue} implementation
+     * used to buffer outgoing/incoming packets.
+     *
+     * @return the configured packet queue
+     */
     public PacketQueue getPacketQueue()
     {
         PacketQueue retval = null;

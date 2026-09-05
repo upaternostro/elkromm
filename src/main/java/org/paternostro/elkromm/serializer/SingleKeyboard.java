@@ -2,6 +2,9 @@ package org.paternostro.elkromm.serializer;
 
 import org.paternostro.elkromm.ElkrommFactory;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class SingleKeyboard implements ElkrommSerializer<org.paternostro.elkromm.dto.SingleKeyboard>
 {
     public static final int KEYBOARD_SIZE   = 111;

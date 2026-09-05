@@ -4,6 +4,9 @@ import java.util.List;
 
 import org.paternostro.elkromm.ElkrommUtils;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class Login implements ElkrommSerializer<org.paternostro.elkromm.dto.Login>
 {
     @Override

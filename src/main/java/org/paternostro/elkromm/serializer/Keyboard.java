@@ -5,6 +5,9 @@ import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.dto.Input;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class Keyboard implements ElkrommSerializer<org.paternostro.elkromm.dto.Keyboard>
 {
     public static final int KEYBOARD_SIZE   = 111;

@@ -2,6 +2,9 @@ package org.paternostro.elkromm.packet;
 
 import org.paternostro.elkromm.ElkronCommand;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class SetKeys extends ElkrommPacket {
     public SetKeys(int plantCode12, int plantCode34, int totalPackets, int index, int dataLength, byte[] data) {
         super(Direction.FROM_CLIENT, plantCode12, plantCode34, totalPackets, index, dataLength, ElkronCommand.SET_KEYS.getValue(), data);

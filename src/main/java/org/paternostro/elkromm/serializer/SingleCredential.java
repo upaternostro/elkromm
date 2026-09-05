@@ -2,6 +2,9 @@ package org.paternostro.elkromm.serializer;
 
 import org.paternostro.elkromm.ElkrommFacade;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public abstract class SingleCredential implements ElkrommSerializer<org.paternostro.elkromm.dto.SingleCredential>
 {
     public static final int CREDENTIAL_SIZE = 1+1+ElkrommFacade.NAME_LENGTH;  // 2 byte di flag e 24 di nome
