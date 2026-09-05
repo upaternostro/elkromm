@@ -16,6 +16,9 @@ import org.paternostro.elkromm.emulator.Model;
 import org.paternostro.mock.ipc.Channel;
 import org.paternostro.mock.ipc.EndpointFactory;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class ElkrommFacadeTest {
     private static ClientConnection server;
     private static ElkrommFacade    facade;
