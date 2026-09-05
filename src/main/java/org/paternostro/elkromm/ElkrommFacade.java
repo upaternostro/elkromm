@@ -151,6 +151,7 @@ public interface ElkrommFacade
         }
     }
 
+    void setDelay(int delay) throws ElkrommException;
     void init(InetAddress inetAddr, int port, int plantCode) throws IOException;
     void init(Endpoint endpoint, int plantCode);
     Status getStatus();

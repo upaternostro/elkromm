@@ -51,8 +51,9 @@ public class ElkrommFacadeImpl implements ElkrommFacade
 {
     public static final Logger logger = LoggerFactory.getLogger(ElkrommFacadeImpl.class);
 
-    public static final int DELAY = 100;
+    public static final int DEFAULT_DELAY = 100;
 
+    private int delay;
     private Status  status;
     private PacketQueue packetQueue;
     private Map<ElkronCommand, SortedSet<ElkrommPacket>> cmdPayloads;
@@ -63,11 +64,20 @@ public class ElkrommFacadeImpl implements ElkrommFacade
 
     public ElkrommFacadeImpl()
     {
+        this.delay = DEFAULT_DELAY;
         this.status = Status.ST_NOT_INITIALIZED;
         this.packetQueue = ElkrommFactory.getFactory().getPacketQueue();
         this.cmdPayloads = new HashMap<>();
     }
 
+    @Override
+    public void setDelay(int delay) throws ElkrommException
+    {
+        if (delay < 0) throw new ElkrommException(String.format("Illegal argumento delay: %d Expected > 0", delay));
+
+        this.delay = delay;
+    }
+    
     @Override
     public void init(InetAddress inetAddr, int port, int plantCode) throws IOException
     {
@@ -135,14 +145,14 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         if (status != Status.ST_CONNECTED) throw new AssertionError("Wrong status");
 
         try {
-            Thread.sleep(DELAY);
+            Thread.sleep(delay);
             new Hello(bcdPlantCode.get(0), bcdPlantCode.get(1)).serialize(os);
-            Thread.sleep(DELAY);
+            Thread.sleep(delay);
             if (is.read() != BYTE_ACK) throw new AssertionError("No ACK received");
             
-            Thread.sleep(DELAY);
+            Thread.sleep(delay);
             new org.paternostro.elkromm.packet.Login(bcdPlantCode.get(0), bcdPlantCode.get(1), new Login(plantCode, technicalCode)).serialize(os);
-            Thread.sleep(DELAY);
+            Thread.sleep(delay);
             if (is.read() != BYTE_ACK) throw new AssertionError("No ACK received");
 
             status = Status.ST_LOGGED_IN;
@@ -163,9 +173,9 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
 
         try {
-            Thread.sleep(DELAY);
+            Thread.sleep(delay);
             new Send(bcdPlantCode.get(0), bcdPlantCode.get(1)).serialize(os);
-            Thread.sleep(DELAY);
+            Thread.sleep(delay);
             if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
         } catch (IOException e) {
             logger.error("Communication error", e);
@@ -218,9 +228,9 @@ public class ElkrommFacadeImpl implements ElkrommFacade
             packetQueue.enqueuePayload(command, bcdPlantCode.get(0), bcdPlantCode.get(1), data);
 
             while (!packetQueue.isEmpty()) {
-                Thread.sleep(DELAY);
+                Thread.sleep(delay);
                 packetQueue.remove().serialize(os);
-                Thread.sleep(DELAY);
+                Thread.sleep(delay);
                 if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
 
                 ping();
@@ -344,9 +354,9 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         byte[] data = null;
 
         try {
-            Thread.sleep(DELAY);
+            Thread.sleep(delay);
             ElkrommPacket.packetFactoryAllocate(cmd, bcdPlantCode.get(0), bcdPlantCode.get(1), 0, 0, 0, null).serialize(os);
-            Thread.sleep(DELAY);
+            Thread.sleep(delay);
             if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
 
             while (data == null) {
@@ -370,9 +380,9 @@ public class ElkrommFacadeImpl implements ElkrommFacade
         if (status != Status.ST_LOGGED_IN) return;
 
         try {
-            Thread.sleep(DELAY);
+            Thread.sleep(delay);
             new Logout(bcdPlantCode.get(0), bcdPlantCode.get(1)).serialize(os);
-            Thread.sleep(DELAY);
+            Thread.sleep(delay);
             if (is.read() != BYTE_SYN) throw new AssertionError("No SYN received");
 
             status = Status.ST_CONNECTED;

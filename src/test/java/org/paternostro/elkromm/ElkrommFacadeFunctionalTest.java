@@ -67,6 +67,15 @@ public class ElkrommFacadeFunctionalTest {
         facade = factory.getElkrommFacade(EndpointFactory.getFactory().getPipeEndpoint(c2s, s2c), 12345678);
 
         assertNotNull(facade);
+
+        try {
+            facade.setDelay(0);
+        } catch (ElkrommException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            assertTrue(false);
+        }
+        
         assertEquals(facade.getStatus(), Status.ST_DISCONNECTED);
 
         try {
