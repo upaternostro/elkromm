@@ -264,7 +264,7 @@ public interface ElkrommFacade
      * Sets the delay used to communicate to the panel, whose hardware is not so much performant.
      * Hint: set to 0 (zero) to obtain maximum speed (i.e.: during unit test that do not use a hardware panel)
      * 
-     * @param delay delay in ms, defaults to {@link ElkrommFacadeImpl#DEFAULT_DELAY}
+     * @param delay delay in ms, defaults to {@link org.paternostro.elkromm.impl.ElkrommFacadeImpl#DEFAULT_DELAY}
      * @throws ElkrommException if the parameter is less than zero
      */
     void setDelay(int delay) throws ElkrommException;
