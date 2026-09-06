@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * Default {@link ElkrommFacade} implementation.
  * <p>
  * Talks to the panel (or emulator) over a {@link org.paternostro.mock.ipc.Endpoint},
- * pacing every write/read with a short {@link #DELAY} to mirror Hi-Connect's
+ * pacing every write/read with a short {@link #DEFAULT_DELAY} to mirror Hi-Connect's
  * own timing and avoid overrunning the panel's serial-derived interface.
  * Individual {@code get*}/{@code set*} methods documented on
  * {@link ElkrommFacade} are implemented here in terms of two private
