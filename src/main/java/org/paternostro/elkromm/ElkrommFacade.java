@@ -19,6 +19,7 @@ import org.paternostro.elkromm.dto.PhoneNumbersSendingCodes;
 import org.paternostro.elkromm.dto.PhoneParameters;
 import org.paternostro.elkromm.dto.Reader;
 import org.paternostro.elkromm.dto.SMSs;
+import org.paternostro.elkromm.dto.SingleCredential;
 import org.paternostro.elkromm.dto.SingleKeyboard;
 import org.paternostro.elkromm.dto.SingleSMS;
 import org.paternostro.elkromm.dto.SystemStatus;
@@ -634,4 +635,21 @@ public interface ElkrommFacade
      * @throws ElkrommException if the write fails
      */
     void setDayClassCommands(DayClassCommands dayClassCommands) throws ElkrommException;
+
+    // v0.5 APIs
+    /**
+     * Writes the configuration of a single user, identified by its index.
+     *
+     * @param user the user configuration (with its index) to write
+     * @throws ElkrommException if the write fails
+     */
+    void setUser(SingleCredential user) throws ElkrommException;
+
+    /**
+     * Writes the configuration of a single key, identified by its index.
+     *
+     * @param key the key configuration (with its index) to write
+     * @throws ElkrommException if the write fails
+     */
+    void setKey(SingleCredential key) throws ElkrommException;
 }

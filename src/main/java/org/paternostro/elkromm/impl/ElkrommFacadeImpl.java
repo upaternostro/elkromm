@@ -34,6 +34,7 @@ import org.paternostro.elkromm.dto.PhoneNumbersSendingCodes;
 import org.paternostro.elkromm.dto.PhoneParameters;
 import org.paternostro.elkromm.dto.Reader;
 import org.paternostro.elkromm.dto.SMSs;
+import org.paternostro.elkromm.dto.SingleCredential;
 import org.paternostro.elkromm.dto.SingleKeyboard;
 import org.paternostro.elkromm.dto.SingleSMS;
 import org.paternostro.elkromm.dto.SystemStatus;
@@ -584,5 +585,17 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     public void setDayClassCommands(DayClassCommands dayClassCommands) throws ElkrommException
     {
         sendCommand(ElkronCommand.DAY_CLASS_CMDS, ElkrommFactory.getFactory().getDayClassCommandsSerializer().serialize(dayClassCommands));
+    }
+
+    @Override
+    public void setUser(SingleCredential user) throws ElkrommException
+    {
+        sendCommand(ElkronCommand.USER_PROGRAMMING, ElkrommFactory.getFactory().getSingleUserSerializer().serialize(user));
+    }
+
+    @Override
+    public void setKey(SingleCredential key) throws ElkrommException
+    {
+        sendCommand(ElkronCommand.KEY_PROGRAMMING, ElkrommFactory.getFactory().getSingleKeySerializer().serialize(key));
     }
 }

@@ -36,6 +36,7 @@ import org.paternostro.elkromm.dto.PhoneParameters.ReturnCall;
 import org.paternostro.elkromm.dto.Reader;
 import org.paternostro.elkromm.dto.SMS;
 import org.paternostro.elkromm.dto.SMSs;
+import org.paternostro.elkromm.dto.SingleCredential;
 import org.paternostro.elkromm.dto.SMSs.SMSIndex;
 import org.paternostro.elkromm.dto.SingleKeyboard;
 import org.paternostro.elkromm.dto.SingleSMS;
@@ -860,6 +861,57 @@ public class ElkrommFacadeFunctionalTest {
         workingDaysCommands = timeProgrammer.getWorkingDaysCommands();
         assertNotNull(workingDaysCommands);
         assertTrue(workingDaysCommands.length > 0);
+    }
+
+    @Test
+    public void testSetUser() throws ElkrommException {
+        Credential[]    users = facade.getUsers();
+
+        assertNotNull(users);
+        assertTrue(users.length > 0);
+
+        Credential          oldUser = users[2];
+        SingleCredential    sc = new SingleCredential((byte)3, new User(3, "Test user", Credential.Enabling.ENABLED, ElkrommUtils.unpackPartitions((byte)0x01)));
+
+        facade.setUser(sc);
+        users = facade.getUsers();
+        assertNotNull(users);
+        assertTrue(users.length > 0);
+        assertEquals(3, users[2].getOrdinal());
+        assertEquals("Test user", users[2].getName());
+        assertEquals(Credential.Enabling.ENABLED, users[2].getEnabling());
+        assertEquals(0x01, ElkrommUtils.packPartitions(users[2].getAssociatedPartitions()));
+        sc.setCredential(oldUser);
+        facade.setUser(sc);
+        users = facade.getUsers();
+        assertNotNull(users);
+        assertTrue(users.length > 0);
+    }
+
+    @Test
+    public void testSetKey() throws ElkrommException {
+        Credential[]    keys = facade.getKeys();
+
+        assertNotNull(keys);
+        assertTrue(keys.length > 0);
+
+        Credential          oldKey = keys[0];
+        SingleCredential    sc = new SingleCredential((byte)3, new Key(3, "Test key", Credential.Enabling.ENABLED, Key.Specialization.KS_CHANGE_PARTITION_STATUS, ElkrommUtils.unpackPartitions((byte)0x01)));
+
+        facade.setKey(sc);
+        keys = facade.getKeys();
+        assertNotNull(keys);
+        assertTrue(keys.length > 0);
+        assertEquals(3, keys[2].getOrdinal());
+        assertEquals("Test key", keys[2].getName());
+        assertEquals(Credential.Enabling.ENABLED, keys[2].getEnabling());
+        assertEquals(Key.Specialization.KS_CHANGE_PARTITION_STATUS, ((Key)keys[2]).getSpecialization());
+        assertEquals(0x01, ElkrommUtils.packPartitions(keys[2].getAssociatedPartitions()));
+        sc.setCredential(oldKey);
+        facade.setKey(sc);
+        keys = facade.getKeys();
+        assertNotNull(keys);
+        assertTrue(keys.length > 0);
     }
 
     @AfterClass
