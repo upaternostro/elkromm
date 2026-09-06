@@ -485,7 +485,7 @@ public class PSTNGSM implements Serializable {
      * @throws IllegalArgumentException if {@code enableIncomingSMS} is {@code null}
      */
     public void setEnableIncomingSMS(Enabling enableIncomingSMS) {
-        if (enableGSMAnsweringMachine == null) throw new IllegalArgumentException("Missing mandatory enableGSMAnsweringMachine");
+        if (enableIncomingSMS == null) throw new IllegalArgumentException("Missing mandatory enableIncomingSMS");
         
         this.enableIncomingSMS = enableIncomingSMS;
     }
