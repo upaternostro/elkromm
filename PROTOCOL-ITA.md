@@ -510,8 +510,8 @@ Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
 Dati telefoni:
 
 `20 1f ff ff ff ff ff ff ff ff ff ff ff ff ff # Numero telefonico codificato in BCD (15 bytes)`  
-`00 # Rete telefonica (00 = PSTN, 01 = GSM)`  
-`00 # Tipo di segnalazione (00 = Voce, 06 = SMS)`  
+`00 # Rete telefonica (00 = PSTN, 01 = GSM, 02 = LAN)`  
+`00 # Modalità di invio (00 = Voce, 01 = IDP, 02 = ADF, 04 = Modem, 06 = SMS, 07 = C200b)`  
 `ff ff ff ff ff ff ff ff ff ff ff ff ff ff f0 `  
 `00 00 `  
 `ff ff ff ff ff ff ff ff ff ff ff ff ff ff f0 `  
@@ -585,6 +585,14 @@ Dati telefoni:
 `00 00 00 00 `  
 `00 00 00 00 `  
 `ff ff 57 75 # Checksum blocco`
+
+**Tabella di assegnazione eventi**: dopo i 12 record telefonici segue una tabella con un blocco da 4 byte per ciascun evento riportabile (stesso ordine e stessi eventi dell'enum `PhoneNumber.Event`, che ne fissa già gli offset — vedi Javadoc), con questa struttura dedotta da più catture comparate in `ClientConnection`:
+
+* **byte 0** — maschera partizioni (valori osservati: `0x00`, `0x02`, `0x04`, `0x08`; il significato esatto del bit resta da confermare)
+* **byte 1** — **bitmask dei telefoni** assegnati a quell'evento (bit *i* = telefono *i+1*), confermato empiricamente: cattura con solo il telefono 1 abilitato su un evento → `0x01`; stesso evento con telefono 1 **e** 2 abilitati → `0x03`. Anche i valori "a scalare" osservati nelle prime catture (`0x01`, `0x03`, `0x05`, `0x09`, `0x11`, `0x21`, `0x41`, `0x81` per eventi diversi con solo telefono 1) sono coerenti con questa lettura se combinati col byte 0
+* **byte 2-3** — sempre `0x00` in tutte le catture disponibili, probabile riservato
+
+**Numeri LAN/IP**: quando il campo rete vale `0x02` (LAN), il numero di telefono BCD viene sostituito da un indirizzo IP. Nota originale dell'autore, non ancora decodificata in dettaglio: *"In generale gli IP sono 001B002B003B004C00005 (attivo se tipo = LAN)"* — sembra suggerire una codifica per ottetto con byte di marcatura, ma il pattern esatto (specialmente la parte finale) resta da verificare con una cattura dedicata e più annotazioni. Coerente comunque con il `// FIXME: IP addresses in phone numbers!` presente nel setter `PhoneNumber.setPhoneNumber()`.
 
 ## Parametri telefonici
 
