@@ -509,7 +509,8 @@ Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
 
 Dati telefoni:
 
-`20 1f ff ff ff ff ff ff ff ff ff ff ff ff ff # Numero telefonico codificato in BCD (15 bytes)`  
+`20 1f ff ff ff ff ff ff ff ff ff ff ff ff # Numero telefonico codificato in BCD (14 byte — ElkrommFacade.PHONE_NUMBER_LENGTH = 28 cifre)`  
+`ff # Maschera partizioni associate (bitmask, ElkrommUtils.packPartitions/unpackPartitions; qui vale 0xff = tutte le partizioni, motivo per cui inizialmente si confondeva col padding standard e sembrava parte del numero)`  
 `00 # Rete telefonica (00 = PSTN, 01 = GSM, 02 = LAN)`  
 `00 # Modalità di invio (00 = Voce, 01 = IDP, 02 = ADF, 04 = Modem, 06 = SMS, 07 = C200b)`  
 `ff ff ff ff ff ff ff ff ff ff ff ff ff ff f0 `  
@@ -592,14 +593,14 @@ Dati telefoni:
 * **byte 1** — **bitmask dei telefoni** assegnati a quell'evento (bit *i* = telefono *i+1*), confermato empiricamente: cattura con solo il telefono 1 abilitato su un evento → `0x01`; stesso evento con telefono 1 **e** 2 abilitati → `0x03`. Anche i valori "a scalare" osservati nelle prime catture (`0x01`, `0x03`, `0x05`, `0x09`, `0x11`, `0x21`, `0x41`, `0x81` per eventi diversi con solo telefono 1) sono coerenti con questa lettura se combinati col byte 0
 * **byte 2-3** — sempre `0x00` in tutte le catture disponibili, probabile riservato
 
-**Numeri LAN/IP**: quando il campo rete vale `0x02` (LAN), il numero di telefono viene sostituito da un indirizzo nel formato fisso `DDD.DDD.DDD.DDD:DDDDD` (ogni ottetto zero-paddato a 3 cifre, parte finale a 5 cifre). Codifica confermata da catture dedicate: ogni cifra decimale in BCD, il punto `.` codificato come nibble `B`, i due punti `:` come nibble `C`.
+**Numeri LAN/IP**: quando il campo rete vale `0x02` (LAN), il numero di telefono viene sostituito da un indirizzo nel formato fisso `DDD.DDD.DDD.DDD:DDDDD` (ogni ottetto zero-paddato a 3 cifre, parte finale a 5 cifre). Codifica **confermata direttamente dal codice** — `serializer.PhoneNumber.serialize()` implementa esattamente questa logica: ogni cifra decimale in BCD, il punto `.` come nibble `0x0B`, i due punti `:` come nibble `0x0C`, con lo stesso commento originale dell'autore (`"In generale gli IP sono 001B002B003B004C00005"`) presente sia lì sia in `ClientConnection`. Il padding dell'ultimo nibble spaiato (per un numero dispari di cifre/separatori, come nell'esempio sotto) è `0x0F` — anch'esso nel codice (`bcdByte | 0x0F`), non un'ipotesi.
 
-Esempio, per l'indirizzo `192.168.001.100:00080`:
+Esempio verificato con una cattura reale, per l'indirizzo `192.168.001.100:00080`:
 
 * sequenza cifre/separatori: `1 9 2 B 1 6 8 B 0 0 1 B 1 0 0 C 0 0 0 8 0`
-* raggruppata in byte (nibble alto prima): `19 2B 16 8B 00 1B 10 0C 00 08 0F` — 21 nibble (numero dispari, per costruzione del formato a lunghezza fissa), l'ultimo nibble resta spaiato: ipotesi `0xF` di padding (coerente con lo stile generale del protocollo, che usa `0xff` come riempimento altrove — nomi, SMS, campi BCD non impostati), da confermare su una cattura reale
+* byte risultanti: `19 2b 16 8b 00 1b 10 0c 00 08 0f` (11 byte, l'ultimo nibble `f` di padding) — combacia esattamente con la cattura
 
-Coerente con il `// FIXME: IP addresses in phone numbers!` ancora presente nel setter `PhoneNumber.setPhoneNumber()`, che non implementa (ancora) questa codifica.
+Coerente con il `// FIXME: IP addresses in phone numbers!` ancora presente nel setter `PhoneNumber.setPhoneNumber()` del DTO — quel commento segnala solo che il DTO non valida/riconosce ancora esplicitamente il formato IP (accetta la stringa così com'è), non che la codifica sia incerta: la codifica stessa, lato serializer, è completa.
 
 ## Parametri telefonici
 
