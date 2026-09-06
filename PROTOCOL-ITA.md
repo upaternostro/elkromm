@@ -118,7 +118,7 @@ Comando	| Tipo	| Significato	| Dati		| Risposta centrale	| Note
 0x57	| Lettura	| PHONE NUMBERS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x57
 0x56	| Lettura	| PHONE PARAMETERS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x56
 0x5a	| Lettura	| PSTN GSM	| nessuno	| 0x16 (SYN) + pacchetto dati 0x5a
-0x59	| Lettura	| SMS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x59	| vedi anche 0xa0 SMS PROGRAMMING per la scrittura del singolo SMS
+0x59	| Lettura	| SMS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x59, vedi [SMS](#sms)	| vedi anche 0xa0 SMS PROGRAMMING per la scrittura del singolo SMS
 0x58	| Lettura	| C200B	| nessuno	| 0x16 (SYN) + pacchetto dati 0x58
 0x54	| Lettura	| TIME PROGRAMMER	| nessuno	| 0x16 (SYN) + pacchetto dati 0x54
 0x8b	| Lettura (ipotesi)	| KEY STATUS	| TBD	| TBD	| packetClass non implementata (FIXME nel codice); ipotesi basata sull'analogia col naming di INPUT/SYSTEM/USER STATUS
@@ -592,7 +592,14 @@ Dati telefoni:
 * **byte 1** — **bitmask dei telefoni** assegnati a quell'evento (bit *i* = telefono *i+1*), confermato empiricamente: cattura con solo il telefono 1 abilitato su un evento → `0x01`; stesso evento con telefono 1 **e** 2 abilitati → `0x03`. Anche i valori "a scalare" osservati nelle prime catture (`0x01`, `0x03`, `0x05`, `0x09`, `0x11`, `0x21`, `0x41`, `0x81` per eventi diversi con solo telefono 1) sono coerenti con questa lettura se combinati col byte 0
 * **byte 2-3** — sempre `0x00` in tutte le catture disponibili, probabile riservato
 
-**Numeri LAN/IP**: quando il campo rete vale `0x02` (LAN), il numero di telefono BCD viene sostituito da un indirizzo IP. Nota originale dell'autore, non ancora decodificata in dettaglio: *"In generale gli IP sono 001B002B003B004C00005 (attivo se tipo = LAN)"* — sembra suggerire una codifica per ottetto con byte di marcatura, ma il pattern esatto (specialmente la parte finale) resta da verificare con una cattura dedicata e più annotazioni. Coerente comunque con il `// FIXME: IP addresses in phone numbers!` presente nel setter `PhoneNumber.setPhoneNumber()`.
+**Numeri LAN/IP**: quando il campo rete vale `0x02` (LAN), il numero di telefono viene sostituito da un indirizzo nel formato fisso `DDD.DDD.DDD.DDD:DDDDD` (ogni ottetto zero-paddato a 3 cifre, parte finale a 5 cifre). Codifica confermata da catture dedicate: ogni cifra decimale in BCD, il punto `.` codificato come nibble `B`, i due punti `:` come nibble `C`.
+
+Esempio, per l'indirizzo `192.168.001.100:00080`:
+
+* sequenza cifre/separatori: `1 9 2 B 1 6 8 B 0 0 1 B 1 0 0 C 0 0 0 8 0`
+* raggruppata in byte (nibble alto prima): `19 2B 16 8B 00 1B 10 0C 00 08 0F` — 21 nibble (numero dispari, per costruzione del formato a lunghezza fissa), l'ultimo nibble resta spaiato: ipotesi `0xF` di padding (coerente con lo stile generale del protocollo, che usa `0xff` come riempimento altrove — nomi, SMS, campi BCD non impostati), da confermare su una cattura reale
+
+Coerente con il `// FIXME: IP addresses in phone numbers!` ancora presente nel setter `PhoneNumber.setPhoneNumber()`, che non implementa (ancora) questa codifica.
 
 ## Parametri telefonici
 
@@ -645,6 +652,8 @@ Mappa byte (offset 0-based), enum lato codice `PSTNGSM.*`:
 * **offset 16** — anno di scadenza
 
 ## SMS
+
+Comando `0x59 SMS` (lettura bulk di tutti i messaggi, vedi [Tipologie di comando](#tipologie-di-comando)): payload suddiviso su 3 pacchetti (140+140+84 byte, checksum incluso), un blocco di 40 caratteri per messaggio (padding `0xff`), **nello stesso ordine** dell'enum `SMSs.SMSIndex`: Intrusione (burglar), Allarme tecnico 1/2/3, Incendio, Partizione attivata, Partizione disattivata, Manomissione, Note — conferma diretta che l'ordine dell'enum nel DTO rispecchia esattamente l'ordine on-the-wire.
 
 Comando: `0xa0 SMS PROGRAMMING` (scrittura singola istanza, confermata raggiungibile via `ElkrommFacadeImpl.setSMS()`, vedi [Tipologie di comando](#tipologie-di-comando)). L'indice identifica il tipo di evento tramite l'enum `SMSs.SMSIndex` (9 valori: `SMS_BURLGAR`, `SMS_TECHNICAL_ALARM_1/2/3`, `SMS_FIRE`, `SMS_PARTITION_ON`, `SMS_PARTITION_OFF`, `SMS_TAMPERING`, `SMS_NOTICE`). Dump catturato (payload 41 byte, checksum non valido nella cattura):
 
