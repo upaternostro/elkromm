@@ -35,6 +35,9 @@ import org.paternostro.mock.ipc.Endpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class ClientConnection extends Thread {
     public static final Logger logger = LoggerFactory.getLogger(ClientConnection.class);
 

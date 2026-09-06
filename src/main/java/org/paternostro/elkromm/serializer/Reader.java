@@ -5,6 +5,9 @@ import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.dto.Input;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class Reader implements ElkrommSerializer<org.paternostro.elkromm.dto.Reader>
 {
     public static final int INPUT_SIZE  = 38;

@@ -12,8 +12,19 @@ import org.paternostro.elkromm.packet.ElkrommPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Default {@link PacketQueue} implementation, backed by a plain
+ * {@link LinkedList}. {@link #enqueuePayload} does the actual work of
+ * splitting an arbitrary-length payload into as many
+ * {@link ElkrommFacade#MAX_DATA_LENGTH}-sized, correctly indexed packets
+ * as needed, rolling back any partially-enqueued packets if allocation
+ * fails partway through.
+ * <p>
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class PacketQueueImpl extends LinkedList<ElkrommPacket> implements PacketQueue
 {
+    /** Logger used to dump outgoing payloads at debug level. */
     public static final Logger logger = LoggerFactory.getLogger(PacketQueueImpl.class);
 
     @Override

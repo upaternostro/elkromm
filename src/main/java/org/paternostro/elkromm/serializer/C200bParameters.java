@@ -7,6 +7,9 @@ import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.dto.C200bParameters.Event;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class C200bParameters implements ElkrommSerializer<org.paternostro.elkromm.dto.C200bParameters> 
 {
     public static final int INPUT_CODES_OFFSET = 0x64;

@@ -2,6 +2,9 @@ package org.paternostro.elkromm;
 
 import org.paternostro.elkromm.dto.Input;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class ElkrommTestUtils {
     public static void testInput(Input input, Input input2)
     {

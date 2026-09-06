@@ -4,6 +4,9 @@ import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.dto.DayClassCommands.DayClass;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class DayClassCommands implements ElkrommSerializer<org.paternostro.elkromm.dto.DayClassCommands>
 {
     public final static int COMMAND_LENGTH  = 5;

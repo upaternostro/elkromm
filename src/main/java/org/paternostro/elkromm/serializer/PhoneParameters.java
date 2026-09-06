@@ -7,6 +7,9 @@ import org.paternostro.elkromm.dto.PhoneParameters.Enabling;
 import org.paternostro.elkromm.dto.PhoneParameters.ReturnCall;
 import org.paternostro.elkromm.dto.PhoneParameters.VoiceMessagesSendingMode;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class PhoneParameters implements ElkrommSerializer<org.paternostro.elkromm.dto.PhoneParameters>
 {
     @Override

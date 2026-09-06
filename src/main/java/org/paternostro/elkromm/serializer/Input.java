@@ -3,6 +3,9 @@ package org.paternostro.elkromm.serializer;
 import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommUtils;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class Input implements ElkrommSerializer<org.paternostro.elkromm.dto.Input>
 {
     @Override
