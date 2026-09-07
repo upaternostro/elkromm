@@ -11,6 +11,10 @@ public class ElkrommTestUtils {
         assert input.getLogicNumber() == input2.getLogicNumber();
         assert input.getConfiguration() == input2.getConfiguration();
         assert input.getSpecialization() == input2.getSpecialization();
+        assert input.getDelay() == input2.getDelay();
+        assert input.getFlags() == input2.getFlags();
+        assert input.getSensitivity() == input2.getSensitivity();
+        assert input.getVideo() == input2.getVideo();
 
         for (int k = 0; k < ElkrommFacade.MAX_PARTITIONS; k++) {
             assert input.getAssociatedPartitions()[k] == input2.getAssociatedPartitions()[k];
