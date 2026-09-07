@@ -52,8 +52,8 @@ import org.slf4j.LoggerFactory;
  * Default {@link ElkrommFacade} implementation.
  * <p>
  * Talks to the panel (or emulator) over a {@link org.paternostro.mock.ipc.Endpoint},
- * pacing every write/read with a short {@link #DEFAULT_DELAY} to mirror Hi-Connect's
- * own timing and avoid overrunning the panel's serial-derived interface.
+ * pacing every write/read with a short delay (see {@link #setDelay(int)}) so as
+ * not to overwhelm the panel's not-particularly-performant hardware.
  * Individual {@code get*}/{@code set*} methods documented on
  * {@link ElkrommFacade} are implemented here in terms of two private
  * helpers, {@link #getData(ElkronCommand)} and
@@ -68,7 +68,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     /** Logger for connection lifecycle and communication errors. */
     public static final Logger logger = LoggerFactory.getLogger(ElkrommFacadeImpl.class);
 
-    /** Milliseconds paused before/after each write and after each read, mirroring Hi-Connect's own pacing. */
+    /** Default value of {@link #delay}, in milliseconds, used until {@link #setDelay(int)} overrides it. Chosen so as not to overwhelm the panel's not-particularly-performant hardware. */
     public static final int DEFAULT_DELAY = 100;
 
     private int delay;
@@ -243,7 +243,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
      * Sends a write-style command: enqueues {@code data} as one or more
      * framed packets via {@link PacketQueue#enqueuePayload}, then writes,
      * paces and acknowledges (SYN) each one in turn, {@link #ping()}-ing
-     * after each to match Hi-Connect's own protocol rhythm.
+     * after each so as not to overwhelm the panel's hardware.
      *
      * @param command the command to send
      * @param data the full payload to frame and send
@@ -382,7 +382,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
      * response: one or more packets are received and cached (via
      * {@link ElkrommPacket#cachePayload}) until the full multi-packet
      * payload for {@code cmd} is complete, {@link #ping()}-ing between
-     * packets to match Hi-Connect's own protocol rhythm.
+     * packets so as not to overwhelm the panel's hardware.
      *
      * @param cmd the read command to send
      * @return the fully reassembled response payload
