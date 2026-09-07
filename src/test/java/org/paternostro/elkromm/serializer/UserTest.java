@@ -10,7 +10,7 @@ public class UserTest {
     @Test
     public void test()
     {
-        User    user = new User(1, "User 1", Credential.Enabling.DISABLED, ElkrommUtils.unpackPartitions((byte)1));
+        User    user = new User("User 1", Credential.Enabling.DISABLED, ElkrommUtils.unpackPartitions((byte)1));
         byte[]  data = ElkrommFactory.getFactory().getUserSerializer().serialize(user);
 
         assert data.length == 26 : "Wrong length";

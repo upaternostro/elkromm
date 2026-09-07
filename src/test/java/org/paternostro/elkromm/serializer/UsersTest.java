@@ -14,7 +14,7 @@ public class UsersTest {
         User[]  users = new User[ElkrommFacade.MAX_CREDENTIALS];
 
         for (int i = 0; i < ElkrommFacade.MAX_CREDENTIALS; i++) {
-            users[i] = new User(i+1, "User " + (i + 1), Credential.Enabling.DISABLED, ElkrommUtils.unpackPartitions((byte)i));
+            users[i] = new User("User " + (i + 1), Credential.Enabling.DISABLED, ElkrommUtils.unpackPartitions((byte)i));
         }
 
         byte[]  data = ElkrommFactory.getFactory().getUsersSerializer().serialize(users);

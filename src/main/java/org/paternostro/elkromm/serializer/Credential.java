@@ -31,10 +31,10 @@ public abstract class Credential implements ElkrommSerializer<org.paternostro.el
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
         if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
 
-        return allocateCredential(1, ElkrommUtils.getText(data, 2, ElkrommFacade.NAME_LENGTH), data[0], ElkrommUtils.unpackPartitions(data[1]));
+        return allocateCredential(ElkrommUtils.getText(data, 2, ElkrommFacade.NAME_LENGTH), data[0], ElkrommUtils.unpackPartitions(data[1]));
     }
 
-    protected org.paternostro.elkromm.dto.Credential allocateCredential(int ordinal, String name, byte enabling, boolean[] associatedPartitions)
+    protected org.paternostro.elkromm.dto.Credential allocateCredential(String name, byte enabling, boolean[] associatedPartitions)
     {
         throw new UnsupportedOperationException();
     }

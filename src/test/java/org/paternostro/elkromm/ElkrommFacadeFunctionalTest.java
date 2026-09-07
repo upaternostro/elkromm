@@ -694,12 +694,11 @@ public class ElkrommFacadeFunctionalTest {
 
         Credential      oldUser = users[2];
 
-        users[2] = new User(3, "Test user", Credential.Enabling.ENABLED, ElkrommUtils.unpackPartitions((byte)0x01));
+        users[2] = new User("Test user", Credential.Enabling.ENABLED, ElkrommUtils.unpackPartitions((byte)0x01));
         facade.setUsers(users);
         users = facade.getUsers();
         assertNotNull(users);
         assertTrue(users.length > 0);
-        assertEquals(3, users[2].getOrdinal());
         assertEquals("Test user", users[2].getName());
         assertEquals(Credential.Enabling.ENABLED, users[2].getEnabling());
         assertEquals(0x01, ElkrommUtils.packPartitions(users[2].getAssociatedPartitions()));
@@ -719,13 +718,12 @@ public class ElkrommFacadeFunctionalTest {
 
         Credential      oldKey = keys[2];
 
-        keys[2] = new Key(3, "Test user", Credential.Enabling.ENABLED, Key.Specialization.KS_CHANGE_PARTITION_STATUS, ElkrommUtils.unpackPartitions((byte)0x01));
+        keys[2] = new Key("Test key", Credential.Enabling.ENABLED, Key.Specialization.KS_CHANGE_PARTITION_STATUS, ElkrommUtils.unpackPartitions((byte)0x01));
         facade.setKeys(keys);
         keys = facade.getKeys();
         assertNotNull(keys);
         assertTrue(keys.length > 0);
-        assertEquals(3, keys[2].getOrdinal());
-        assertEquals("Test user", keys[2].getName());
+        assertEquals("Test key", keys[2].getName());
         assertEquals(Credential.Enabling.ENABLED, keys[2].getEnabling());
         assertEquals(Key.Specialization.KS_CHANGE_PARTITION_STATUS, ((Key)keys[2]).getSpecialization());
         assertEquals(0x01, ElkrommUtils.packPartitions(keys[2].getAssociatedPartitions()));
@@ -871,13 +869,12 @@ public class ElkrommFacadeFunctionalTest {
         assertTrue(users.length > 0);
 
         Credential          oldUser = users[2];
-        SingleCredential    sc = new SingleCredential((byte)3, new User(3, "Test user", Credential.Enabling.ENABLED, ElkrommUtils.unpackPartitions((byte)0x01)));
+        SingleCredential    sc = new SingleCredential((byte)3, new User("Test user", Credential.Enabling.ENABLED, ElkrommUtils.unpackPartitions((byte)0x01)));
 
         facade.setUser(sc);
         users = facade.getUsers();
         assertNotNull(users);
         assertTrue(users.length > 0);
-        assertEquals(3, users[2].getOrdinal());
         assertEquals("Test user", users[2].getName());
         assertEquals(Credential.Enabling.ENABLED, users[2].getEnabling());
         assertEquals(0x01, ElkrommUtils.packPartitions(users[2].getAssociatedPartitions()));
@@ -896,13 +893,12 @@ public class ElkrommFacadeFunctionalTest {
         assertTrue(keys.length > 0);
 
         Credential          oldKey = keys[0];
-        SingleCredential    sc = new SingleCredential((byte)3, new Key(3, "Test key", Credential.Enabling.ENABLED, Key.Specialization.KS_CHANGE_PARTITION_STATUS, ElkrommUtils.unpackPartitions((byte)0x01)));
+        SingleCredential    sc = new SingleCredential((byte)3, new Key("Test key", Credential.Enabling.ENABLED, Key.Specialization.KS_CHANGE_PARTITION_STATUS, ElkrommUtils.unpackPartitions((byte)0x01)));
 
         facade.setKey(sc);
         keys = facade.getKeys();
         assertNotNull(keys);
         assertTrue(keys.length > 0);
-        assertEquals(3, keys[2].getOrdinal());
         assertEquals("Test key", keys[2].getName());
         assertEquals(Credential.Enabling.ENABLED, keys[2].getEnabling());
         assertEquals(Key.Specialization.KS_CHANGE_PARTITION_STATUS, ((Key)keys[2]).getSpecialization());

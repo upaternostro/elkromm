@@ -10,7 +10,7 @@ public class SingleKeyTest {
     @Test
     public void test()
     {
-        org.paternostro.elkromm.dto.SingleCredential    singleKey = new org.paternostro.elkromm.dto.SingleCredential((byte)12, new org.paternostro.elkromm.dto.Key(12, "Key 12" , Enabling.DISABLED, Specialization.KS_CHANGE_PARTITION_STATUS, ElkrommUtils.unpackPartitions((byte)13)));
+        org.paternostro.elkromm.dto.SingleCredential    singleKey = new org.paternostro.elkromm.dto.SingleCredential((byte)12, new org.paternostro.elkromm.dto.Key("Key 12" , Enabling.DISABLED, Specialization.KS_CHANGE_PARTITION_STATUS, ElkrommUtils.unpackPartitions((byte)13)));
         byte[]                                          data = ElkrommFactory.getFactory().getSingleKeySerializer().serialize(singleKey);
 
         assert data.length == 27 : "Wrong length";

@@ -11,7 +11,7 @@ import org.paternostro.elkromm.ElkrommFacade;
  * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
  */
-public abstract class Credential implements Serializable, Comparable<Credential>
+public abstract class Credential implements Serializable
 {
     /** How and when a credential is allowed to arm/disarm its associated partitions. */
     public enum Enabling {
@@ -59,7 +59,6 @@ public abstract class Credential implements Serializable, Comparable<Credential>
         }
     }
 
-    protected int       ordinal;
     protected String    name;
     protected Enabling  enabling;
     protected boolean[] associatedPartitions;
@@ -67,40 +66,15 @@ public abstract class Credential implements Serializable, Comparable<Credential>
     /**
      * Creates a new credential.
      *
-     * @param ordinal 1-based position of this credential in its array (users and keys are numbered independently)
      * @param name display name
      * @param enabling arming/disarming enabling mode
      * @param associatedPartitions per-partition association flags, length {@link org.paternostro.elkromm.ElkrommFacade#MAX_PARTITIONS}
      */
-    public Credential(int ordinal, String name, Enabling enabling, boolean[] associatedPartitions)
+    public Credential(String name, Enabling enabling, boolean[] associatedPartitions)
     {
-        setOrdinal(ordinal);
         setName(name);
         setEnabling(enabling);
         setAssociatedPartitions(associatedPartitions);
-    }
-
-    /**
-     * Returns the 1-based ordinal of this credential.
-     *
-     * @return the ordinal
-     */
-    public int getOrdinal()
-    {
-        return ordinal;
-    }
-
-    /**
-     * Sets the 1-based ordinal of this credential.
-     *
-     * @param ordinal the ordinal to set, in range [1, {@link org.paternostro.elkromm.ElkrommFacade#MAX_CREDENTIALS}]
-     * @throws IllegalArgumentException if out of range
-     */
-    public void setOrdinal(int ordinal)
-    {
-        if (ordinal < 1 || ordinal > ElkrommFacade.MAX_CREDENTIALS) throw new IllegalArgumentException("Wrong ordinal " + ordinal + ", expected between 1 and " + ElkrommFacade.MAX_CREDENTIALS);
-
-        this.ordinal = ordinal;
     }
 
     /**
@@ -185,20 +159,9 @@ public abstract class Credential implements Serializable, Comparable<Credential>
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{ordinal=").append(ordinal).append(", name=").append(name).append(", enabling=").append(enabling
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{name=").append(name).append(", enabling=").append(enabling
                ).append(", associatedPartitions=").append(Arrays.toString(associatedPartitions)).append("}");
         
         return sb.toString();
-    }
-
-    /**
-     * Compares two credentials by their ordinal.
-     *
-     * @param o the other credential to compare against
-     * @return the result of comparing the two ordinals
-     */
-    @Override
-    public int compareTo(Credential o) {
-        return Integer.compare(this.getOrdinal(), o.getOrdinal());
     }
 }

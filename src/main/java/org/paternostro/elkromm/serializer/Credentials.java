@@ -48,7 +48,6 @@ public abstract class Credentials implements ElkrommSerializer<Credential[]>
         for (byte i = 0; i < ElkrommFacade.MAX_CREDENTIALS; i++) {
             System.arraycopy(data, i * CREDENTIAL_SIZE, cData, 0, CREDENTIAL_SIZE);
             retval[i] = cSerializer.deserialize(cData);
-            retval[i].setOrdinal(i+1);
         }
 
         return retval;

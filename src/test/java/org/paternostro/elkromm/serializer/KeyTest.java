@@ -10,7 +10,7 @@ public class KeyTest {
     @Test
     public void test()
     {
-        Key     key = new Key(1, "Key 1" , Credential.Enabling.DISABLED, Key.Specialization.KS_CHANGE_PARTITION_STATUS, ElkrommUtils.unpackPartitions((byte)1));
+        Key     key = new Key("Key 1" , Credential.Enabling.DISABLED, Key.Specialization.KS_CHANGE_PARTITION_STATUS, ElkrommUtils.unpackPartitions((byte)1));
         byte[]  data = ElkrommFactory.getFactory().getKeySerializer().serialize(key);
 
         assert data.length == 26 : "Wrong length";

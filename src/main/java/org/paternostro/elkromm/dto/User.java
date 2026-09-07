@@ -11,13 +11,12 @@ public class User extends Credential
     /**
      * Creates a new user credential.
      *
-     * @param ordinal 1-based position of this user (user 0 is TECNICO/installer, not representable here)
      * @param name display name, up to {@link org.paternostro.elkromm.ElkrommFacade#NAME_LENGTH} characters
      * @param enabling area/partition enabling flags for this user
      * @param associatedPartitions per-partition association flags
      */
-    public User(int ordinal, String name, Enabling enabling, boolean[] associatedPartitions)
+    public User(String name, Enabling enabling, boolean[] associatedPartitions)
     {
-        super(ordinal, name, enabling, associatedPartitions);
+        super(name, enabling, associatedPartitions);
     }
 }

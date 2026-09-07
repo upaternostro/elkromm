@@ -61,15 +61,14 @@ public class Key extends Credential
     /**
      * Creates a new key credential.
      *
-     * @param ordinal 1-based position of this key
      * @param name display name
      * @param enabling area/partition enabling flags for this key
      * @param specialization what this key is authorized to do
      * @param associatedPartitions per-partition association flags
      */
-    public Key(int ordinal, String name, Enabling enabling, Specialization specialization, boolean[] associatedPartitions)
+    public Key(String name, Enabling enabling, Specialization specialization, boolean[] associatedPartitions)
     {
-        super(ordinal, name, enabling, associatedPartitions);
+        super(name, enabling, associatedPartitions);
 
         setSpecialization(specialization);
     }
