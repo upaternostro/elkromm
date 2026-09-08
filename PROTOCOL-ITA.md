@@ -6,7 +6,7 @@
 * [Framing e comandi](#framing-e-comandi)
 * [Tipologie di comando](#tipologie-di-comando)
 * [Comandi riconosciuti](#comandi-riconosciuti)
-* [Settori](#settori)
+* [Settori](#settori) aka "Aree e settori"
 * [Utenti](#utenti)
 * [Chiavi](#chiavi)
 * [Parametri](#parametri)
@@ -14,10 +14,11 @@
 * [Parametri telefonici](#parametri-telefonici)
 * [PSTN GSM](#pstn-gsm)
 * [SMS](#sms)
-* [C200B](#c200b)
+* [C200B](#c200b) aka "Eventi"
 * [Time programmer e Day class commands](#time-programmer-e-day-class-commands)
-* [Blocco B](#blocco-b)
+* [Blocco B](#blocco-b) aka "Espansioni" aka "Nodi"
 * [Keypads](#keypads)
+* [Readers](#readers)
 * [Keypad programming](#keypad-programming)
 
 ## Premessa
@@ -109,7 +110,7 @@ Comando	| Tipo	| Significato	| Dati		| Risposta centrale	| Note
 0x80	| Lettura	| SYSTEM STATUS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x80 con un singolo byte di dati, 1 bit ogni settore, LSB = settore 1	
 0x81	| Azione	| ARM/DISARM SYSTEM	| due byte di dati, 1 bit ogni settore, LSB = settore 1, in caso di attivazione i due byte sono uguali (ad es. 0x02 + 0x02 per armare il settore 2), mentre in caso di disattivazione il primo indica il settore, il secondo vale 0x00. È possibile attivare/disattivare oiù settori contemporaneamente effettuando l'OR logico dei bit che rappsentano i settori, ad es. 0xFF 0x00 per disattivare tutto.	| 0x16 (SYN)	
 0x96	| Scrittura	| WRITE PARAMETERS & ENABLINGS	| vedi dati di 0x26, [Parametri](#parametri). Attenzione: ESCAPE con 0x11 anche di 0x01	| 0x16 (SYN)	
-0x95	| Scrittura singola istanza	| AGGIUNTA UTENTE	| Progressivo utente incrementato di 1 + aree + settori + nome (24 byte)	| 0x16 (SYN)	| Confermato da DTO `SingleCredential`(index, `User`); gestito anche dall'emulatore, ma **non raggiungibile dalla ElkrommFacade pubblica** (nessun metodo `addUser`/equivalente) — gap della libreria, non del protocollo
+0x95	| Scrittura singola istanza	| AGGIUNTA UTENTE	| Progressivo utente incrementato di 1 + aree + settori + nome (24 byte)	| 0x16 (SYN)	| Confermato da DTO `SingleCredential`(index, `User`); gestito anche dall'emulatore
 0xe7	| Scrittura	| MODIFICA NUMERI TELEFONICI	| pacchetto dati 0xe7, vedi [Numeri telefonici](#numeri-telefonici)	| 0x16 (SYN)	
 0x51	| Lettura	| EXPANSIONS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x51, vedi [Blocco B](#blocco-b)	| Aka Blocco B
 0x83	| Azione	| EXCLUDE/INCLUDE INPUT	| due byte di dati, il primo indica il numero di ingresso, il secondo vale 0x01 (attenzione all’escape) per escludere l’ingresso, 0x00 per includerlo	| 0x16 (SYN)	
@@ -123,9 +124,9 @@ Comando	| Tipo	| Significato	| Dati		| Risposta centrale	| Note
 0x54	| Lettura	| TIME PROGRAMMER	| nessuno	| 0x16 (SYN) + pacchetto dati 0x54
 0x8b	| Lettura (ipotesi)	| KEY STATUS	| TBD	| TBD	| packetClass non implementata (FIXME nel codice); ipotesi basata sull'analogia col naming di INPUT/SYSTEM/USER STATUS
 0x70	| Lettura (ipotesi)	| EVENT LOG	| TBD	| TBD	| packetClass non implementata (FIXME nel codice) — lettura log, vedi chat dedicata
-0x91	| Scrittura singola istanza (ipotesi)	| CONTROL PANEL PROGRAMMING	| TBD	| TBD	| packetClass non implementata (FIXME nel codice); ipotesi basata sull'analogia col naming "PROGRAMMING"
+0x91	| Scrittura singola istanza	| EXPANSION PROGRAMMING	| TBD	| TBD	| packetClass non implementata (FIXME nel codice)
 0xe1	| Scrittura singola istanza (ipotesi)	| EXPANSIONS PROGRAMMING	| TBD	| TBD	| packetClass non implementata (FIXME nel codice); ipotesi basata sull'analogia col naming "PROGRAMMING"
-0xe2	| Scrittura singola istanza (ipotesi)	| KEYBOARD PROGRAMMING	| TBD	| TBD	| packetClass non implementata (FIXME nel codice); ipotesi basata sull'analogia col naming "PROGRAMMING". Verificato che il DTO `SingleKeyboard` è in realtà usato da 0x92 KEYPAD PROGRAMMING, non da questo comando — la vera natura di 0xe2 resta da chiarire
+0xe2	| Scrittura	| KEYPADS PROGRAMMING	| TBD	| TBD	| packetClass non implementata (FIXME nel codice)
 0xe4	| Scrittura	| SET TIME PROGRAMMER	| pacchetto 131 byte, vedi [Time programmer e Day class commands](#time-programmer-e-day-class-commands)	| 0x16 (SYN)	| packetClass: `SetTimeProgrammer`
 0xe5	| Scrittura	| SET PARTITIONS AND AREAS	| TBD	| TBD	| packetClass: `SetAreasAndPartitions`, mai documentata
 0xe6	| Scrittura	| SET PHONE PARAMETERS	| pacchetto 20 byte, vedi [Parametri telefonici](#parametri-telefonici)	| 0x16 (SYN)	| packetClass: `SetPhoneParameters`
@@ -139,7 +140,7 @@ Comando	| Tipo	| Significato	| Dati		| Risposta centrale	| Note
 0x52	| Lettura	| KEYPADS	| TBD	| TBD	| packetClass: `Keypads`, vedi [Keypads](#keypads) (dati presenti, codice comando non ancora collegato)
 0x53	| Lettura	| READERS	| TBD	| TBD	| packetClass: `Readers`, mai documentata
 0x93	| Scrittura singola istanza	| READER PROGRAMMING	| TBD	| TBD	| packetClass: `Reader`, mai documentata. Raggiungibile via `ElkrommFacadeImpl.setReader()`, ma marcato `// FIXME: da provare!?!?` nel codice — implementato ma **non verificato**. Nota: qui l'indice è implicito nel campo `address` del DTO `Reader` stesso, non c'è un wrapper `SingleReader` separato
-0xa3	| Scrittura singola istanza	| KEY PROGRAMMING	| indice + dati `Key` (nome, specializzazione)	| 0x16 (SYN)	| packetClass: `KeyProgramming`. Confermato da DTO `SingleCredential`(index, `Key`); esempio catturato: indice `0x08`, nome "antani"; gestito anche dall'emulatore, ma **non raggiungibile dalla ElkrommFacade pubblica** (nessun metodo `addKey`/equivalente) — gap della libreria, non del protocollo
+0xa3	| Scrittura singola istanza	| KEY PROGRAMMING	| indice + dati `Key` (nome, specializzazione)	| 0x16 (SYN)	| packetClass: `KeyProgramming`. Confermato da DTO `SingleCredential`(index, `Key`)
 0xe3	| Scrittura	| SET READERS	| TBD	| TBD	| packetClass: `SetReaders`, mai documentata
 0xa1	| Scrittura singola istanza	| DAY CLASS CMDS	| lista `Command[]` per la day class, vedi [Time programmer e Day class commands](#time-programmer-e-day-class-commands)	| 0x16 (SYN)	| packetClass: `DayClassCommands`. Confermato via `ElkrommFacadeImpl.setDayClassCommands()`, pienamente raggiungibile dalla facade pubblica — qui l'"istanza" è la classe giorno stessa (`DayClass`: WORKING_DAY/PRE_HOLIDAY/HOLIDAY), non un indice numerico in un array
 
@@ -188,7 +189,7 @@ Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
 
 ## Settori
 
-Porzione di stream relativo alla lettura dei settori:
+Porzione di stream relativo alla lettura dei settori:  
 
 Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
 ----------------|---------------|---------------|---------------|------------
@@ -204,7 +205,36 @@ Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
 000000E8	| 01 55 55 00 00 00 00 65 fe f1 03	| 	| 	| SEND
 	| 	| 185	| 16	| SYN
 
-Dati settori:
+Definizione del payload "Aree e settori":  
+` `  
+
+Offset	| Significato	| Note
+--------|---------------|-----
+0	| Numero di aree	| Può valere zero se non sono utilizzate
+1-4	| Bitmask settori assegnati all'area	| LSB = settore 1, un byte ogni area
+5-28	| Nome prima area	|
+29-52	| Nome seconda area	|
+53-76	| Nome terza area	|
+77-100	| Nome quarta area	|
+101	| Numero di settori	|
+102	| Bitmask self exclusion	| LSB = settore 1
+103	| Bitmask arming block	| LSB = settore 1
+104-119 | Entry delay	| 2 byte per settore (partendo da 104-105 per settore 1 e così via), big endian
+120-135 | Exit delay	| 2 byte per settore (partendo da 120-121 per settore 1 e così via), big endian
+136-159	| Nome del primo settore	|
+160-183	| Nome del secondo settore	|
+184-207	| Nome del terzo settore	|
+208-231	| Nome del quarto settore	|
+232-255	| Nome del quinto settore	|
+256-279	| Nome del sesto settore	|
+280-303	| Nome del settimo settore	|
+304-327	| Nome del ottavo settore	|
+328	| ?	|
+329-332	| Checksum blocco	|
+
+` `  
+` `  
+Esempio di cattura dati settori:  
 
 `00 # numero di aree (max 4)`  
 `01 00 00 00 # settori assegnati alle 4 aree (bit mask, un byte per ogni area)`  
@@ -226,9 +256,9 @@ Dati settori:
 `2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 `  
 `2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 `  
 `20 `  
-`ff ff e0 b6 # Checksum blocco`
+`ff ff e0 b6 # Checksum blocco`  
 
-Altro esempio:
+Altro esempio:  
 
 `00 01 00 00 00`  
 `2e 2e 2e 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00`  
@@ -864,7 +894,36 @@ Dati blocco B:
 
 Dati delle tastiere.
 
-Dati keypads:
+Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
+----------------|---------------|---------------|---------------|------------
+  | 01 55 55 00 00 00 00 52 ff 04 03	|	|	| KEYPADS
+  |	|	| 16 | SYN
+  |	|	| 01 55 55 01 00 8c 00 52 **01 00 30 34 31 30 00 00 01 09 00 01 2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 00 00 00 00 00 ff ff 00 00 00 00 09 00 01 2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 00 00 00 00 00 ff ff 00 06 ff 06 49 4e 47 52 45 53 53 4f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 b0 00 02 00 30 32 30 30 00 00 01 09 00 01 2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20** ec 0e 03
+| 01 55 55 00 00 00 00 65 fe f1 03	|	|	| SEND
+  |	|	| 16 | SYN
+  |	|	| 01 55 55 01 01 56 00 52 **20 20 20 20 20 20 20 00 00 00 00 00 ff ff 00 00 00 00 09 00 01 2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 00 00 00 00 00 ff ff 00 06 ff 00 47 41 52 41 47 45 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 e5 00 ff ff e3 8b** ef 9f 03
+
+Definizione del payload "Keypads":  
+` `  
+
+Offset	| Significato	| Note
+--------|---------------|-----
+0	| Indirizzo	| Indirizzo della tastiera (base 1)
+1	| ?	|
+2-5	| Versione	| ASCII
+6-43	| Primo ingresso della tastiera	|
+44-81	| Secondo ingresso della tastiera	|
+82	| Bitmask abilitazioni	| GONG, ENTRY, EXIT, MASKING, FIRE, PANIC, HELP
+83	| Bitmask settori associati	| LSB = settore 1
+84	| Bitmask feature audio	| CAPABLE, ENABLED
+85-108	| Nome della tastiera	|
+109-110	| ?	|
+111	| Seconda tastiera	| Si ripetono i campi precedenti
+...	|	|
+
+` `  
+` `  
+Esempio di cattura dati tastiere:  
 
 `01 Address`  
 `00`  
@@ -897,6 +956,10 @@ Dati keypads:
 `e500`  
 
 `ffffe38b checksum blocco`  
+
+## Readers
+
+TBD
 
 ## Keypad programming
 
