@@ -74,7 +74,29 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
         if (data.length % EXPANSION_SIZE != 4) throw new IllegalArgumentException("Wrong data size");
-        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getLong(data, data.length - 4)) logger.warn("Wrong checksum, expected: 0x%08x found: 0x%08x delta: 0x%08x", ElkrommUtils.computeBlockChecksum(data), ElkrommUtils.getLong(data, data.length - 4), ElkrommUtils.getLong(data, data.length - 4) - ElkrommUtils.computeBlockChecksum(data));
+
+        /*
+         * WARNING: my MP-508 v03.01 alarm computes the checksum excluding the last two bytes in each expansion
+         * (that seems another checksum, but Claude and I were unable to understand the algorithm) and randomly
+         * rises bit 4 (0x10) in inputs at offset 3 relative to the input start (i.e.: Sensitivity and Flags).
+         * 
+         * Moreover, please note that Hi-Connect software sets those values to zero, both the pseudo checksum and
+         * the bit.
+         * 
+         * Assuming that those valueas are meaningless, to make checksum match, we reset last two bytes of each 
+         * expansion and that bit in each input. This explains the black magic code that follows.
+         */
+        int patchOffset = 0;
+        while ((patchOffset += EXPANSION_SIZE - 2) < data.length) data[patchOffset++] = data[patchOffset++] = 0x00;
+        patchOffset = 0;
+        while (patchOffset < data.length - 4) {
+            for (int j = 0; j < 8; j++) {
+                data[patchOffset + 7 + j * INPUT_SIZE + 3] &= ~0x10;
+            }
+            patchOffset += EXPANSION_SIZE;
+        }
+
+        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getLong(data, data.length - 4)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getLong(data, data.length - 4));
 
         Expansion[]                 retval = new Expansion[(data.length - 4) / EXPANSION_SIZE];
         int                         offset;
