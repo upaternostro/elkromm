@@ -5,6 +5,9 @@ import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.dto.PartitionArming;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class PartitionArmingTest {
     @Test
     public void test()

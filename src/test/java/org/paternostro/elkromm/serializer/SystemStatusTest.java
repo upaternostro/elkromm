@@ -5,6 +5,9 @@ import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.dto.SystemStatus;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class SystemStatusTest {
     @Test
     public void test()

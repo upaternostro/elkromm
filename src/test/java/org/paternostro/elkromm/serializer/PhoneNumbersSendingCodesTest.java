@@ -8,6 +8,9 @@ import org.paternostro.elkromm.dto.PhoneNumber.Event;
 import org.paternostro.elkromm.dto.PhoneNumber.SendingMode;
 import org.paternostro.elkromm.dto.PhoneNumber.Type;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class PhoneNumbersSendingCodesTest {
     public static final boolean[]   emptyAssociatedPartitions = { false, false, false, false, false, false, false, false };
     public static final PhoneNumber emptyPhonenumber = new PhoneNumber("", emptyAssociatedPartitions, Type.PNT_PSTN, SendingMode.PNSM_VOICE, new Event[0]);

@@ -9,6 +9,9 @@ import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.dto.C200bParameters;
 import org.paternostro.elkromm.dto.C200bParameters.Event;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class C200bParametersTest {
     @Test
     public void test()

@@ -7,6 +7,9 @@ import org.paternostro.elkromm.dto.Command.Action;
 import org.paternostro.elkromm.dto.Command.ObjectType;
 import org.paternostro.elkromm.dto.DayClassCommands.DayClass;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class TimeProgrammerTest {
     @Test
     public void test()

@@ -7,6 +7,9 @@ import org.paternostro.elkromm.dto.Expansion;
 import org.paternostro.elkromm.dto.Input;
 import org.paternostro.elkromm.dto.Output;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class ExpansionsTest {
     @Test
     public void test()

@@ -8,6 +8,9 @@ import org.paternostro.elkromm.dto.Input;
 import org.paternostro.elkromm.dto.Keyboard;
 import org.paternostro.elkromm.dto.SingleKeyboard;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class SingleKeyboardTest {
     @Test
     public void test()

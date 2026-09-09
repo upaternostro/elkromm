@@ -6,6 +6,9 @@ import org.paternostro.elkromm.dto.SMS;
 import org.paternostro.elkromm.dto.SingleSMS;
 import org.paternostro.elkromm.dto.SMSs.SMSIndex;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class SingleSMSTest {
     @Test
     public void test()

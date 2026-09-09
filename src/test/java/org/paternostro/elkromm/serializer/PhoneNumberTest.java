@@ -7,6 +7,9 @@ import org.paternostro.elkromm.dto.PhoneNumber.Event;
 import org.paternostro.elkromm.dto.PhoneNumber.SendingMode;
 import org.paternostro.elkromm.dto.PhoneNumber.Type;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class PhoneNumberTest {
     @Test
     public void test()

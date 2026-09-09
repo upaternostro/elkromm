@@ -13,6 +13,9 @@ import org.paternostro.elkromm.dto.ParametersEnablings.Play;
 import org.paternostro.elkromm.dto.ParametersEnablings.PowerLack;
 import org.paternostro.elkromm.dto.ParametersEnablings.Time;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class ParametersEnablingsTest {
     @Test
     public void test()

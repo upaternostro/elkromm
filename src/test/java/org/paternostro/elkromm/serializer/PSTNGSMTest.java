@@ -9,6 +9,9 @@ import org.paternostro.elkromm.dto.PSTNGSM.PABXLocalAccessDigit;
 import org.paternostro.elkromm.dto.PSTNGSM.PSTNAnsweringMachineRings;
 import org.paternostro.elkromm.dto.PSTNGSM.PSTNLineTestFrequency;
 
+/**
+ * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ */
 public class PSTNGSMTest {
     @Test
     public void test()
