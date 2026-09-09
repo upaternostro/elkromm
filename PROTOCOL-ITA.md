@@ -87,7 +87,8 @@ Escludendo i pacchetti di controllo a byte singolo (SYN/ACK/NAK), i comandi appl
 * **Lettura**: il client invia il codice senza dati (salvo eventuali parametri di richiesta), la centrale risponde con SYN seguito da uno o più pacchetti dati con lo stesso codice comando.
 * **Azione**: il client invia il codice con pochi byte di dati che rappresentano un comando puntuale e immediato (es. armare un settore, escludere un ingresso, abilitare un utente); la centrale risponde solo con SYN, senza restituire un pacchetto dati.
 * **Scrittura**: il client invia il codice comando con l'intero blocco dati, strutturalmente analogo a quanto restituito dalla corrispondente lettura; la centrale risponde con SYN.
-* **Scrittura singola istanza**: il client invia il codice comando con l'indice dell'elemento all'interno del proprio array (es. l'i-esimo utente, tastiera, lettore, chiave, SMS, day class) seguito dai soli dati di quell'istanza; la centrale risponde con SYN. A differenza della scrittura di blocco, non richiede di ritrasmettere l'intero array.
+* **Scrittura singola istanza**: il client invia il codice comando con l'indice dell'elemento all'interno del proprio array (es. l'i-esimo utente, tastiera, lettore, chiave, SMS, day class) seguito dai soli dati di quell'istanza; la centrale risponde con SYN. A differenza della scrittura di blocco, non richiede di ritrasmettere l'intero array e non presenta il checksum di blocco. Nota: alcuni oggetti (ad es. [Espansioni](#blocco-b)) hanno l'indice al loro interno, quindi non viene aggiunto un ulteriore indice in vetta al pacchetto.
+
 
 ## Comandi riconosciuti
 
@@ -162,9 +163,9 @@ Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
 	| 	| 00000001	| 06	| ACK
 0000001D	| 01 55 55 00 00 00 00 65 fe f1 03	| 	| 	| SEND
 	| 	| 00000002	| 16	| SYN
-00000028	| 01 55 55 00 00 00 00 62 fe f4 03	| 	| 	| ADDRESSES?
+00000028	| 01 55 55 00 00 00 00 62 fe f4 03	| 	| 	| ADDRESSES
 	| 	| 00000003	| 16	| SYN
-	| 	| 00000004	| 01 55 55 00 00 06 00 62 **01 01 00 02 01 02** fe e7 03	| ADDRESSES?
+	| 	| 00000004	| 01 55 55 00 00 06 00 62 **01 01 00 02 01 02** fe e7 03	| ADDRESSES
 00000033	| 01 55 55 00 00 00 00 65 fe f1 03	| 	| 	| SEND
 	| 	| 00000015	| 16	| SYN
 0000003E	| 01 55 55 00 00 00 00 65 fe f1 03	| 	| 	| SEND
@@ -189,6 +190,10 @@ Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
 
 ## Settori
 
+Riporta i dati delle aree (opzionali) e dei settori (aka partizioni).
+
+### Cattura stream
+
 Porzione di stream relativo alla lettura dei settori:  
 
 Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
@@ -204,6 +209,8 @@ Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
 	| 	| 145	| 01 55 55 02 02 35 00 55 **2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 ff ff e0 b6** f4 c0 03	
 000000E8	| 01 55 55 00 00 00 00 65 fe f1 03	| 	| 	| SEND
 	| 	| 185	| 16	| SYN
+
+### Struttura payload
 
 Definizione del payload "Aree e settori":  
 ` `  
@@ -234,6 +241,9 @@ Offset	| Significato	| Note
 
 ` `  
 ` `  
+
+### Esempio payload
+
 Esempio di cattura dati settori:  
 
 `00 # numero di aree (max 4)`  
@@ -281,6 +291,10 @@ Altro esempio:
 
 ## Utenti
 
+Lettura degli utenti.
+
+### Cattura stream
+
 Porzione di stream relativo alla lettura degli utenti:
 
 Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
@@ -304,9 +318,21 @@ Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
 	| 	| 00000375	| 16	| SYN
 	| 	| 00000376	| 01 55 55 05 05 88 00 5b **20 20 00 01 2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 00 01 2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 00 01 2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 00 01 2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 00 01 2e 2e 2e 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff ff 9d d4** ed 83 03	
 
+### Struttura payload
+
+Definizione del payload "Utenti" — 26 byte per utente (`Credential.CREDENTIAL_SIZE`), 32 utenti consecutivi (`MAX_CREDENTIALS`) + 4 byte di checksum finale. Per ogni utente si ha:
+
+Offset (relativo all'utente)	| Significato	| Note
+--------|---------------|-----
+0	| Abilitazione	| `Credential.Enabling`: 0=disabilitato, 1=abilitato, 2=sempre abilitato
+1	| Partizioni associate	| Bitmask, LSB = partizione 1
+2-25	| Nome	| 24 byte
+
+### Esempio payload
+
 Dati utenti:
 
-`00 ff # Abilitazione (1 byte) + Aree e settori associati?`  
+`00 ff # Abilitazione (1 byte) + settori associati`  
 `54 45 43 4e 49 43 4f 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 00 # TECNICO (24 byte)`  
 `02 ff # 0x02 = sempre abilitato`  
 `4d 41 53 54 45 52 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 00 # MASTER`  
@@ -374,6 +400,10 @@ Dati utenti:
 
 ## Chiavi
 
+Dati delle chiavi (inseritori).
+
+### Cattura stream
+
 Porzione di stream relativo alla lettura delle chiavi:
 
 Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
@@ -397,10 +427,22 @@ Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
 	| 	| 00000371	| 16	| SYN
 	| 	| 00000372	| 01 55 55 05 05 88 00 5c **20 20 00 01 2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 00 01 2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 00 01 2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 00 01 2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 00 01 2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 ff ff 9a a0** eb 19 03	
 
+### Struttura payload
+
+Definizione del payload "Chiavi" — stessa struttura di [Utenti](#utenti) (26 byte per chiave, 32 chiavi + 4 byte di checksum), con il byte 0 che impacchetta due campi anziché uno. Per ogni chiave si ha:
+
+Offset (relativo alla chiave)	| Significato	| Note
+--------|---------------|-----
+0	| Abilitazione (bit 0) + Specializzazione (bit 2-3)	| Abilitazione: `Credential.Enabling` sul bit meno significativo. Specializzazione: `Key.Specialization` su `(byte & 0x0C) >> 2` — 0=nessuna, 1=cambio stato partizione, 2=controllo accessi, 3=controllo accessi limitato alle partizioni associate
+1	| Partizioni associate	| Bitmask, LSB = partizione 1
+2-25	| Nome	| 24 byte
+
+### Esempio payload
+
 Dati chiavi:
 
-`00 01 # aree settori?`  
-`2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 # nome chiave? (24 byte)`  
+`00 01 # Ablitazione + specializzazione e settori associati`  
+`2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 # nome chiave (24 byte)`  
 `00 01 `  
 `2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 `  
 `00 01 `  
@@ -467,6 +509,10 @@ Dati chiavi:
 
 ## Parametri
 
+Parametri della conigurazione di sistema.
+
+### Cattura stream
+
 Porzione di stream relativo alla lettura dei parametri:
 
 Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
@@ -474,6 +520,33 @@ Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
 0000011A	| 01 55 55 00 00 00 00 26 ff 30 03	| 	| 	| PARAMETRI
 	| 	| 0000006A	| 16	| SYN
 	| 	| 00000079	| 01 55 55 00 00 1e 00 26 **00 00 00 00 00 01 01 01 01 01 00 00 00 00 05 00 11 03 55 55 55 55 0a 11 03 01 0f 00 ff ff fe 82** fa 16 03	
+
+### Struttura payload
+
+Definizione del payload "Parametri" (30 byte, offset 0-based), verificata direttamente su `serializer.ParametersEnablings`:
+
+Offset	| Significato	| Note
+--------|---------------|-----
+0-4	| ?	| Non mappato da nessun campo del DTO
+5, 7, 9	| Tempo bulgar	| `Time`: 0=30s, 1=60s, 2=90s, 3=180s, 4=9min. **I tre offset contengono sempre lo stesso valore** (`data[5]=data[7]=data[9]`)
+6	| Tempo pre-allarme	| `Time`, stessi valori
+8	| Tempo emergenza	| `Time`, stessi valori
+10	| ?	| Non mappato da nessun campo del DTO
+11	| Mancanza rete	| `PowerLack`: 0=1h, 1=2h, 2=4h
+12	| ?	| Non mappato da nessun campo del DTO
+13	| Conteggio allarmi	| `AlarmCount`: 0=nessuno, 1=due, 2=quattro, 3=sei, 4=otto
+14	| Preavviso	| `Notice`: 0=nessuno, 5=5min, 10=10min, 15=15min, 20=20min
+15	| Programmatore orario	| `Enabling`: 0=disabilitato, 1=abilitato
+16	| DST	| Bitmask: bit0=abilitato, bit1=ultima domenica (invece di prima)
+17-20	| ?	| Non mappato da nessun campo del DTO
+21	| Mese OFF DST	| `Month`: 1-12
+22	| Mese ON DST	| `Month`: 1-12
+23	| LAN	| `Enabling`: **qui `0x00`=disabilitato** (convenzione invertita rispetto agli altri campi enable/disable del protocollo, dove tipicamente 0=disabilitato ma con valore di default diverso)
+24	| Play	| Bitmask: bit0=fault, bit1=settori, bit2=sistema, bit3=servizio
+25	| Help	| Bit 7 (`0x80`)=abilitato, bit 0-2=indirizzo tastiera - 1
+26-29	| Checksum blocco	|
+
+### Esempio payload
 
 Dati parametri:
 
@@ -506,25 +579,11 @@ Dati parametri:
 `00 00 00 00 00` *`11`* `01` *`11`* `01` *`11`* `01` *`11`* `01` *`11`* `01 00 00 00 00 05 00` *`11`* `03 55 55 55 55 0a` *`11`* `03` *`11`* `01 0f 00 `  
 `ff ff fe 82 # Checksum blocco`
 
-Mappa (parziale) byte → significato, dedotta da `ClientConnection` (payload di scrittura, 30 byte, offset 0-based). Valori enum lato codice: `ParametersEnablings.Time`, `.AlarmCount`, `.PowerLack`, `.Play` (bitmask), `.Notice`, `.DST` (bitmask), `.Month`:
-
-* **offset 5, 7, 9** — timer (30s/60s/90s/180s/9min); il commento originale li raggruppa genericamente come "bulgar/pre-alarm/emerg" tutti a 30s nella cattura, il mapping preciso offset↔timer specifico resta da confermare
-* **offset 8** — emergency time
-* **offset 6** — pre-alarm time
-* **offset 13** — alarm count (`0x00`=nessuno, `0x01`=due, `0x02`=quattro, `0x03`=sei, `0x04`=otto)
-* **offset 11** — power lack (`0x00`=1h, `0x01`=2h, `0x02`=4h)
-* **offset 14** — notice (`0x00`=nessuno, `0x05`=5min, `0x0a`=10min, `0x0f`=15min, `0x14`=20min)
-* **offset 15** — time programmer enable (`0x01`=abilitato)
-* **offset 16** — auto DST (`0x01`=abilitato) + sunday (bit `0x02`: `0`=prima, `1`=ultima)
-* **offset 21** — mese OFF DST (es. ottobre)
-* **offset 22** — mese ON DST (es. marzo)
-* **offset 23** — LAN (`0x00`=disabilitato, invece del solito `0x01`)
-* **offset 24** — play flags (bitmask: bit0 `0x01`=fault, bit1 `0x02`=sectors, bit2 `0x04`=system, bit3 `0x08`=service)
-* **offset 25** — help message enable (`0x80`) + nibble basso = indirizzo tastiera - 1
-
-**Nota**: numerazione offset dedotta da commenti originali dell'autore scritti durante il reverse engineering, non riverificata sistematicamente byte-per-byte contro il dump — da considerare un buon punto di partenza, non un mapping definitivo.
-
 ## Numeri telefonici
+
+Dati dei numeri telefonici e dei relativi eventi che vengono trasmessi.
+
+### Cattura stream
 
 Porzione di stream relativo alla scrittura dei numeri telefonici:
 
@@ -536,6 +595,35 @@ Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
 	| 	| 000000B4	| 16	| SYN
 000004E8	| 01 55 55 02 02 80 00 e7 **00 00 00 00 00 00 00 00 00 04 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 04 00 00 00 04 00 00 00 04 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 04 00 00 00 04 00 00 00 04 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff ff 55 80** fa ec 03			
 	| 	| 000000B5	| 16	| SYN
+
+### Struttura payload
+
+Definizione del payload "Phone numbers": sono riportati 12 numeri telefonici, ognuno dei quali presenta i seguenti dati:  
+` `  
+
+Offset (relativo al numero telefonico)	| Significato	| Note
+----------------------------------------|---------------|-----
+0-13	| Numero telefonico	| Numero telefonico codificato in BCD (14 byte - 28 cifre)
+14	| Bitmask settori associati	| LSB = settore 1
+15	| Rete telefonica	| 00 = PSTN, 01 = GSM, 02 = LAN
+16	| Modalità di invio	| 00 = Voce, 01 = IDP, 02 = ADF, 04 = Modem, 06 = SMS, 07 = C200b
+
+**Numeri LAN/IP**: quando il campo "Rete telefonica" vale `0x02` (LAN), il numero di telefono viene sostituito da un indirizzo nel formato fisso `DDD.DDD.DDD.DDD:DDDDD` (ogni ottetto zero-paddato a 3 cifre, parte finale a 5 cifre). Codifica **confermata direttamente dal codice** — `serializer.PhoneNumber.serialize()` implementa esattamente questa logica: ogni cifra decimale in BCD, il punto `.` come nibble `0x0B`, i due punti `:` come nibble `0x0C`, con lo stesso commento originale dell'autore (`"In generale gli IP sono 001B002B003B004C00005"`) presente sia lì sia in `ClientConnection`. Il padding dell'ultimo nibble spaiato (per un numero dispari di cifre/separatori, come nell'esempio sotto) è `0x0F` — anch'esso nel codice (`bcdByte | 0x0F`).
+
+Esempio verificato con una cattura reale, per l'indirizzo `192.168.001.100:00080`:
+
+* sequenza cifre/separatori: `1 9 2 B 1 6 8 B 0 0 1 B 1 0 0 C 0 0 0 8 0`
+* byte risultanti: `19 2b 16 8b 00 1b 10 0c 00 08 0f` (11 byte, l'ultimo nibble `f` di padding) — combacia esattamente con la cattura
+
+Coerente con il `// FIXME: IP addresses in phone numbers!` ancora presente nel setter `PhoneNumber.setPhoneNumber()` del DTO — quel commento segnala solo che il DTO non valida/riconosce ancora esplicitamente il formato IP (accetta la stringa così com'è), non che la codifica sia incerta: la codifica stessa, lato serializer, è completa.
+
+**Tabella di assegnazione eventi**: dopo i 12 record telefonici (204 byte) segue, negli offset assoluti restituiti da `PhoneNumber.Event.getOffset()`, una **word a 2 byte** per ciascun evento riportabile:
+
+* La word è un **bitmask dei telefoni** assegnati a quell'evento (bit *i* = telefono *i+1*), confermato empiricamente: cattura con solo il telefono 1 abilitato su un evento → `0x0001`; stesso evento con telefono 1 **e** 2 → `0x0003`
+* Gli offset **non sono consecutivi/ordinati** come nell'enum: sono sparsi nei restanti ~200 byte del payload (tra il termine dei record telefonici e il checksum), con ampie zone non utilizzate tra un evento e l'altro — coerente con le lunghe sequenze di `00 00 00 00...` osservate nei dump
+* Il serializer inoltre **duplica** il valore di alcuni eventi su più offset contemporaneamente (mirror, come già visto per [C200B](#c200b)): `PNSCE_BURGLAR_ALARM` → anche `0x00e8`, `0x00ec`, `0x00f0`; `PNSCE_INPUT_INCLUSION_EXCLUSION` → anche `0x0148`; `PNSCE_TAMPERING` → anche `0x0104`, `0x0170`; `PNSCE_SYSTEM_FAULT` → anche `0x0130`
+
+### Esempio payload
 
 Dati telefoni:
 
@@ -617,76 +705,89 @@ Dati telefoni:
 `00 00 00 00 `  
 `ff ff 57 75 # Checksum blocco`
 
-**Tabella di assegnazione eventi**: dopo i 12 record telefonici segue una tabella con un blocco da 4 byte per ciascun evento riportabile (stesso ordine e stessi eventi dell'enum `PhoneNumber.Event`, che ne fissa già gli offset — vedi Javadoc), con questa struttura dedotta da più catture comparate in `ClientConnection`:
-
-* **byte 0** — maschera partizioni (valori osservati: `0x00`, `0x02`, `0x04`, `0x08`; il significato esatto del bit resta da confermare)
-* **byte 1** — **bitmask dei telefoni** assegnati a quell'evento (bit *i* = telefono *i+1*), confermato empiricamente: cattura con solo il telefono 1 abilitato su un evento → `0x01`; stesso evento con telefono 1 **e** 2 abilitati → `0x03`. Anche i valori "a scalare" osservati nelle prime catture (`0x01`, `0x03`, `0x05`, `0x09`, `0x11`, `0x21`, `0x41`, `0x81` per eventi diversi con solo telefono 1) sono coerenti con questa lettura se combinati col byte 0
-* **byte 2-3** — sempre `0x00` in tutte le catture disponibili, probabile riservato
-
-**Numeri LAN/IP**: quando il campo rete vale `0x02` (LAN), il numero di telefono viene sostituito da un indirizzo nel formato fisso `DDD.DDD.DDD.DDD:DDDDD` (ogni ottetto zero-paddato a 3 cifre, parte finale a 5 cifre). Codifica **confermata direttamente dal codice** — `serializer.PhoneNumber.serialize()` implementa esattamente questa logica: ogni cifra decimale in BCD, il punto `.` come nibble `0x0B`, i due punti `:` come nibble `0x0C`, con lo stesso commento originale dell'autore (`"In generale gli IP sono 001B002B003B004C00005"`) presente sia lì sia in `ClientConnection`. Il padding dell'ultimo nibble spaiato (per un numero dispari di cifre/separatori, come nell'esempio sotto) è `0x0F` — anch'esso nel codice (`bcdByte | 0x0F`), non un'ipotesi.
-
-Esempio verificato con una cattura reale, per l'indirizzo `192.168.001.100:00080`:
-
-* sequenza cifre/separatori: `1 9 2 B 1 6 8 B 0 0 1 B 1 0 0 C 0 0 0 8 0`
-* byte risultanti: `19 2b 16 8b 00 1b 10 0c 00 08 0f` (11 byte, l'ultimo nibble `f` di padding) — combacia esattamente con la cattura
-
-Coerente con il `// FIXME: IP addresses in phone numbers!` ancora presente nel setter `PhoneNumber.setPhoneNumber()` del DTO — quel commento segnala solo che il DTO non valida/riconosce ancora esplicitamente il formato IP (accetta la stringa così com'è), non che la codifica sia incerta: la codifica stessa, lato serializer, è completa.
-
 ## Parametri telefonici
 
-Comando: `0xe6 SET PHONE PARAMETERS` (scrittura, mai letta/collegata a `0x56 PHONE PARAMETERS` in tabella comandi — verificare se condividono lo stesso formato dati, come avviene per `0x26`/`0x96`). Payload di scrittura, 20 byte, dump catturato da `ClientConnection`:
+Parametri del compositore telefonico.
 
-```
-0000: 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
-0010: 00 00 00 00
-Checksum: 00000000
-```
+### Struttura payload
 
-Mappa byte (offset 0-based), enum lato codice `PhoneParameters.*`:
+Definizione del payload "Parametri telefonici" (20 byte, offset 0-based), verificata su `serializer.PhoneParameters`:
 
-* **offset 5** — call delay enable (`0x01`)
-* **offset 7** — return call (`ReturnCall`: `0x00`=disabilitato, `0x01`=tipo A, `0x02`=tipo B)
-* **offset 8** — remote surveillance enable (`0x01`)
-* **offset 9** — voice messages sending mode (`VoiceMessagesSendingMode`: `0x00`=nessuno, `0x01`-`0x04`=modalità 1-4)
-* **offset 11** — cyclic test call (`CyclicTestCallFrequency`: `0x00`=disabilitato, `0x01`=24h, `0x02`=a sistema inserito)
-* **offset 12** — indice numero telefonico per cyclic test call
-* **offset 13** — ora cyclic test call
-* **offset 14** — minuto cyclic test call
-* **offset 15** — intervallo cyclic test call (`CyclicTestCallInterval`: `0x00`=1h ... `0x0a`=168h, in progressione — vedi enum completa nel codice)
+Offset	| Significato	| Note
+--------|---------------|-----
+0-4	| ?	| Non mappato da nessun campo del DTO
+5	| Ritardo chiamata	| `Enabling`: 0=disabilitato, 1=abilitato
+6	| ?	| Non mappato da nessun campo del DTO
+7	| Richiamata	| `ReturnCall`: 0=disabilitato, 1=tipo A, 2=tipo B
+8	| Telesorveglianza	| `Enabling`
+9	| Modalità invio messaggi vocali	| `VoiceMessagesSendingMode`: 0=nessuno, 1-4=modalità 1-4
+10	| ?	| Non mappato da nessun campo del DTO
+11	| Frequenza chiamata di test ciclica	| `CyclicTestCallFrequency`: 0=disabilitato, 1=24h, 2=a sistema inserito
+12	| Indice numero telefonico per la chiamata di test	|
+13	| Ora chiamata di test	|
+14	| Minuto chiamata di test	|
+15	| Intervallo chiamata di test	| `CyclicTestCallInterval`: 0=1h, 1=4h, 2=8h, 3=12h, 4=24h, 5=48h, 6=72h, 7=96h, 8=120h, 9=144h, 10=168h
+16-19	| Checksum blocco	|
 
-**Nota**: dump con tutti zero (nessun dato configurato/testato con valori reali) — la mappa byte è dedotta dai commenti originali, non da un dump con valori non-default per ogni campo.
+**Nota**: mappatura offset→campo verificata direttamente sul serializer; il comando `0xe6` non è mai stato collegato in tabella a una lettura `0x56 PHONE PARAMETERS` corrispondente — verificare se condividono lo stesso formato dati, come avviene per `0x26`/`0x96`.
 
 ## PSTN GSM
 
-Comando: `0xea SET PSTN GSM` (scrittura, mai letta/collegata a `0x5a PSTN GSM` in tabella comandi). Payload di scrittura, 21 byte:
+Parametri delle reti telefoniche tradizionale (PSTN) e cellulare (GSM), ove installata la scheda GSM.
 
-```
-0000: 00 01 00 00 00 00 00 00  00 00 00 00 00 00 00 00
-0010: 00 ff ff ff ff
-Checksum: ffffffff
-```
+### Struttura payload
 
-Mappa byte (offset 0-based), enum lato codice `PSTNGSM.*`:
+Definizione del payload "PSTN GSM" (21 byte, offset 0-based), verificata su `serializer.PSTNGSM`:
 
-* **offset 0** — enable rete PSTN (`0x01`)
-* **offset 1** — paese (`Country`: `0x00`=Italia, `0x01`=Francia, `0x02`=Germania, `0x03`=Rep. Ceca, `0x04`=Polonia, `0x05`=Spagna, `0x06`=Portogallo, `0x07`=Grecia, `0x08`=Inghilterra)
-* **offset 4** — cifra accesso PABX locale (`PABXLocalAccessDigit`: `0x00`-`0x09`, `0xff`=disabilitato)
-* **offset 5** — tone control enable (`0x01`)
-* **offset 6** — answer control enable (`0x01`)
-* **offset 7** — PSTN line test (`PSTNLineTestFrequency`: `0x00`=disabilitato, `0x01`=24h, `0x02`=a sistema inserito)
-* **offset 8** — PSTN answering machine rings (`PSTNAnsweringMachineRings`: `0x00`=disabilitato, `0x02`/`0x04`/`0x08`=numero di squilli)
-* **offset 9** — enable rete GSM (`0x01`)
-* **offset 10** — GSM answering machine (nessuno squillo) enable (`0x01`)
-* **offset 11** — incoming SMS enable (`0x01`)
-* **offset 12-14** — PIN GSM in BCD
-* **offset 15** — mese di scadenza
-* **offset 16** — anno di scadenza
+Offset	| Significato	| Note
+--------|---------------|-----
+0	| Abilita rete PSTN	| `Enabling`
+1	| Paese	| `Country`: 0=Italia, 1=Francia, 2=Germania, 3=Rep. Ceca, 4=Polonia, 5=Spagna, 6=Portogallo, 7=Grecia, 8=Inghilterra
+2-3	| ?	| Non mappato da nessun campo del DTO
+4	| Cifra accesso PABX locale	| `PABXLocalAccessDigit`: 0-9, 0xff=disabilitato
+5	| Controllo tono	| `Enabling`
+6	| Controllo risposta	| `Enabling`
+7	| Test linea PSTN	| `PSTNLineTestFrequency`: 0=disabilitato, 1=24h, 2=a sistema inserito
+8	| Squilli segreteria PSTN	| `PSTNAnsweringMachineRings`: 0=disabilitato, 2/4/8=numero di squilli
+9	| Abilita rete GSM	| `Enabling`
+10	| Segreteria GSM (nessuno squillo)	| `Enabling`
+11	| SMS in ingresso	| `Enabling`
+12-14	| PIN GSM	| BCD, 3 byte; `0xff 0xff 0xff` = nessun PIN impostato
+15	| Mese di scadenza	|
+16	| Anno di scadenza	|
+17-20	| Checksum blocco	|
 
 ## SMS
 
-Comando `0x59 SMS` (lettura bulk di tutti i messaggi, vedi [Tipologie di comando](#tipologie-di-comando)): payload suddiviso su 3 pacchetti (140+140+84 byte, checksum incluso), un blocco di 40 caratteri per messaggio (padding `0xff`), **nello stesso ordine** dell'enum `SMSs.SMSIndex`: Intrusione (burglar), Allarme tecnico 1/2/3, Incendio, Partizione attivata, Partizione disattivata, Manomissione, Note — conferma diretta che l'ordine dell'enum nel DTO rispecchia esattamente l'ordine on-the-wire.
+Comando `0x59 SMS` (lettura bulk di tutti i messaggi, vedi [Tipologie di comando](#tipologie-di-comando))
 
-Comando: `0xa0 SMS PROGRAMMING` (scrittura singola istanza, confermata raggiungibile via `ElkrommFacadeImpl.setSMS()`, vedi [Tipologie di comando](#tipologie-di-comando)). L'indice identifica il tipo di evento tramite l'enum `SMSs.SMSIndex` (9 valori: `SMS_BURLGAR`, `SMS_TECHNICAL_ALARM_1/2/3`, `SMS_FIRE`, `SMS_PARTITION_ON`, `SMS_PARTITION_OFF`, `SMS_TAMPERING`, `SMS_NOTICE`). Dump catturato (payload 41 byte, checksum non valido nella cattura):
+### Struttura payload
+
+Payload 364 byte, un blocco di 40 caratteri per messaggio (padding `0xff`), **nello stesso ordine** dell'enum `SMSs.SMSIndex`.
+
+Offset	| Significato	| Note
+--------|---------------|-----
+0-39	| Messaggio 1	| `SMS_BURLGAR` (intrusione), ASCII, padding `0xff`
+40-79	| Messaggio 2	| `SMS_TECHNICAL_ALARM_1`
+80-119	| Messaggio 3	| `SMS_TECHNICAL_ALARM_2`
+120-159	| Messaggio 4	| `SMS_TECHNICAL_ALARM_3`
+160-199	| Messaggio 5	| `SMS_FIRE` (incendio)
+200-239	| Messaggio 6	| `SMS_PARTITION_ON` (partizione attivata)
+240-279	| Messaggio 7	| `SMS_PARTITION_OFF` (partizione disattivata)
+280-319	| Messaggio 8	| `SMS_TAMPERING` (manomissione)
+320-359	| Messaggio 9	| `SMS_NOTICE` (nota)
+360-363	| Checksum blocco	|
+
+Comando `0xa0 SMS PROGRAMMING` (scrittura singola istanza, confermata raggiungibile via `ElkrommFacadeImpl.setSMS()`, vedi [Tipologie di comando](#tipologie-di-comando)): payload 41 byte, verificato su `serializer.SingleSMS`.
+
+Offset	| Significato	| Note
+--------|---------------|-----
+0	| Indice	| **1-based** (`SMSIndex.ordinal() + 1`): 1=burglar, 2-4=tech.alarm 1-3, 5=fire, 6=partition on, 7=partition off, 8=tampering, 9=notice
+1-40	| Messaggio	| 40 byte ASCII, padding `0xff`
+
+### Esempio payload
+
+Dump catturato:
 
 ```
 0000: 01 41 67 61 69 6e 3f ff  ff ff ff ff ff ff ff ff
@@ -694,57 +795,137 @@ Comando: `0xa0 SMS PROGRAMMING` (scrittura singola istanza, confermata raggiungi
 0020: ff ff ff ff ff ff ff ff  ff
 ```
 
-Il testo `41 67 61 69 6e 3f` decodifica in ASCII come **"Again?"** — testo di prova inserito dall'autore in Hi-Connect. Struttura dedotta: byte 0 = indice (`SMSIndex`, qui `0x01` = `SMS_TECHNICAL_ALARM_1`?, da confermare), seguito dal testo del messaggio in ASCII, padding `0xff` fino a fine payload.
+Il testo `41 67 61 69 6e 3f` decodifica in ASCII come **"Again?"** — testo di prova inserito dall'autore in Hi-Connect. Indice `0x01` = `SMS_BURLGAR`.
 
 ## C200B
 
-Comando: `0xe8 SET C200B` (scrittura, mai letta/collegata a `0x58 C200B` in tabella comandi). Payload 168 byte. Due catture disponibili — la prima con tutti i codici evento a zero (checksum valido, quindi configurazione "vuota" legittima), la seconda con i codici popolati:
+Comando: `0xe8 SET C200B` (scrittura, mai letta/collegata a `0x58 C200B` in tabella comandi).
 
-```
-0030: 00 00 0f 00 11 10 00 00  01 01 01 01 02 00 00 00
-0040: 0f 07 08 06 00 00 00 09  12 00 0c 12 0b 0b 0a 0b
-0050: 0e 0e 14 0d 13 00 00 00  03 04 05 0f 00 00 00 00
-```
+### Struttura payload
 
-I codici evento (offset ~0x30-0x57, uno o più byte ciascuno a seconda del tipo di allarme) **coincidono esattamente** con i valori dell'enum `C200bParameters.Event` già presente nei DTO:
+Payload 168 byte, verificato su `serializer.C200bParameters`.
 
-* burglar `0x38` (prima occorrenza, poi `0x39`, `0x3a`, `0x3b`)
-* pre-alarm `0x3c`
-* tech type 1/2/3: `0x58`/`0x59`/`0x5a`
-* fire `0x43`, panic `0x41`, silent panic `0x42`
-* medical aid `0x47`, hold up `0x4e`
-* system on/off `0x4c` (poi `0x4d`, `0x4f`)
-* partition on/off `0x4a`
-* maintenance `0x53`
-* input incl/escl `0x50` (poi `0x51`)
-* tampering `0x32` (poi `0x40`, `0x5b`)
-* mains power `0x35`, low battery `0x34`
-* system fault `0x48` (poi `0x4b`)
-* false code `0x54`
-* cyclical test call `0x52`
-
-Dall'offset `0x64` per 64 byte (`0x40`) seguono gli **input code** di ciascun ingresso in sequenza, `0xff` se l'ingresso non esiste (probabile codifica per il protocollo di allarme remoto C200b, coerente con l'uso generale di questo comando per la trasmissione eventi a centrale ricezione allarmi).
+Offset	| Significato	| Note
+--------|---------------|-----
+0x00-0x31	| ?	| Non mappato da nessun campo del DTO
+0x32	| Tampering	| `Event.C2PE_TAMPERING`; il serializer scrive lo stesso valore anche a `0x40` e `0x5b` (mirror, non eventi distinti)
+0x33	| ?	|
+0x34	| Batteria scarica	| `Event.C2PE_LOW_BATTERY`
+0x35	| Mancanza rete	| `Event.C2PE_MAINS_POWER`
+0x36-0x37	| ?	|
+0x38	| Allarme intrusione	| `Event.C2PE_BURGLAR_ALARM`; mirror anche a `0x39`, `0x3a`, `0x3b`
+0x39-0x3b	| (mirror di 0x38)	|
+0x3c	| Pre-allarme	| `Event.C2PE_PRE_ALARM`
+0x3d-0x3f	| ?	|
+0x40	| (mirror di 0x32, tampering)	|
+0x41	| Panico	| `Event.C2PE_PANIC`
+0x42	| Panico silenzioso	| `Event.C2PE_SILENT_PANIC`
+0x43	| Incendio	| `Event.C2PE_FIRE_ALARM`
+0x44-0x46	| ?	|
+0x47	| Emergenza medica	| `Event.C2PE_MEDICAL_EMERGENCY`
+0x48	| Guasto sistema	| `Event.C2PE_SYSTEM_FAULT`; mirror anche a `0x4b`
+0x49	| ?	|
+0x4a	| Attivazione/disattivazione partizioni	| `Event.C2PE_PARTITIONS_ON_OFF`
+0x4b	| (mirror di 0x48, guasto sistema)	|
+0x4c	| Attivazione/disattivazione sistema	| `Event.C2PE_SYSTEM_ON_OFF`; mirror anche a `0x4d`, `0x4f`
+0x4d	| (mirror di 0x4c)	|
+0x4e	| Rapina	| `Event.C2PE_HOLD_UP`
+0x4f	| (mirror di 0x4c)	|
+0x50	| Esclusione/inclusione ingresso	| `Event.C2PE_INPUT_INCLUSION_EXCLUSION`; mirror anche a `0x51`
+0x51	| (mirror di 0x50)	|
+0x52	| Chiamata di test ciclica	| `Event.C2PE_CYCLICAL_TEST_CALL`
+0x53	| Manutenzione	| `Event.C2PE_MAINTENANCE`
+0x54	| Codice falso	| `Event.C2PE_FALSE_CODE`
+0x55-0x57	| ?	|
+0x58	| Allarme tecnico tipo 1	| `Event.C2PE_TECHNOLOGICAL_ALARM_TYPE_1`
+0x59	| Allarme tecnico tipo 2	| `Event.C2PE_TECHNOLOGICAL_ALARM_TYPE_2`
+0x5a	| Allarme tecnico tipo 3	| `Event.C2PE_TECHNOLOGICAL_ALARM_TYPE_3`
+0x5b	| (mirror di 0x32, tampering)	|
+0x5c-0x63	| ?	|
+0x64-0xa3	| Codici ingresso	| 64 byte, uno per ingresso logico (`MAX_LOGICAL_INPUTS`), `0xff` se l'ingresso non esiste
+0xa4-0xa7	| Checksum blocco	|
 
 ## Time programmer e Day class commands
 
 Comandi coinvolti: `0xe4 SET TIME PROGRAMMER` (scrittura, blocco intero) e `0xa1 DAY CLASS CMDS` (scrittura singola istanza, confermata raggiungibile via `ElkrommFacadeImpl.setDayClassCommands()`). L'"istanza" per `DAY_CLASS_CMDS` è la classe giorno stessa, enum `DayClassCommands.DayClass`: `DCCDC_WORKING_DAY` (`0x00`), `DCCDC_PRE_HOLIDAY` (`0x01`), `DCCDC_HOLIDAY` (`0x02`).
 
-**SET_TIME_PROGRAMMER** (payload 131 byte) — mappa giorni della settimana → tipo di giorno, offset dedotti da `ClientConnection`:
+### Struttura payload
 
-* lunedì → offset 120, martedì-sabato in sequenza, domenica → offset 126
-* valore: `0x00`=Working day, `0x01`=Pre holiday, `0x02`=Holiday
+Definizione del payload "SET TIME PROGRAMMER" (131 byte), verificata su `serializer.TimeProgrammer`:
 
-**Comandi orari per giorno** (`Command` DTO, usato sia dentro `SET_TIME_PROGRAMMER` sia per i comandi di dettaglio di ciascuna day class): 5 byte a comando:
+Offset	| Significato	| Note
+--------|---------------|-----
+0-39	| Comandi giorno lavorativo	| 8 comandi × 5 byte, vedi tabella "Comando" sotto
+40-79	| Comandi pre-festivo	| 8 comandi × 5 byte
+80-119	| Comandi festivo	| 8 comandi × 5 byte
+120	| Classe giorno — lunedì	| `DayClass`: 0=lavorativo, 1=pre-festivo, 2=festivo
+121	| Classe giorno — martedì	|
+122	| Classe giorno — mercoledì	|
+123	| Classe giorno — giovedì	|
+124	| Classe giorno — venerdì	|
+125	| Classe giorno — sabato	|
+126	| Classe giorno — domenica	|
+127-130	| Checksum blocco	|
 
-* byte 0 — azione (`Command.Action`: `0x00`=nessuna, `0x01`=abilita, `0x02`=disabilita)
-* byte 1 — indice oggetto (numero settore o utente, a seconda del byte successivo)
-* byte 2 — tipo oggetto (`Command.ObjectType`: `0x10`=settori, `0x40`=utente — commento nel codice segnala "more to come: keys, outputs", quindi la lista potrebbe non essere completa)
-* byte 3 — ora
-* byte 4 — minuto
+Definizione del payload "DAY CLASS CMDS" (41 byte, scrittura singola istanza — nessun checksum di blocco, coerente con le altre scritture di singola istanza), verificata su `serializer.DayClassCommands`:
 
-Esempio dal dump `WORKING_DAY_CMD` (payload 41 byte): comando 1 → ora 1, minuto 2, enable, user 13 (dedotto dal commento originale, non riverificato byte-per-byte contro l'esadecimale).
+Offset	| Significato	| Note
+--------|---------------|-----
+0	| Classe giorno	| `DayClass`, identifica quale dei tre set di comandi si sta scrivendo
+1-40	| 8 comandi	| 5 byte ciascuno, vedi tabella "Comando" sotto
+
+**Comando** (`Command` DTO, 5 byte, usato sia dentro `SET_TIME_PROGRAMMER` sia in `DAY_CLASS_CMDS`; se `Action` vale `CA_NONE` i byte 1-4 non vengono scritti dal serializer):
+
+Offset (relativo al comando)	| Significato	| Note
+--------|---------------|-----
+0	| Azione	| `Command.Action`: 0=nessuna, 1=abilita, 2=disabilita
+1	| Oggetto	| Indice dell'oggetto (settore o utente, in base al byte successivo)
+2	| Tipo oggetto	| `Command.ObjectType`: `0x10`=settori, `0x40`=utente — commento nel codice segnala "more to come: keys, outputs", quindi la lista potrebbe non essere completa
+3	| Ora	|
+4	| Minuto	|
+
+Esempio dal dump `WORKING_DAY_CMD`: comando 1 → ora 1, minuto 2, enable, user 13 (dedotto dal commento originale, non riverificato byte-per-byte contro l'esadecimale).
+
+## Input
+
+Struttura condivisa (38 byte), usata all'interno di ogni espansione (fino a 8 per espansione, [Blocco B](#blocco-b)) e per i due ingressi di bordo di ciascun [Keypad](#keypads)/[Reader](#readers). Uno slot con `logicNumber` (offset 0) a `0x00` è considerato non usato: la centrale non ne inizializza necessariamente gli altri campi, e `serializer.Input` lo restituisce come `null` in fase di lettura.
+
+### Struttura payload
+
+Offset	| Significato	| Note
+--------|---------------|-----
+0	| Numero logico dell'ingresso	| `0x00` = slot non usato
+1	| Configurazione	| `Configuration`: 0=non usato, 1=NC, 2=NA, 3=NC bilanciato singolo, 4=NC doppio bilanciato, 7=shock, 8=roller
+2	| Specializzazione	| `Specialization`: vedi enum, 20 valori (immediato, ritardato, primo ingresso, incendio, tamper, ...)
+3	| Sensibilità (bit alti) + Flags (bit bassi)	| Sensibilità: `0x80`=bassa, `0x40`=media, `0x00`=alta (solo per shock/roller). Flags (bitmask): `0x01`=esclusione abilitata, `0x02`=doppio rilascio, `0x08`=OR settori. **Attenzione**: il bit `0x10` non è gestito da nessun campo — la centrale (almeno un MP-508 v03.01) lo alza in modo apparentemente casuale su alcuni ingressi; va escluso dal calcolo del checksum di blocco (vedi [Blocco B](#blocco-b))
+4	| Telecamera associata	| `Video`: 0=nessuna, poi bitmask 0x10/0x20/0x40/0x80 per le camere 1-4
+5	| Partizioni associate	| Bitmask, LSB = partizione 1
+6-29	| Nome	| 24 byte
+30-33	| ?	| Non mappato da nessun campo del DTO
+34	| Ritardo	| `Delay`: 0=5s, 1=10s, 2=30s, 3=60s, 4=90s, 5=5min, 6=20s
+35-37	| ?	| Non mappato da nessun campo del DTO
+
+## Output
+
+Struttura condivisa (37 byte), usata all'interno di ogni espansione (fino a 6 per espansione, [Blocco B](#blocco-b)). Come per [Input](#input), uno slot con `logicNumber` (offset 0) a `0x00` è considerato non usato.
+
+### Struttura payload
+
+Offset	| Significato	| Note
+--------|---------------|-----
+0	| Numero logico dell'uscita	| `0x00` = slot non usato
+1	| Tipo	| `Type`: 0=non usata, 1=normalmente bassa, 2=normalmente alta
+2	| Partizioni associate	| Bitmask, LSB = partizione 1
+3	| Specializzazione	| `Specialization`: 31 valori (burglar, pre-alarm, tamper, gong, buzzer, stato partizioni, ...)
+4-7	| ?	| Non mappato da nessun campo del DTO
+8-31	| Nome	| 24 byte
+32-36	| ?	| Non mappato da nessun campo del DTO
 
 ## Blocco B
+
+Dati delle espansioni.
+
+### Cattura stream
 
 Porzione di stream relativo alla lettura del blocco B:
 
@@ -790,10 +971,29 @@ Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
 	| 	| 000007A5	| 16	| SYN
 	| 	| 000007A6	| 01 55 55 0c 0c 01 00 51 **af** fe 3d 03	
 
+### Struttura payload
+
+Ogni espansione occupa un blocco fisso di 559 byte (`EXPANSION_SIZE`), ripetuto per il numero di espansioni presenti (0-7); il blocco complessivo termina con i consueti 4 byte di checksum.
+
+Offset (relativo all'espansione)	| Significato	| Note
+--------|---------------|-----
+0	| ?	| Non mappato da nessun campo del DTO
+1	| Indirizzo bus	| `0x00` = espansione non presente/non usata
+2	| ?	| Non mappato da nessun campo del DTO
+3-6	| Versione firmware	| stringa ASCII, es. `"0301"`
+7-310	| 8 ingressi	| 38 byte ciascuno, vedi [Input](#input)
+311-532	| 6 uscite	| 37 byte ciascuna, vedi [Output](#output)
+533-556	| Nome	| 24 byte
+557-558	| ?	| **Non fornito dal client in scrittura** (Hi-Connect invia sempre `0x00 0x00` su `EXPANSION PROGRAMMING`/0x91), valorizzato dalla centrale in lettura con contenuto non ancora identificato — va escluso dal calcolo del checksum di blocco (vedi nota sotto)
+
+**Nota sul checksum**: su una centrale MP-508 v03.01 reale, il checksum di blocco calcolato secondo l'algoritmo standard (vedi [Tipologie di comando](#tipologie-di-comando)) non combacia con quello incorporato dalla centrale, a meno di azzerare preventivamente, per ciascuna espansione: i 2 byte a offset relativo 557-558 sopra descritti, **e** il bit `0x10` a offset relativo 10 (byte 3 del primo... in realtà di *ogni* ingresso, offset relativo `7 + i*38 + 3` per l'ingresso i-esimo) — vedi [Input](#input). Il codice attuale (`serializer.Expansions`) applica questa doppia correzione prima di verificare il checksum. Non è chiaro se questo comportamento sia specifico del firmware v03.01 o generale; va verificato su altre versioni/modelli.
+
+### Esempio payload
+
 Dati blocco B:
 
 `00 00 00`   
-`30 33 30 31 # 0301 versione centrale???`  
+`30 33 30 31 # 0301 versione centrale`  
 `01 04` *`11`* `03 09 00 01 # Ingresso centrale: numero logico, configurazione (4 = NC Double Bal, 2 = NO), specializzazione (3 = way, 0 = immediate, 5 = first/last entry, 7 = tecno type 1), escludibile etc?, aux?, settori`  
 `56 4f 4c 20 5a 4f 4e 41 20 47 49 4f 52 4e 4f 00 00 00 00 00 00 00 00 00 00 00 00 00 02 ff ff 00 `  
 `02 04 00 09 00 01`   
@@ -822,10 +1022,10 @@ Dati blocco B:
 `2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 00 00 00 00 00 `  
 `06 02 ff 01 00 00 00 00`   
 `2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 00 00 00 00 00 `  
-`55 43 20 20 20 20 20 20 20 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # UC?`  
+`55 43 20 20 20 20 20 20 20 20 00 00 00 00 00 00 00 00 00 00 00 00 00 00 # UC`  
 `c9 20`   
-`00 01 00 # Indirizzo nuova unità?`  
-`30 32 30 30 # 0200 versione espansione???`  
+`00 01 00 # Indirizzo nuova unità`  
+`30 32 30 30 # 0200 versione espansione`  
 `09 04 00 09 00 08`   
 `50 45 52 53 49 41 4e 41 20 43 41 4d 45 52 49 4e 41 00 00 00 00 00 00 00 00 00 00 00 00 ff ff 00 `  
 `0a 04 00 09 00 04`   
@@ -856,8 +1056,8 @@ Dati blocco B:
 `00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 `  
 `45 50 20 30 31 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 # EP 01`  
 `21 20`   
-`00 02 00 # Indirizzo nuova unità?`  
-`30 32 30 30 # 0200 versione espansione?`  
+`00 02 00 # Indirizzo nuova unità`  
+`30 32 30 30 # 0200 versione espansione`  
 *`11`* `11 04 00 09 00 02`   
 `50 4f 52 54 41 20 47 41 52 41 47 45 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff ff 00 `  
 `12 04` *`11`* `03 09 00 02`   
@@ -894,6 +1094,8 @@ Dati blocco B:
 
 Dati delle tastiere.
 
+### Cattura stream
+
 Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
 ----------------|---------------|---------------|---------------|------------
   | 01 55 55 00 00 00 00 52 ff 04 03	|	|	| KEYPADS
@@ -903,6 +1105,8 @@ Offset TX	| Trasmissione	| Offset RX	| Ricezione	| Significato
   |	|	| 16 | SYN
   |	|	| 01 55 55 01 01 56 00 52 **20 20 20 20 20 20 20 00 00 00 00 00 ff ff 00 00 00 00 09 00 01 2e 2e 2e 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 00 00 00 00 00 ff ff 00 06 ff 00 47 41 52 41 47 45 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 e5 00 ff ff e3 8b** ef 9f 03
 
+### Struttura payload
+
 Definizione del payload "Keypads":  
 ` `  
 
@@ -911,8 +1115,8 @@ Offset	| Significato	| Note
 0	| Indirizzo	| Indirizzo della tastiera (base 1)
 1	| ?	|
 2-5	| Versione	| ASCII
-6-43	| Primo ingresso della tastiera	|
-44-81	| Secondo ingresso della tastiera	|
+6-43	| Primo ingresso della tastiera	| 38 byte, vedi [Input](#input)
+44-81	| Secondo ingresso della tastiera	| 38 byte, vedi [Input](#input)
 82	| Bitmask abilitazioni	| GONG, ENTRY, EXIT, MASKING, FIRE, PANIC, HELP
 83	| Bitmask settori associati	| LSB = settore 1
 84	| Bitmask feature audio	| CAPABLE, ENABLED
@@ -923,47 +1127,70 @@ Offset	| Significato	| Note
 
 ` `  
 ` `  
+
+### Esempio payload
+
 Esempio di cattura dati tastiere:  
 
-`01 Address`  
+`01 @ Address`  
 `00`  
-`30343130 Version`  
-`000001090001`  
+`30343130 # Version`  
+`000001090001 # Ingresso 1`  
 `2e2e2e202020202020202020202020202020202020202020`  
 `0000000000ffff00`  
-`000000090001`  
+`000000090001 # Ingresso 2`  
 `2e2e2e202020202020202020202020202020202020202020`  
 `0000000000ffff00`  
-`06`  
-`ff Settori associati`  
-`06`  
+`06 # Abilitazioni`  
+`ff # Settori associati`  
+`06 # Audio`  
 `494e47524553534f00000000000000000000000000000000 # Name`  
 `b000`  
 
-`02 Address`  
+`02 # Address`  
 `00`  
-`30323030 Version`  
-`000001090001`  
+`30323030 # Version`  
+`000001090001 # Ingresso 1`  
 `2e2e2e202020202020202020202020202020202020202020`  
 `0000000000ffff00`  
-`000000090001`  
+`000000090001 # Ingresso 2`  
 `2e2e2e202020202020202020202020202020202020202020`  
 `0000000000ffff00`  
-`06`  
-`ff Settori associati`  
-`00`  
+`06 # Abilitazioni`  
+`ff # Settori associati`  
+`00 # Audio`  
 `474152414745000000000000000000000000000000000000 # Name`  
 `e500`  
 
-`ffffe38b checksum blocco`  
+`ffffe38b # Checksum blocco`  
 
 ## Readers
 
-TBD
+Struttura di un reader (113 byte), letta in blocco con `READERS` (0x53) e scrivibile singolarmente con `READER PROGRAMMING` (0x93, non verificato su hardware reale — vedi [Tipologie di comando](#tipologie-di-comando)).
+
+### Struttura payload
+
+Offset	| Significato	| Note
+--------|---------------|-----
+0	| Indirizzo bus	| Identifica il reader anche in scrittura singola (non c'è un wrapper `SingleReader` separato)
+1-5	| ?	| Non mappato da nessun campo del DTO
+6-43	| Primo ingresso del reader	| 38 byte, vedi [Input](#input)
+44-81	| Secondo ingresso del reader	| 38 byte, vedi [Input](#input)
+82	| LED 1	| Partizione associata (`ElkrommFacade.Partition`), `0x00` = non usato
+83	| LED 2	| Partizione associata
+84	| LED 3	| Partizione associata
+85	| LED 4	| Partizione associata
+86	| Bitmask abilitazioni	| `Reader.Enablings`: solo `MASKING` (0x01) noto
+87-110	| Nome	| 24 byte
+111-112	| ?	| Non mappato da nessun campo del DTO
 
 ## Keypad programming
 
 Scrittura parametri singola tastiera
+
+### Struttura payload
+
+Vedi [Keypads](#keypads), offset 0-110. L'indirizzo della singola tastiera è entrocontenuto all'offset relativo 0.
 
 Dati keypad:
 
