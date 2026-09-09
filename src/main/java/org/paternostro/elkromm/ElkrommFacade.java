@@ -66,7 +66,7 @@ public interface ElkrommFacade
 
     /** Number of proximity key readers supported by the panel. */
     public static final int MAX_READERS = 16;
-    /** Number of LAN/other expansion units supported by the panel. */
+    /** Number of expansion units supported by the panel. */
     public static final int MAX_EXPANSIONS = 7;
     /** Number of keypads supported by the panel. */
     public static final int MAX_KEYPADS = 8;

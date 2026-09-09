@@ -10,8 +10,8 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
- * An expansion unit ("blocco B"): an addressable board adding inputs and/or
- * outputs to the panel (e.g. a LAN expansion, an I/O expansion).
+ * An expansion unit (aka "nodes" or "blocco B"): an addressable board adding inputs and/or
+ * outputs to the panel.
  * <p>
  * Exposes its {@link Input} and {@link Output} collections through the
  * usual {@code List}-style accessors rather than returning the backing
