@@ -85,9 +85,13 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
          * 
          * Assuming that those valueas are meaningless, to make checksum match, we reset last two bytes of each 
          * expansion and that bit in each input. This explains the black magic code that follows.
+         * 
+         * NOTICE: input's bit 4 (0x10) at offset 3 is raised by the control panel on input exclusion, but is not
+         * computed in the block checksum. Please note that 0x10 is exactly {@link ElkrommFacade.InputStatus.IS_EXCLUDED}
          */
         int patchOffset = 0;
         while ((patchOffset += EXPANSION_SIZE - 2) < data.length) data[patchOffset++] = data[patchOffset++] = 0x00;
+        // clear not-checksummed excluded bit from inputs
         patchOffset = 0;
         while (patchOffset < data.length - 4) {
             for (int j = 0; j < 8; j++) {
