@@ -7,17 +7,15 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.paternostro.elkromm.ElkrommException;
+import org.paternostro.elkromm.ElkrommFacade.Status;
 import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.ElkronCommand;
-import org.paternostro.elkromm.ElkrommFacade.Status;
-import org.paternostro.elkromm.dto.Expansion;
 import org.paternostro.elkromm.serializer.ElkrommSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,9 +86,9 @@ public class RoundTripIT {
         assertEquals(data.length, roundTripVerify.length);
 
         for (int i = 0; i < data.length - 4; i++) {
-            if (!validator.validate(i)) continue;
+            if (validator != null && !validator.validate(i)) continue;
 
-            patcher.patchData(i, data, roundTripVerify);
+            if (patcher != null) patcher.patchData(i, data, roundTripVerify);
 
             if (data[i] != roundTripVerify[i]) {
                 differences = true;
@@ -102,9 +100,9 @@ public class RoundTripIT {
                 } else {
                     if (data[i] != lastData || roundTripVerify[i] != lastRTV) {
                         if (startIndex == i - 1) {
-                            logger.error(String.format("Byte diverso! 0x%08x: 0x%02x <-> 0x%02x", startIndex, lastData, lastRTV));
-                        } else {
-                            logger.error(String.format("Bytes diversi! 0x%08x-0x%08x: 0x%02x <-> 0x%02x", startIndex, i - 1, lastData, lastRTV));
+                        logger.error(String.format("Different byte!  0x%08x           : 0x%02x <-> 0x%02x", startIndex, lastData, lastRTV));
+                    } else {
+                        logger.error(String.format("Different bytes! 0x%08x-0x%08x: 0x%02x <-> 0x%02x", startIndex, i - 1, lastData, lastRTV));
                         }
 
                         startIndex = i;
@@ -115,9 +113,9 @@ public class RoundTripIT {
             } else {
                 if (startIndex != -1) {
                     if (startIndex == i - 1) {
-                        logger.error(String.format("Byte diverso! 0x%08x: 0x%02x <-> 0x%02x", startIndex, lastData, lastRTV));
+                        logger.error(String.format("Different byte!  0x%08x           : 0x%02x <-> 0x%02x", startIndex, lastData, lastRTV));
                     } else {
-                        logger.error(String.format("Bytes diversi! 0x%08x-0x%08x: 0x%02x <-> 0x%02x", startIndex, i - 1, lastData, lastRTV));
+                        logger.error(String.format("Different bytes! 0x%08x-0x%08x: 0x%02x <-> 0x%02x", startIndex, i - 1, lastData, lastRTV));
                     }
 
                     startIndex = -1;
@@ -134,38 +132,180 @@ public class RoundTripIT {
         assertTrue(!differences);
     }
 
-    @Test 
-    public void expansionsRoundTripIT() throws UnknownHostException, IOException, ElkrommException
+    private <T> void roundTripIT(ElkronCommand command, ElkrommSerializer<T> serializer, Validate validator, Patch patcher) throws ElkrommException
+    {
+        assertNotNull(serializer);
+
+        byte[]  data = facade.getData(command);
+
+        assertNotNull(data);
+        assertTrue(data.length > 0);
+
+        T       dto = serializer.deserialize(data);
+
+        assertNotNull(dto);
+        
+        if (dto.getClass().isArray()) {
+            StringBuffer sb = new StringBuffer("DTO[]: [");
+
+            for (Object pivot : ((Object[])dto)) {
+                sb.append(pivot).append(", ");
+            }
+
+            sb.setLength(sb.length() - 2);
+            sb.append("]");
+
+            logger.debug(sb.toString());
+        } else {
+            logger.debug("DTO: " + dto);
+        }
+
+        byte[]  roundTripVerify = serializer.serialize(dto);
+
+        compareArrays(data, roundTripVerify, validator, patcher);
+
+        ElkrommUtils.dumpPayload(command, roundTripVerify);
+    }
+
+    @Test
+    public void partitionsAndAreasRoundTripIT() throws ElkrommException
     {
         if (config.areITEnabled()) {
-            ElkrommSerializer<Expansion[]>  expansionsSerializer = factory.getExpansionsSerializer();
+            roundTripIT(ElkronCommand.PARTITIONS_AND_AREAS, factory.getAreasAndPartitionsSerializer(), null, null);
+        }
+    }
 
-            assertNotNull(expansionsSerializer);
+    @Test
+    public void systemStatusRoundTripIT() throws ElkrommException
+    {
+        if (config.areITEnabled()) {
+            roundTripIT(ElkronCommand.SYSTEM_STATUS, factory.getSystemStatusSerializer(), null, null);
+        }
+    }
 
-            byte[]                          data = facade.getData(ElkronCommand.EXPANSIONS);
+    @Test
+    public void peripheralUnitsRoundTripIT() throws ElkrommException
+    {
+        if (config.areITEnabled()) {
+            roundTripIT(ElkronCommand.PERIPHERAL_UNITS_ADDRESSES, factory.getPeripheralUnitsSerializer(), null, null);
+        }
+    }
 
-            assertNotNull(data);
-            assertTrue(data.length > 0);
+    @Test
+    public void checksumsRoundTripIT() throws ElkrommException
+    {
+        if (config.areITEnabled()) {
+            roundTripIT(ElkronCommand.CHECKSUM, factory.getChecksumsSerializer(), null, null);
+        }
+    }
 
-            Expansion[]                     expansions = expansionsSerializer.deserialize(data);
+    @Test
+    public void usersRoundTripIT() throws ElkrommException
+    {
+        if (config.areITEnabled()) {
+            roundTripIT(ElkronCommand.USERS, factory.getUsersSerializer(), null, null);
+        }
+    }
 
-            assertNotNull(expansions);
-            assertTrue(expansions.length > 0);
+    @Test
+    public void keysRoundTripIT() throws ElkrommException
+    {
+        if (config.areITEnabled()) {
+            roundTripIT(ElkronCommand.KEYS, factory.getKeysSerializer(), null, null);
+        }
+    }
 
-            logger.debug("Expansions: " + Arrays.toString(expansions));
+    @Test
+    public void phoneNumbersSendingCodesRoundTripIT() throws ElkrommException
+    {
+        if (config.areITEnabled()) {
+            roundTripIT(ElkronCommand.PHONE_NUMBERS, factory.getPhoneNumbersSendingCodesSerializer(), null, null);
+        }
+    }
 
-            byte[]                          roundTripVerify = expansionsSerializer.serialize(expansions);
+    @Test
+    public void phoneParametersRoundTripIT() throws ElkrommException
+    {
+        if (config.areITEnabled()) {
+            roundTripIT(ElkronCommand.PHONE_PARAMETERS, factory.getPhoneParametersSerializer(), null, null);
+        }
+    }
 
-            compareArrays(data, roundTripVerify, index -> index % 559 != 557 && index % 559 != 558, (index, d, rtv) -> {
+    @Test
+    public void pstnGsmRoundTripIT() throws ElkrommException
+    {
+        if (config.areITEnabled()) {
+            roundTripIT(ElkronCommand.PSTN_GSM, factory.getPSTNGSMSerializer(), null, null);
+        }
+    }
+
+    @Test
+    public void readersRoundTripIT() throws ElkrommException
+    {
+        if (config.areITEnabled()) {
+            roundTripIT(ElkronCommand.READERS, factory.getReadersSerializer(), null, null);
+        }
+    }
+
+    @Test
+    public void smssRoundTripIT() throws ElkrommException
+    {
+        if (config.areITEnabled()) {
+            roundTripIT(ElkronCommand.SMS, factory.getSMSsSerializer(), null, null);
+        }
+    }
+
+    @Test
+    public void timeProgrammerRoundTripIT() throws ElkrommException
+    {
+        if (config.areITEnabled()) {
+            roundTripIT(ElkronCommand.TIME_PROGRAMMER, factory.getTimeProgrammerSerializer(), null, null);
+        }
+    }
+
+    @Test
+    public void c200BRoundTripIT() throws ElkrommException
+    {
+        if (config.areITEnabled()) {
+            roundTripIT(ElkronCommand.C200B, factory.getC200bParametersSerializer(), null, null);
+        }
+    }
+
+    @Test 
+    public void expansionsRoundTripIT() throws ElkrommException
+    {
+        if (config.areITEnabled()) {
+            roundTripIT(ElkronCommand.EXPANSIONS, factory.getExpansionsSerializer(), index -> index % 559 != 557 && index % 559 != 558, (index, d, rtv) -> {
                 int inputNum = ((index % 559) - 7) / 38;
 
                 if (inputNum < 8 && ((index % 559) - 7) % 38 == 3) {
                     d[index] &= ~0x10;
-                    // logger.debug("Patching " + index + " - Input num: " + inputNum);
                 }
             });
+        }
+    }
 
-            ElkrommUtils.dumpPayload(ElkronCommand.EXPANSIONS, roundTripVerify);
+    @Test
+    public void userEnablingsRoundTripIT() throws ElkrommException
+    {
+        if (config.areITEnabled()) {
+            roundTripIT(ElkronCommand.USER_ENABLINGS, factory.getUserEnablingsSerializer(), null, null);
+        }
+    }
+
+    @Test
+    public void keypadsRoundTripIT() throws ElkrommException
+    {
+        if (config.areITEnabled()) {
+            roundTripIT(ElkronCommand.KEYPADS, factory.getKeyboardsSerializer(), null, null);
+        }
+    }
+
+    @Test
+    public void parametersEnablingsRoundTripIT() throws ElkrommException
+    {
+        if (config.areITEnabled()) {
+            roundTripIT(ElkronCommand.PARAMETERS_ENABLINGS, factory.getParametersEnablingsSerializer(), null, null);
         }
     }
 
