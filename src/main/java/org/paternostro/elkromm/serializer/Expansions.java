@@ -5,6 +5,7 @@ import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.dto.Expansion;
 import org.paternostro.elkromm.dto.Input;
+import org.paternostro.elkromm.dto.Input.Configuration;
 import org.paternostro.elkromm.dto.Output;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,13 +41,7 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
 
             for (int j = 0; j < obj[i].getInputNum(); j++) {
                 offset = i * EXPANSION_SIZE + j * INPUT_SIZE + 7;
-
-                if (obj[i].getInput(j).getLogicNumber() == 0) {
-                    // Unused input, skip
-                    continue;
-                }
-
-                System.arraycopy(iSerializer.serialize(obj[i].getInput(j)), 0, data, offset, INPUT_SIZE);
+                System.arraycopy(iSerializer.serialize((obj[i].getInput(j) == null || obj[i].getInput(j).getLogicNumber() == 0 || obj[i].getInput(j).getConfiguration() == Configuration.IC_NOT_USED) ? Input.UNUSED : obj[i].getInput(j)), 0, data, offset, INPUT_SIZE);
             }
 
             for (int j = 0; j < obj[i].getOutputNum(); j++) {
@@ -117,12 +112,12 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
                 offset = i * EXPANSION_SIZE + j * INPUT_SIZE + 7;
 
                 if (data[offset] == 0x00) {
-                    // Unused input, skip
-                    continue;
+                    // Unused input
+                    retval[i].addInput(null);
+                } else {
+                    System.arraycopy(data, offset, iData, 0, INPUT_SIZE);
+                    retval[i].addInput(iSerializer.deserialize(iData));
                 }
-
-                System.arraycopy(data, offset, iData, 0, INPUT_SIZE);
-                retval[i].addInput(iSerializer.deserialize(iData));
             }
 
             for (int j = 0; j < 6; j++) {

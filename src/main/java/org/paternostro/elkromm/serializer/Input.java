@@ -15,17 +15,15 @@ public class Input implements ElkrommSerializer<org.paternostro.elkromm.dto.Inpu
 
         byte[]  data = new byte[length()];
 
-        if (obj.getLogicNumber() > 0) {
-            data[0] = (byte)(obj.getLogicNumber() & 0xFF);
-            data[1] = obj.getConfiguration().getValue();
-            data[2] = obj.getSpecialization().getValue();
-            data[3] = (byte)(obj.getSensitivity().getValue() | obj.getFlags());
-            data[4] = obj.getVideo().getValue();
-            data[5] = ElkrommUtils.packPartitions(obj.getAssociatedPartitions());
-            ElkrommUtils.setText(data, 6, obj.getName(), ElkrommFacade.NAME_LENGTH);
-            data[34] = obj.getDelay().getValue();
-        }
-        // else: unused input, skip
+        data[0] = (byte)(obj.getLogicNumber() & 0xFF);
+        data[1] = obj.getConfiguration().getValue();
+        data[2] = obj.getSpecialization().getValue();
+        data[3] = (byte)(obj.getSensitivity().getValue() | obj.getFlags());
+        data[4] = obj.getVideo().getValue();
+        data[5] = ElkrommUtils.packPartitions(obj.getAssociatedPartitions());
+        ElkrommUtils.setText(data, 6, obj.getName(), ElkrommFacade.NAME_LENGTH);
+        data[34] = obj.getDelay().getValue();
+        data[35] = data[36] = (byte)0xff;
         
         return data;
     }

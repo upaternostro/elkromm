@@ -389,7 +389,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
      * @throws AssertionError if not currently logged in, or if the panel does not reply with SYN
      * @throws ElkrommException if a communication or threading error occurs
      */
-    private byte[] getData(ElkronCommand cmd) throws ElkrommException
+    byte[] getData(ElkronCommand cmd) throws ElkrommException
     {
         if (status != Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
 

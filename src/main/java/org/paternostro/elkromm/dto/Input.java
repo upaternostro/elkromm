@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 import org.paternostro.elkromm.ElkrommFacade;
+import org.paternostro.elkromm.ElkrommUtils;
 
 /**
  * A logical input (sensor): a door/window contact, PIR, shock/roller
@@ -417,6 +418,18 @@ public class Input implements Serializable, Comparable<Input>
         }
     }
 
+    public static final Input UNUSED = new Input(
+        0, 
+        Configuration.IC_NOT_USED, 
+        Specialization.IS_IMMEDIATE, 
+        Sensitivity.IS_HIGH, 
+        (byte)(Flags.IF_EXCLUSION_ENABLED.getValue() | Flags.IF_OR_SECTORS.getValue()), 
+        Video.IV_NONE, 
+        ElkrommUtils.unpackPartitions((byte)0x01), 
+        "...                     ", 
+        Delay.ID_5_SECS
+    );
+
     private int             logicNumber;
     private Configuration   configuration;
     private Specialization  specialization;
@@ -471,7 +484,7 @@ public class Input implements Serializable, Comparable<Input>
      */
     public void setLogicNumber(int logicNumber)
     {
-        if (logicNumber < 1 || logicNumber > ElkrommFacade.MAX_LOGICAL_INPUTS) throw new IllegalArgumentException("Wrong logic number value, expected between 1 and " + ElkrommFacade.MAX_LOGICAL_INPUTS + ", found " + logicNumber);
+        if (logicNumber < 0 || logicNumber > ElkrommFacade.MAX_LOGICAL_INPUTS) throw new IllegalArgumentException("Wrong logic number value, expected between 0 and " + ElkrommFacade.MAX_LOGICAL_INPUTS + ", found " + logicNumber);
 
         this.logicNumber = logicNumber;
     }
