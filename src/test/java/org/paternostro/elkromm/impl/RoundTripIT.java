@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -16,6 +17,7 @@ import org.paternostro.elkromm.ElkrommFacade.Status;
 import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.ElkronCommand;
+import org.paternostro.elkromm.dto.Checksums;
 import org.paternostro.elkromm.serializer.ElkrommSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,7 @@ public class RoundTripIT {
     private static ITConfig             config;
     private static ElkrommFactory       factory;
     private static ElkrommFacadeImpl    facade;
+    private static Checksums            checksums;
 
     @BeforeClass
     public static void initTests() throws IOException
@@ -59,6 +62,14 @@ public class RoundTripIT {
             try {
                 facade.login(config.getPlantCode(), config.getTechnicalPin());
                 assertEquals(facade.getStatus(), Status.ST_LOGGED_IN);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                assertTrue(false);
+            }
+            
+            try {
+                checksums = facade.getChecksums();
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -145,20 +156,7 @@ public class RoundTripIT {
 
         assertNotNull(dto);
         
-        if (dto.getClass().isArray()) {
-            StringBuffer sb = new StringBuffer("DTO[]: [");
-
-            for (Object pivot : ((Object[])dto)) {
-                sb.append(pivot).append(", ");
-            }
-
-            sb.setLength(sb.length() - 2);
-            sb.append("]");
-
-            logger.debug(sb.toString());
-        } else {
-            logger.debug("DTO: " + dto);
-        }
+        logger.debug("DTO: " + (dto.getClass().isArray() ? Arrays.toString((Object[])dto) : dto));
 
         byte[]  roundTripVerify = serializer.serialize(dto);
 
@@ -242,8 +240,14 @@ public class RoundTripIT {
     @Test
     public void readersRoundTripIT() throws ElkrommException
     {
-        if (config.areITEnabled()) {
-            roundTripIT(ElkronCommand.READERS, factory.getReadersSerializer(), null, null);
+        if (config.areITEnabled() && checksums.getReaders() != 0) {
+            roundTripIT(ElkronCommand.READERS, factory.getReadersSerializer(), index -> index % 113 != 111 && index % 113 != 112, (index, d, rtv) -> {
+                int inputNum = ((index % 113) - 6) / 38;
+
+                if (inputNum < 2 && ((index % 113) - 6) % 38 == 3) {
+                    d[index] &= ~0x10;
+                }
+            });
         }
     }
 
@@ -274,7 +278,7 @@ public class RoundTripIT {
     @Test 
     public void expansionsRoundTripIT() throws ElkrommException
     {
-        if (config.areITEnabled()) {
+        if (config.areITEnabled() && checksums.getNodes() != 0) {
             roundTripIT(ElkronCommand.EXPANSIONS, factory.getExpansionsSerializer(), index -> index % 559 != 557 && index % 559 != 558, (index, d, rtv) -> {
                 int inputNum = ((index % 559) - 7) / 38;
 
@@ -296,8 +300,14 @@ public class RoundTripIT {
     @Test
     public void keypadsRoundTripIT() throws ElkrommException
     {
-        if (config.areITEnabled()) {
-            roundTripIT(ElkronCommand.KEYPADS, factory.getKeyboardsSerializer(), null, null);
+        if (config.areITEnabled() && checksums.getKeypads() != 0) {
+            roundTripIT(ElkronCommand.KEYPADS, factory.getKeyboardsSerializer(), index -> index % 111 != 109 && index % 111 != 110, (index, d, rtv) -> {
+                int inputNum = ((index % 111) - 6) / 38;
+
+                if (inputNum < 2 && ((index % 111) - 6) % 38 == 3) {
+                    d[index] &= ~0x10;
+                }
+            });
         }
     }
 

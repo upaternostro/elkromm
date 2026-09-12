@@ -48,6 +48,18 @@ public class Keyboards implements ElkrommSerializer<Keyboard[]>
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
         if (data.length % KEYBOARD_SIZE != 4) throw new IllegalArgumentException("Wrong data size");
+
+        int patchOffset = 0;
+        while ((patchOffset += KEYBOARD_SIZE - 2) < data.length) data[patchOffset++] = data[patchOffset++] = 0x00;
+        // clear not-checksummed excluded bit from inputs
+        patchOffset = 0;
+        while (patchOffset < data.length - 4) {
+            for (int j = 0; j < 2; j++) {
+                data[patchOffset + 6 + j * INPUT_SIZE + 3] &= ~0x10;
+            }
+            patchOffset += KEYBOARD_SIZE;
+        }
+
         if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getLong(data, data.length - 4)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getLong(data, data.length - 4));
 
         Keyboard[]                  retval = new Keyboard[(data.length - 4) / KEYBOARD_SIZE];

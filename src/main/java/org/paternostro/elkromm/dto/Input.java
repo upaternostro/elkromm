@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 import org.paternostro.elkromm.ElkrommFacade;
-import org.paternostro.elkromm.ElkrommUtils;
 
 /**
  * A logical input (sensor): a door/window contact, PIR, shock/roller
@@ -418,18 +417,6 @@ public class Input implements Serializable, Comparable<Input>
         }
     }
 
-    public static final Input UNUSED = new Input(
-        0, 
-        Configuration.IC_NOT_USED, 
-        Specialization.IS_IMMEDIATE, 
-        Sensitivity.IS_HIGH, 
-        (byte)(Flags.IF_EXCLUSION_ENABLED.getValue() | Flags.IF_OR_SECTORS.getValue()), 
-        Video.IV_NONE, 
-        ElkrommUtils.unpackPartitions((byte)0x01), 
-        "...                     ", 
-        Delay.ID_5_SECS
-    );
-
     private int             logicNumber;
     private Configuration   configuration;
     private Specialization  specialization;
@@ -479,7 +466,7 @@ public class Input implements Serializable, Comparable<Input>
     /**
      * Sets this input's logical number.
      *
-     * @param logicNumber the number to set, in range [1, {@link ElkrommFacade#MAX_LOGICAL_INPUTS}]
+     * @param logicNumber the number to set, in range [0, {@link ElkrommFacade#MAX_LOGICAL_INPUTS}], zero for unused inputs
      * @throws IllegalArgumentException if out of range
      */
     public void setLogicNumber(int logicNumber)

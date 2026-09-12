@@ -5,7 +5,6 @@ import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.dto.Expansion;
 import org.paternostro.elkromm.dto.Input;
-import org.paternostro.elkromm.dto.Input.Configuration;
 import org.paternostro.elkromm.dto.Output;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +40,7 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
 
             for (int j = 0; j < obj[i].getInputNum(); j++) {
                 offset = i * EXPANSION_SIZE + j * INPUT_SIZE + 7;
-                System.arraycopy(iSerializer.serialize((obj[i].getInput(j) == null || obj[i].getInput(j).getLogicNumber() == 0 || obj[i].getInput(j).getConfiguration() == Configuration.IC_NOT_USED) ? Input.UNUSED : obj[i].getInput(j)), 0, data, offset, INPUT_SIZE);
+                System.arraycopy(iSerializer.serialize(obj[i].getInput(j)), 0, data, offset, INPUT_SIZE);
             }
 
             for (int j = 0; j < obj[i].getOutputNum(); j++) {
@@ -110,14 +109,8 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
 
             for (int j = 0; j < 8; j++) {
                 offset = i * EXPANSION_SIZE + j * INPUT_SIZE + 7;
-
-                if (data[offset] == 0x00) {
-                    // Unused input
-                    retval[i].addInput(null);
-                } else {
-                    System.arraycopy(data, offset, iData, 0, INPUT_SIZE);
-                    retval[i].addInput(iSerializer.deserialize(iData));
-                }
+                System.arraycopy(data, offset, iData, 0, INPUT_SIZE);
+                retval[i].addInput(iSerializer.deserialize(iData));
             }
 
             for (int j = 0; j < 6; j++) {
@@ -131,13 +124,6 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
                 System.arraycopy(data, offset, oData, 0, OUTPUT_SIZE);
                 retval[i].addOutput(oSerializer.deserialize(oData));
             }
-
-//            int checksum = 0;
-//            for (int j = 0; j < 557; j++) {
-//                checksum += data[i * EXPANSION_SIZE + j];
-//            }
-//            checksum += ElkrommUtils.getWord(data, i * EXPANSION_SIZE + 557);
-//            logger.info("Checksum: " + checksum);
         }
 
         return retval;
