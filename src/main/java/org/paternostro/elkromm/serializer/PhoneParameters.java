@@ -19,10 +19,14 @@ public class PhoneParameters implements ElkrommSerializer<org.paternostro.elkrom
 
         byte[]  data = new byte[length()];
 
+        data[ 0] = data[ 1] = data[ 2] = data[ 3] = 0x66;
+        data[ 4] = 0x01;
         data[ 5] = obj.getCallDelay().getValue();
+        data[ 6] = 0x07;
         data[ 7] = obj.getReturnCall().getValue();
         data[ 8] = obj.getRemoteSurveillance().getValue();
         data[ 9] = obj.getVoiceMessagesSendingMode().getValue();
+        data[10] = 0x02;
         data[11] = obj.getCyclicTestCallFrequency().getValue();
         data[12] = obj.getCyclicTestCallPhoneNumber();
         data[13] = obj.getCyclicTestCallHour();

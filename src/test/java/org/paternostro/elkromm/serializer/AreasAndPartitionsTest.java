@@ -16,12 +16,12 @@ public class AreasAndPartitionsTest {
 
         for (int i = 0; i < 4; i++) {
             associatedPartitions[i] = true;
-            ap.addArea(new org.paternostro.elkromm.dto.Area(i+1, "Area " + i, associatedPartitions));
+            ap.addArea(new org.paternostro.elkromm.dto.Area("Area " + i, associatedPartitions));
             associatedPartitions[i] = false;
         }
 
         for (int i = 0; i < 8; i++) {
-            ap.addPartition(new org.paternostro.elkromm.dto.Partition(i + 1, "Partition " + i, false, Type.STANDARD, i*10, i*20));
+            ap.addPartition(new org.paternostro.elkromm.dto.Partition("Partition " + i, false, Type.STANDARD, i*10, i*20));
         }
 
         byte[]  data = ElkrommFactory.getFactory().getAreasAndPartitionsSerializer().serialize(ap);

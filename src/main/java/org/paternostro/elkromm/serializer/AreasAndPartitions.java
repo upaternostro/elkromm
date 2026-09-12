@@ -16,7 +16,7 @@ public class AreasAndPartitions implements ElkrommSerializer<org.paternostro.elk
 
         data[0] = (byte)obj.getAreaNum(); // numero di aree
 
-        for (int i = 0; i < obj.getAreaNum(); i++) {
+        for (int i = 0; i < ElkrommFacade.MAX_AREAS; i++) {
             data[i + 1] = (byte)ElkrommUtils.packPartitions(obj.getArea(i).getAssociatedPartitions()); // settori nell'area i-esima (bit mask)
             ElkrommUtils.setText(data, 5 + i*24, obj.getArea(i).getName(), 24); // nome dell'area i-esima
         }
@@ -25,7 +25,7 @@ public class AreasAndPartitions implements ElkrommSerializer<org.paternostro.elk
         data[102] = 0; // self exclusion (bit mask)
         data[103] = 0; // arming block (bit mask)
 
-        for (int i = 0; i < obj.getPartitionNum(); i++) {
+        for (int i = 0; i < ElkrommFacade.MAX_PARTITIONS; i++) {
             switch (obj.getPartition(i).getType()) { // tipo del settore i-esimo
                 case STANDARD:
                     break;
@@ -56,24 +56,22 @@ public class AreasAndPartitions implements ElkrommSerializer<org.paternostro.elk
         if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getLong(data, data.length - 4)) throw new IllegalArgumentException("Wrong checksum");
 
         org.paternostro.elkromm.dto.AreasAndPartitions  retval = new org.paternostro.elkromm.dto.AreasAndPartitions();
-        int                                             areas;
-        int                                             partitions;
         int                                             selfExclusion;
         int                                             armingBlock;
         Partition.Type                                  type;
         byte                                            partitionBitMask;
 
-        areas = data[0]; // numero di aree
+        retval.setAreaNum(data[0]); // numero di aree
 
-        for (byte i = 0; i < areas; i++) {
-            retval.addArea(new Area(i + 1, ElkrommUtils.getText(data, 5 + i * 24, 24), ElkrommUtils.unpackPartitions(data[i + 1])));
+        for (byte i = 0; i < ElkrommFacade.MAX_AREAS; i++) {
+            retval.addArea(new Area(ElkrommUtils.getText(data, 5 + i * 24, 24), ElkrommUtils.unpackPartitions(data[i + 1])));
         }
 
-        partitions = data[101]; // numero di settori
+        retval.setPartitionNum(data[101]); // numero di settori
         selfExclusion = data[102];
         armingBlock = data[103];
 
-        for (byte i = 0; i < partitions; i++) {
+        for (byte i = 0; i < ElkrommFacade.MAX_PARTITIONS; i++) {
             partitionBitMask = ElkrommFacade.Partition.values()[i].getValue();
 
             if ((selfExclusion & partitionBitMask) == 0x00) {
@@ -90,7 +88,7 @@ public class AreasAndPartitions implements ElkrommSerializer<org.paternostro.elk
                 }
             }
 
-            retval.addPartition(new Partition(i + 1, ElkrommUtils.getText(data, 136 + i * 24, 24), false, type, ElkrommUtils.getWord(data, 104 + i * 2), ElkrommUtils.getWord(data, 120 + i * 2)));
+            retval.addPartition(new Partition(ElkrommUtils.getText(data, 136 + i * 24, 24), false, type, ElkrommUtils.getWord(data, 104 + i * 2), ElkrommUtils.getWord(data, 120 + i * 2)));
         }
 
         return retval;

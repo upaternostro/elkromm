@@ -105,11 +105,11 @@ public class Model {
 
         // Init AreasAndPartitions
         for (int i = 1; i <= config.getAreas(); i++) {
-            this.areasAndPartitions.addArea(new Area(i, config.getAreaName(i), ElkrommUtils.unpackPartitions((byte)(config.getAreaSectors(i) & 0xFF))));
+            this.areasAndPartitions.addArea(new Area(config.getAreaName(i), ElkrommUtils.unpackPartitions((byte)(config.getAreaSectors(i) & 0xFF))));
         }
 
         for (int i = 1; i <= config.getSectors(); i++) {
-            this.areasAndPartitions.addPartition(new Partition(i, config.getSectorName(i), false, config.getSectorType(i), config.getSectorEntryTime(i), config.getSectorExitTime(i)));
+            this.areasAndPartitions.addPartition(new Partition(config.getSectorName(i), false, config.getSectorType(i), config.getSectorEntryTime(i), config.getSectorExitTime(i)));
         }
 
         // Init Users

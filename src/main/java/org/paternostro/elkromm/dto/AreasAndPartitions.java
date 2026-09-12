@@ -9,6 +9,8 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import org.paternostro.elkromm.ElkrommFacade;
+
 /**
  * Areas and partitions configuration ("blocco A"): the panel's arming
  * structure, read/written as a whole via the {@code AREE & SETTORI}/
@@ -22,14 +24,44 @@ import java.util.stream.Stream;
  */
 public class AreasAndPartitions implements Serializable
 {
+    private byte            areaNum;
+    private byte            partitionNum;
     private List<Area>      areas;
     private List<Partition> partitions;
 
     /** Creates a new, empty areas/partitions configuration. */
     public AreasAndPartitions()
     {
+        setAreaNum((byte)0);
+        setPartitionNum((byte)0);
         this.areas = new ArrayList<>();
         this.partitions = new ArrayList<>();
+    }
+
+    /**
+     * Sets how many areas are configured.
+     *
+     * @param areaNum the areas number to set, in range [0, {@link ElkrommFacade#MAX_AREAS}]
+     * @throws IllegalArgumentException if out of range
+     */
+    public void setAreaNum(byte areaNum)
+    {
+        if (areaNum < 0 || areaNum > ElkrommFacade.MAX_AREAS) throw new IllegalArgumentException("Wrong areaNum " + areaNum + ", expected between 0 and " + ElkrommFacade.MAX_AREAS);
+
+        this.areaNum = areaNum;
+    }
+
+    /**
+     * Sets how many partitions are configured.
+     *
+     * @param partitionNum the partitions number to set, in range [0, {@link ElkrommFacade#MAX_PARTITIONS}]
+     * @throws IllegalArgumentException if out of range
+     */
+    public void setPartitionNum(byte partitionNum)
+    {
+        if (partitionNum < 0 || partitionNum > ElkrommFacade.MAX_PARTITIONS) throw new IllegalArgumentException("Wrong partitionNum " + partitionNum + ", expected between 0 and " + ElkrommFacade.MAX_PARTITIONS);
+
+        this.partitionNum = partitionNum;
     }
 
     /**
@@ -57,9 +89,9 @@ public class AreasAndPartitions implements Serializable
      *
      * @return the area count
      */
-    public int getAreaNum()
+    public byte getAreaNum()
     {
-        return areas.size();
+        return areaNum;
     }
 
     /**
@@ -67,9 +99,9 @@ public class AreasAndPartitions implements Serializable
      *
      * @return the partition count
      */
-    public int getPartitionNum()
+    public byte getPartitionNum()
     {
-        return partitions.size();
+        return partitionNum;
     }
 
     /**
@@ -80,7 +112,9 @@ public class AreasAndPartitions implements Serializable
      */
     public Area getArea(int index)
     {
-        return areas.get(index);
+        if (index < 0 || index > ElkrommFacade.MAX_AREAS) throw new IllegalArgumentException("Wrong index " + index + ", expected between 0 and " + ElkrommFacade.MAX_AREAS);
+
+        return index < areas.size() ? areas.get(index) : Area.UNUSED;
     }
 
     /**
@@ -91,7 +125,9 @@ public class AreasAndPartitions implements Serializable
      */
     public Partition getPartition(int index)
     {
-        return partitions.get(index);
+        if (index < 0 || index > ElkrommFacade.MAX_PARTITIONS) throw new IllegalArgumentException("Wrong partitionNum " + index + ", expected between 0 and " + ElkrommFacade.MAX_PARTITIONS);
+
+        return index < partitions.size() ? partitions.get(index) : Partition.UNUSED;
     }
 
     /**

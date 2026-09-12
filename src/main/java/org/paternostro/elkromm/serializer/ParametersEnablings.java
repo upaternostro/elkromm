@@ -28,6 +28,7 @@ public class ParametersEnablings implements ElkrommSerializer<org.paternostro.el
         data[14] = obj.getNotice().getValue();
         data[15] = obj.getTimeProgrammer().getValue();
         data[16] = obj.getDST();
+        data[17] = data[18] = data[19] = data[20] = 0x55; // sembra non essere il plant code (testato con Hi-Connect ed il simulatore, cambiando plant code qui arriva sempre 0x55555555)
         data[21] = obj.getOff().getValue();
         data[22] = obj.getOn().getValue();
         data[23] = obj.getLan().getValue();

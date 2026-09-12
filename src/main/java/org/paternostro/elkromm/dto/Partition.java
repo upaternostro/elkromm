@@ -2,8 +2,6 @@ package org.paternostro.elkromm.dto;
 
 import java.io.Serializable;
 
-import org.paternostro.elkromm.ElkrommFacade;
-
 /**
  * A partition (a.k.a. sector): the smallest independently armable unit of
  * the panel, with its own entry/exit delays.
@@ -13,8 +11,10 @@ import org.paternostro.elkromm.ElkrommFacade;
  * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
  */
-public class Partition implements Serializable, Comparable<Partition>
+public class Partition implements Serializable
 {
+    public static final Partition   UNUSED = new Partition("...                     ", false, Type.STANDARD, 0, 0);
+
     /** How a partition behaves with respect to self-exclusion/arming restrictions. */
     public enum Type
     {
@@ -28,7 +28,6 @@ public class Partition implements Serializable, Comparable<Partition>
         UNKNOWN         // should never happen...
     }
 
-    private int         ordinal;
     private String      name;
     private boolean     vocalName;
     private Type        type;
@@ -38,44 +37,19 @@ public class Partition implements Serializable, Comparable<Partition>
     /**
      * Creates a new partition.
      *
-     * @param ordinal 1-based position of this partition, in range [1, {@link ElkrommFacade#MAX_PARTITIONS}]
      * @param name display name
      * @param vocalName whether the name is announced by voice
      * @param type this partition's behavior type
      * @param entryDelay entry delay, in seconds
      * @param exitDelay exit delay, in seconds
      */
-    public Partition(int ordinal, String name, boolean vocalName, Type type, int entryDelay, int exitDelay)
+    public Partition(String name, boolean vocalName, Type type, int entryDelay, int exitDelay)
     {
-        setOrdinal(ordinal);
         setName(name);
         setVocalName(vocalName);
         setType(type);
         setEntryDelay(entryDelay);
         setExitDelay(exitDelay);
-    }
-
-    /**
-     * Returns the 1-based ordinal of this partition.
-     *
-     * @return the ordinal
-     */
-    public int getOrdinal()
-    {
-        return ordinal;
-    }
-
-    /**
-     * Sets the 1-based ordinal of this partition.
-     *
-     * @param ordinal the ordinal to set, in range [1, {@link ElkrommFacade#MAX_PARTITIONS}]
-     * @throws IllegalArgumentException if out of range
-     */
-    public void setOrdinal(int ordinal)
-    {
-        if (ordinal < 1 || ordinal > ElkrommFacade.MAX_PARTITIONS) throw new IllegalArgumentException("Wrong ordinal " + ordinal + ", expected between 1 and " + ElkrommFacade.MAX_PARTITIONS);
-
-        this.ordinal = ordinal;
     }
 
     /**
@@ -193,20 +167,9 @@ public class Partition implements Serializable, Comparable<Partition>
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{ordinal=").append(ordinal).append(", name=").append(name).append(", vocalName=").append(vocalName).append(", type=").append(type
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{name=").append(name).append(", vocalName=").append(vocalName).append(", type=").append(type
                ).append(", entryDelay=").append(entryDelay).append(", exitDelay=").append(exitDelay).append("}");
 
         return sb.toString();
-    }
-
-    /**
-     * Compares two partitions by their ordinal.
-     *
-     * @param o the other partition to compare against
-     * @return the result of comparing the two ordinals
-     */
-    @Override
-    public int compareTo(Partition o) {
-        return Integer.compare(this.getOrdinal(), o.getOrdinal());
     }
 }

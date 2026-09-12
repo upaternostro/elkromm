@@ -37,8 +37,12 @@ public class PhoneNumbersSendingCodes implements ElkrommSerializer<org.paternost
                     ElkrommUtils.setWord(data, 0x00ec, value);
                     ElkrommUtils.setWord(data, 0x00f0, value);
                     break;
-                case PNSCE_INPUT_INCLUSION_EXCLUSION: // prima occorrenza, poi 148
+                case PNSCE_PARTITIONS_SYSTEM_ON_OFF: // prima occorrenza, poi 138, 140
+                    ElkrommUtils.setWord(data, 0x0138, value);
                     ElkrommUtils.setWord(data, 0x0140, value);
+                    break;
+                case PNSCE_INPUT_INCLUSION_EXCLUSION: // prima occorrenza, poi 148
+                    ElkrommUtils.setWord(data, 0x0148, value);
                     break;
                 case PNSCE_TAMPERING: // prima occorrenza, poi 104, 170
                     ElkrommUtils.setWord(data, 0x0104, value);

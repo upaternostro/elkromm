@@ -146,7 +146,7 @@ public class PhoneNumber implements Serializable {
         /** Hold-up. */
         PNSCE_HOLD_UP(0x013c),
         /** Partition/system armed or disarmed. */
-        PNSCE_PARTITIONS_SYSTEM_ON_OFF(0x0140),
+        PNSCE_PARTITIONS_SYSTEM_ON_OFF(0x0134), // prima occorrenza, poi 138, 140
         /** Maintenance required. */
         PNSCE_MAINTENANCE(0x0150),
         /** Input excluded or re-included. */

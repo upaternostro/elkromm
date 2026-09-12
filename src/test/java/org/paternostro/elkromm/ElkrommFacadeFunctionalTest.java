@@ -117,7 +117,7 @@ public class ElkrommFacadeFunctionalTest {
             
             assertNotNull(areasPartitions);
             assertTrue(areasPartitions.getAreaNum() >= 0 && areasPartitions.getAreaNum() <= ElkrommFacade.MAX_AREAS);
-            assertTrue(areasPartitions.getPartitionNum() > 0 && areasPartitions.getPartitionNum() <= ElkrommFacade.MAX_PARTITIONS);
+            assertTrue(areasPartitions.getPartitionNum() >= 0 && areasPartitions.getPartitionNum() <= ElkrommFacade.MAX_PARTITIONS);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
