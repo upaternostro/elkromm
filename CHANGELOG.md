@@ -50,6 +50,7 @@ following the [Keep a Changelog](https://keepachangelog.com/) convention (Added 
   failure, pending confirmation on real hardware) (fixes #8)
 - `PhoneNumbersSendingCodes` writing the "partitions/system on-off" event's assignment bits
   to the wrong offset, found by the new round-trip test suite
+- `Keyboards` serializer now uses `Keyboard` serializer to transform each keyboard
 
 ### Changed
 - Removed `ordinal` from `Credential`: redundant with the position in its containing array,
