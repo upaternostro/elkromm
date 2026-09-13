@@ -236,7 +236,7 @@ Offset	| Significato	| Note
 256-279	| Nome del sesto settore	|
 280-303	| Nome del settimo settore	|
 304-327	| Nome del ottavo settore	|
-328	| ?	|
+328	| ?	| Il serializer lo azzera esplicitamente in scrittura (`data[328] = 0; // ???`); stessa firma degli altri byte "di stato" già documentati (vedi [Input](#input)) — sospetto contenuto dinamico non gestito dal client, non ancora identificato
 329-332	| Checksum blocco	|
 
 ` `  
@@ -621,7 +621,7 @@ Coerente con il `// FIXME: IP addresses in phone numbers!` ancora presente nel s
 
 * La word è un **bitmask dei telefoni** assegnati a quell'evento (bit *i* = telefono *i+1*), confermato empiricamente: cattura con solo il telefono 1 abilitato su un evento → `0x0001`; stesso evento con telefono 1 **e** 2 → `0x0003`
 * Gli offset **non sono consecutivi/ordinati** come nell'enum: sono sparsi nei restanti ~200 byte del payload (tra il termine dei record telefonici e il checksum), con ampie zone non utilizzate tra un evento e l'altro — coerente con le lunghe sequenze di `00 00 00 00...` osservate nei dump
-* Il serializer inoltre **duplica** il valore di alcuni eventi su più offset contemporaneamente (mirror, come già visto per [C200B](#c200b)): `PNSCE_BURGLAR_ALARM` → anche `0x00e8`, `0x00ec`, `0x00f0`; `PNSCE_INPUT_INCLUSION_EXCLUSION` → anche `0x0148`; `PNSCE_TAMPERING` → anche `0x0104`, `0x0170`; `PNSCE_SYSTEM_FAULT` → anche `0x0130`
+* Il serializer inoltre **duplica** il valore di alcuni eventi su più offset contemporaneamente (mirror, come già visto per [C200B](#c200b)): `PNSCE_BURGLAR_ALARM` → anche `0x00e8`, `0x00ec`, `0x00f0`; `PNSCE_INPUT_INCLUSION_EXCLUSION` → anche `0x0148`; `PNSCE_TAMPERING` → anche `0x0104`, `0x0170`; `PNSCE_SYSTEM_FAULT` → anche `0x0130`; `PNSCE_PARTITIONS_SYSTEM_ON_OFF` → offset primario `0x0134` (non `0x0140` come riportato in una versione precedente di questo documento — bug di mirror scovato e corretto grazie alla suite di test round trip), con mirror anche a `0x0138` e `0x0140`
 
 ### Esempio payload
 
@@ -888,16 +888,16 @@ Esempio dal dump `WORKING_DAY_CMD`: comando 1 → ora 1, minuto 2, enable, user 
 
 ## Input
 
-Struttura condivisa (38 byte), usata all'interno di ogni espansione (fino a 8 per espansione, [Blocco B](#blocco-b)) e per i due ingressi di bordo di ciascun [Keypad](#keypads)/[Reader](#readers). Uno slot con `logicNumber` (offset 0) a `0x00` è considerato non usato: la centrale non ne inizializza necessariamente gli altri campi, e `serializer.Input` lo restituisce come `null` in fase di lettura.
+Struttura condivisa (38 byte), usata all'interno di ogni espansione (fino a 8 per espansione, [Blocco B](#blocco-b)) e per i due ingressi di bordo di ciascun [Keypad](#keypads)/[Reader](#readers). Uno slot con `logicNumber` (offset 0) a `0x00` è considerato non usato — **la centrale non azzera in modo affidabile gli altri campi in questo caso**: `Specialization` in particolare può contenere il valore residuo dell'ultima configurazione reale che quell'ingresso ha avuto (verificato: un ingresso riconfigurato da `DELAYED` a `NOT_USED` continua a riportare `DELAYED`, per poi cambiare in `IMMEDIATE` dopo un uso successivo dell'ingresso per altri test). Per questo motivo `serializer.Input` **deserializza sempre** un oggetto (anche per slot non usati), invece di restituire `null` come in una versione precedente del codice — è l'unico modo per rispettare il round trip, dato che il contenuto non è standardizzabile a un default fisso. Il comportamento non si presenta su [Output](#output), sempre azzerato in modo affidabile dalla centrale quando non usato.
 
 ### Struttura payload
 
 Offset	| Significato	| Note
 --------|---------------|-----
-0	| Numero logico dell'ingresso	| `0x00` = slot non usato
+0	| Numero logico dell'ingresso	| `0x00` = slot non usato (vedi nota sopra sul contenuto residuo)
 1	| Configurazione	| `Configuration`: 0=non usato, 1=NC, 2=NA, 3=NC bilanciato singolo, 4=NC doppio bilanciato, 7=shock, 8=roller
 2	| Specializzazione	| `Specialization`: vedi enum, 20 valori (immediato, ritardato, primo ingresso, incendio, tamper, ...)
-3	| Sensibilità (bit alti) + Flags (bit bassi)	| Sensibilità: `0x80`=bassa, `0x40`=media, `0x00`=alta (solo per shock/roller). Flags (bitmask): `0x01`=esclusione abilitata, `0x02`=doppio rilascio, `0x08`=OR settori. **Attenzione**: il bit `0x10` non è gestito da nessun campo — la centrale (almeno un MP-508 v03.01) lo alza in modo apparentemente casuale su alcuni ingressi; va escluso dal calcolo del checksum di blocco (vedi [Blocco B](#blocco-b))
+3	| Sensibilità (bit alti) + Flags (bit bassi) + bit di esclusione live	| Sensibilità: `0x80`=bassa, `0x40`=media, `0x00`=alta (solo per shock/roller). Flags (bitmask): `0x01`=esclusione abilitata, `0x02`=doppio rilascio, `0x08`=OR settori. **Il bit `0x10` non è gestito da nessun campo statico**: la centrale lo alza quando l'ingresso è **attualmente escluso** (stato live, non configurazione — coincide esattamente con `ElkrommFacade.InputStatus.IS_EXCLUDED`) e lo riabbassa quando l'ingresso viene reincluso. Confermato su hardware reale in tre contesti indipendenti: espansioni, tastiere (sia sui propri ingressi di bordo), e per analogia (non verificato) sui reader. Il bit va sempre escluso dal calcolo del checksum di blocco (vedi [Blocco B](#blocco-b)); Hi-Connect lo scrive sempre a zero
 4	| Telecamera associata	| `Video`: 0=nessuna, poi bitmask 0x10/0x20/0x40/0x80 per le camere 1-4
 5	| Partizioni associate	| Bitmask, LSB = partizione 1
 6-29	| Nome	| 24 byte
@@ -986,7 +986,11 @@ Offset (relativo all'espansione)	| Significato	| Note
 533-556	| Nome	| 24 byte
 557-558	| ?	| **Non fornito dal client in scrittura** (Hi-Connect invia sempre `0x00 0x00` su `EXPANSION PROGRAMMING`/0x91), valorizzato dalla centrale in lettura con contenuto non ancora identificato — va escluso dal calcolo del checksum di blocco (vedi nota sotto)
 
-**Nota sul checksum**: su una centrale MP-508 v03.01 reale, il checksum di blocco calcolato secondo l'algoritmo standard (vedi [Tipologie di comando](#tipologie-di-comando)) non combacia con quello incorporato dalla centrale, a meno di azzerare preventivamente, per ciascuna espansione: i 2 byte a offset relativo 557-558 sopra descritti, **e** il bit `0x10` a offset relativo 10 (byte 3 del primo... in realtà di *ogni* ingresso, offset relativo `7 + i*38 + 3` per l'ingresso i-esimo) — vedi [Input](#input). Il codice attuale (`serializer.Expansions`) applica questa doppia correzione prima di verificare il checksum. Non è chiaro se questo comportamento sia specifico del firmware v03.01 o generale; va verificato su altre versioni/modelli.
+**Nota sul checksum**: su una centrale MP-508 v03.01 reale, il checksum di blocco calcolato secondo l'algoritmo standard (vedi [Tipologie di comando](#tipologie-di-comando)) non combacia con quello incorporato dalla centrale, a meno di azzerare preventivamente, per ciascuna espansione: i 2 byte a offset relativo 557-558 sopra descritti, **e** il bit `0x10` di *ogni* ingresso (offset relativo `7 + i*38 + 3` per l'ingresso i-esimo) — vedi [Input](#input). Il codice attuale (`serializer.Expansions`) applica questa doppia correzione prima di verificare il checksum, e lancia eccezione se ancora non combacia.
+
+**Lo stesso identico fenomeno è stato confermato su hardware reale anche su [Keypads](#keypads)** (con l'unica differenza che lì basta un solo byte anziché due — vedi sezione dedicata), rafforzando l'idea che sia un pattern architetturale della centrale (stato dinamico "infilato" in byte altrimenti di configurazione statica), non una particolarità delle sole espansioni. La stessa correzione (2 byte di coda + bit `0x10` sui due ingressi di bordo) è stata applicata **per analogia, "sulla fiducia"**, anche a [Readers](#readers) — non verificabile sull'hardware dell'autore, che non possiede reader fisici. Per questo motivo, solo su Readers il controllo del checksum resta un `logger.warn()` invece di un'eccezione: se l'ipotesi si rivelasse sbagliata su qualche installazione reale, il sintomo sarebbe un warning nei log, non un errore bloccante. Il byte "misterioso" di [Settori](#settori) (offset 328) potrebbe essere della stessa famiglia, ma lì non c'è granularità per-ingresso, quindi il collegamento resta un'ipotesi debole, non verificata.
+
+Resta invece del tutto irrisolto **cosa siano realmente** i 2 byte a offset 557-558 di ogni espansione (commento nel codice: `// FIXME: single expansion checksum???`) — sappiamo solo che vanno esclusi dal calcolo, non cosa contengano. Non è chiaro se il comportamento generale sia specifico del firmware v03.01 o valga su altre versioni/modelli.
 
 ### Esempio payload
 
@@ -1121,7 +1125,8 @@ Offset	| Significato	| Note
 83	| Bitmask settori associati	| LSB = settore 1
 84	| Bitmask feature audio	| CAPABLE, ENABLED
 85-108	| Nome della tastiera	|
-109-110	| ?	|
+109	| ?	| Va escluso dal calcolo del checksum di blocco (vedi [Input](#input) e nota in [Blocco B](#blocco-b)) — confermato su hardware reale
+110	| ?	| Sempre osservato a `0x00` nelle catture disponibili; il codice lo azzera comunque per simmetria col codice di Expansions, ma non risulta necessario
 111	| Seconda tastiera	| Si ripetono i campi precedenti
 ...	|	|
 
@@ -1182,7 +1187,7 @@ Offset	| Significato	| Note
 85	| LED 4	| Partizione associata
 86	| Bitmask abilitazioni	| `Reader.Enablings`: solo `MASKING` (0x01) noto
 87-110	| Nome	| 24 byte
-111-112	| ?	| Non mappato da nessun campo del DTO
+111-112	| ?	| Non mappato da nessun campo del DTO. Azzerato in scrittura per analogia con [Expansions](#blocco-b)/[Keypads](#keypads), **non verificato su hardware reale** (l'autore non possiede reader fisici) — per questo il checksum di blocco resta un warning, non un'eccezione, su questa struttura
 
 ## Keypad programming
 
