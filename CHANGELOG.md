@@ -63,6 +63,14 @@ following the [Keep a Changelog](https://keepachangelog.com/) convention (Added 
   fields, rather than inferring it from list size — a consequence of no longer discarding
   unused slots
 - Updated the `mock-ipc` dependency version
+- Renamed `ElkronCommand.CONTROL_PANEL_PROGRAMMING` → `EXPANSION_PROGRAMMING` and
+  `KEYBOARD_PROGRAMMING` → `KEYPADS_PROGRAMMING`, to match what those commands were found
+  to actually do (single-expansion and all-keypads programming, respectively)
+- Moved `DEFAULT_DELAY` from `ElkrommFacadeImpl` to `ElkrommFacade`, next to `setDelay()`
+- Consolidated per-record payload size constants, previously duplicated across several
+  `packet`/`serializer` classes, into a single `serializer.SerializersConstants`
+- Factored the ghost-bit patching logic, previously duplicated across the round-trip test
+  cases, into a shared helper
 
 ## [0.4] — 2026-07-20
 
