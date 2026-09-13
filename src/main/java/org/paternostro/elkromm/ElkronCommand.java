@@ -109,7 +109,7 @@ public enum ElkronCommand {
     EVENT_LOG(0x70, null), // FIXME: MISSING    
     
     /** Single-instance write (hypothesis, by naming analogy with the other {@code *_PROGRAMMING} commands). Not yet implemented. */
-    CONTROL_PANEL_PROGRAMMING(0x91, null), // FIXME: MISSING
+    EXPANSION_PROGRAMMING(0x91, null), // FIXME: MISSING ***SINGLE EXPANSION!!!
     /** Single-instance write: adds/updates a single user credential. Not wired to {@link ElkrommFacade}. */
     USER_PROGRAMMING(0x95, UserProgramming.class), // No block checksum!
     /** Write: general system parameters and enablings (shares data layout with {@link #PARAMETERS_ENABLINGS}). */
@@ -141,7 +141,7 @@ public enum ElkronCommand {
     /** Single-instance write (hypothesis): a single expansion unit's configuration. Not yet implemented. */
     EXPANSIONS_PROGRAMMING(0xe1, null), // FIXME: MISSING
     /** Single-instance write (hypothesis): purpose unclear; not the same as {@link #KEYPAD_PROGRAMMING}. Not yet implemented. */
-    KEYBOARD_PROGRAMMING(0xe2, null), // FIXME: MISSING
+    KEYPADS_PROGRAMMING(0xe2, null), // FIXME: MISSING ***multiple KEYPADS
     
     /** Read: all configured keypads. */
     KEYPADS(0x52, Keypads.class),
