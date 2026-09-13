@@ -108,6 +108,9 @@ public interface ElkrommFacade
     /** Framing control byte: SYNchronous idle, used by the panel as a generic "OK" reply. */
     public static final byte BYTE_SYN = 0x16;
 
+    /** Default value of {@link org.paternostro.elkromm.impl.ElkrommFacadeImpl#delay}, in milliseconds, used until {@link #setDelay(int)} overrides it. Chosen so as not to overwhelm the panel's not-particularly-performant hardware. */
+    public static final int DEFAULT_DELAY = 100;
+
     /**
      * Bitmask identifying one or more partitions (sectors).
      * <p>
@@ -264,7 +267,7 @@ public interface ElkrommFacade
      * Sets the delay used to communicate to the panel, whose hardware is not so much performant.
      * Hint: set to 0 (zero) to obtain maximum speed (i.e.: during unit test that do not use a hardware panel)
      * 
-     * @param delay delay in ms, defaults to {@link org.paternostro.elkromm.impl.ElkrommFacadeImpl#DEFAULT_DELAY}
+     * @param delay delay in ms, defaults to {@link #DEFAULT_DELAY}
      * @throws ElkrommException if the parameter is less than zero
      */
     void setDelay(int delay) throws ElkrommException;

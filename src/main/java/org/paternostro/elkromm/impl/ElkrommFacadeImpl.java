@@ -68,9 +68,6 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     /** Logger for connection lifecycle and communication errors. */
     public static final Logger logger = LoggerFactory.getLogger(ElkrommFacadeImpl.class);
 
-    /** Default value of {@link #delay}, in milliseconds, used until {@link #setDelay(int)} overrides it. Chosen so as not to overwhelm the panel's not-particularly-performant hardware. */
-    public static final int DEFAULT_DELAY = 100;
-
     private int delay;
     private Status  status;
     private PacketQueue packetQueue;
