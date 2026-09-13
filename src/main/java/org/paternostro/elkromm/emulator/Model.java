@@ -108,9 +108,13 @@ public class Model {
             this.areasAndPartitions.addArea(new Area(config.getAreaName(i), ElkrommUtils.unpackPartitions((byte)(config.getAreaSectors(i) & 0xFF))));
         }
 
+        this.areasAndPartitions.setAreaNum((byte)config.getAreas());
+
         for (int i = 1; i <= config.getSectors(); i++) {
             this.areasAndPartitions.addPartition(new Partition(config.getSectorName(i), false, config.getSectorType(i), config.getSectorEntryTime(i), config.getSectorExitTime(i)));
         }
+
+        this.areasAndPartitions.setPartitionNum((byte)config.getSectors());
 
         // Init Users
         this.users[0] = new User("TECNICO                 ", User.Enabling.DISABLED, ElkrommUtils.unpackPartitions((byte)0xFF));
