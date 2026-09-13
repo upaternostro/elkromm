@@ -19,7 +19,7 @@ public class PSTNGSMTest {
         PSTNGSM pg = new PSTNGSM(Enabling.PGE_DISABLED, Country.PGC_ITALY, PABXLocalAccessDigit.PGPLAD_DISABLE, Enabling.PGE_DISABLED, Enabling.PGE_DISABLED, PSTNLineTestFrequency.PGPLTF_DISABLE, PSTNAnsweringMachineRings.PGPAMR_DISABLE, Enabling.PGE_DISABLED, Enabling.PGE_DISABLED, Enabling.PGE_DISABLED, 12345, (byte)1, (byte)0);
         byte[]  data = ElkrommFactory.getFactory().getPSTNGSMSerializer().serialize(pg);
 
-        assert data.length == 21 : "Wrong length";
+        assert data.length == SerializersConstants.PSTN_GSM_SIZE : "Wrong length";
 
         PSTNGSM pg2 = ElkrommFactory.getFactory().getPSTNGSMSerializer().deserialize(data);
 

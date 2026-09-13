@@ -19,6 +19,7 @@ import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.ElkronCommand;
 import org.paternostro.elkromm.dto.Checksums;
 import org.paternostro.elkromm.serializer.ElkrommSerializer;
+import org.paternostro.elkromm.serializer.SerializersConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -241,10 +242,10 @@ public class RoundTripIT {
     public void readersRoundTripIT() throws ElkrommException
     {
         if (config.areITEnabled() && checksums.getReaders() != 0) {
-            roundTripIT(ElkronCommand.READERS, factory.getReadersSerializer(), index -> index % 113 != 111 && index % 113 != 112, (index, d, rtv) -> {
-                int inputNum = ((index % 113) - 6) / 38;
+            roundTripIT(ElkronCommand.READERS, factory.getReadersSerializer(), index -> index % SerializersConstants.READER_SIZE != 111 && index % SerializersConstants.READER_SIZE != 112, (index, d, rtv) -> {
+                int inputNum = ((index % SerializersConstants.READER_SIZE) - 6) / SerializersConstants.INPUT_SIZE;
 
-                if (inputNum < 2 && ((index % 113) - 6) % 38 == 3) {
+                if (inputNum < 2 && ((index % SerializersConstants.READER_SIZE) - 6) % SerializersConstants.INPUT_SIZE == 3) {
                     d[index] &= ~0x10;
                 }
             });
@@ -279,10 +280,10 @@ public class RoundTripIT {
     public void expansionsRoundTripIT() throws ElkrommException
     {
         if (config.areITEnabled() && checksums.getNodes() != 0) {
-            roundTripIT(ElkronCommand.EXPANSIONS, factory.getExpansionsSerializer(), index -> index % 559 != 557 && index % 559 != 558, (index, d, rtv) -> {
-                int inputNum = ((index % 559) - 7) / 38;
+            roundTripIT(ElkronCommand.EXPANSIONS, factory.getExpansionsSerializer(), index -> index % SerializersConstants.EXPANSION_SIZE != 557 && index % SerializersConstants.EXPANSION_SIZE != 558, (index, d, rtv) -> {
+                int inputNum = ((index % SerializersConstants.EXPANSION_SIZE) - 7) / SerializersConstants.INPUT_SIZE;
 
-                if (inputNum < 8 && ((index % 559) - 7) % 38 == 3) {
+                if (inputNum < 8 && ((index % SerializersConstants.EXPANSION_SIZE) - 7) % SerializersConstants.INPUT_SIZE == 3) {
                     d[index] &= ~0x10;
                 }
             });
@@ -301,10 +302,10 @@ public class RoundTripIT {
     public void keypadsRoundTripIT() throws ElkrommException
     {
         if (config.areITEnabled() && checksums.getKeypads() != 0) {
-            roundTripIT(ElkronCommand.KEYPADS, factory.getKeyboardsSerializer(), index -> index % 111 != 109 && index % 111 != 110, (index, d, rtv) -> {
-                int inputNum = ((index % 111) - 6) / 38;
+            roundTripIT(ElkronCommand.KEYPADS, factory.getKeyboardsSerializer(), index -> index % SerializersConstants.KEYBOARD_SIZE != 109 && index % SerializersConstants.KEYBOARD_SIZE != 110, (index, d, rtv) -> {
+                int inputNum = ((index % SerializersConstants.KEYBOARD_SIZE) - 6) / SerializersConstants.INPUT_SIZE;
 
-                if (inputNum < 2 && ((index % 111) - 6) % 38 == 3) {
+                if (inputNum < 2 && ((index % SerializersConstants.KEYBOARD_SIZE) - 6) % SerializersConstants.INPUT_SIZE == 3) {
                     d[index] &= ~0x10;
                 }
             });

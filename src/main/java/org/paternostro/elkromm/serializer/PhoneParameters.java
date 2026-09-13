@@ -51,6 +51,6 @@ public class PhoneParameters implements ElkrommSerializer<org.paternostro.elkrom
     @Override
     public int length()
     {
-        return 20;
+        return SerializersConstants.PHONE_PARAMETERS_SIZE;
     }
 }

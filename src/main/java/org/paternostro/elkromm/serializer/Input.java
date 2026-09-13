@@ -41,6 +41,6 @@ public class Input implements ElkrommSerializer<org.paternostro.elkromm.dto.Inpu
     @Override
     public int length()
     {
-        return 38;
+        return SerializersConstants.INPUT_SIZE;
     }
 }

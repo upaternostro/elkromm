@@ -14,7 +14,7 @@ public class SMSTest {
         SMS     sms = new SMS("a text");
         byte[]  data = ElkrommFactory.getFactory().getSMSSerializer().serialize(sms);
 
-        assert data.length == 40 : "Wrong length";
+        assert data.length == SerializersConstants.SMS_SIZE : "Wrong length";
 
         SMS sms2 = ElkrommFactory.getFactory().getSMSSerializer().deserialize(data);
 

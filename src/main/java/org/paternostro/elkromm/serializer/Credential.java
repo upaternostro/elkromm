@@ -8,8 +8,6 @@ import org.paternostro.elkromm.ElkrommUtils;
  */
 public abstract class Credential implements ElkrommSerializer<org.paternostro.elkromm.dto.Credential>
 {
-    public static final int CREDENTIAL_SIZE = 1+1+ElkrommFacade.NAME_LENGTH;  // 2 byte di flag e 24 di nome
-
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.Credential obj)
     {
@@ -42,6 +40,6 @@ public abstract class Credential implements ElkrommSerializer<org.paternostro.el
     @Override
     public int length()
     {
-        return CREDENTIAL_SIZE;
+        return SerializersConstants.CREDENTIAL_SIZE;
     }
 }

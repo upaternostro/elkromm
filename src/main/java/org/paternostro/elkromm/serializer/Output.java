@@ -40,6 +40,6 @@ public class Output implements ElkrommSerializer<org.paternostro.elkromm.dto.Out
     @Override
     public int length()
     {
-        return 37;
+        return SerializersConstants.OUTPUT_SIZE;
     }
 }

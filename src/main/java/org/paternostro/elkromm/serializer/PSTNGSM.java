@@ -61,6 +61,6 @@ public class PSTNGSM implements ElkrommSerializer<org.paternostro.elkromm.dto.PS
     @Override
     public int length()
     {
-        return 21;
+        return SerializersConstants.PSTN_GSM_SIZE;
     }
 }

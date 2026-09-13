@@ -1,6 +1,7 @@
 package org.paternostro.elkromm.serializer;
 
 import org.junit.Test;
+import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.dto.Command;
 import org.paternostro.elkromm.dto.Command.Action;
@@ -21,7 +22,7 @@ public class CommandsTest {
 
         byte[]  data = ElkrommFactory.getFactory().getCommandsSerializer().serialize(commands);
 
-        assert data.length == 40 : "Wrong length";
+        assert data.length == ElkrommFacade.NUM_COMMANDS * SerializersConstants.COMMAND_LENGTH : "Wrong length";
 
         Command[]   commands2 = ElkrommFactory.getFactory().getCommandsSerializer().deserialize(data);
 

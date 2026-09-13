@@ -9,8 +9,6 @@ import org.paternostro.elkromm.ElkrommUtils;
  */
 public class SMS implements ElkrommSerializer<org.paternostro.elkromm.dto.SMS>
 {
-    public static final int INPUT_SIZE  = 38;
-
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.SMS obj)
     {
@@ -47,6 +45,6 @@ public class SMS implements ElkrommSerializer<org.paternostro.elkromm.dto.SMS>
     @Override
     public int length()
     {
-        return 40;
+        return SerializersConstants.SMS_SIZE;
     }
 }

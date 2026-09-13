@@ -12,8 +12,6 @@ import org.paternostro.elkromm.dto.C200bParameters.Event;
  */
 public class C200bParameters implements ElkrommSerializer<org.paternostro.elkromm.dto.C200bParameters> 
 {
-    public static final int INPUT_CODES_OFFSET = 0x64;
-
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.C200bParameters obj) {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
@@ -48,7 +46,7 @@ public class C200bParameters implements ElkrommSerializer<org.paternostro.elkrom
             }
         }
 
-        System.arraycopy(obj.getInputCodes(), 0, data, INPUT_CODES_OFFSET, ElkrommFacade.MAX_LOGICAL_INPUTS);
+        System.arraycopy(obj.getInputCodes(), 0, data, SerializersConstants.C200B_INPUT_CODES_OFFSET, ElkrommFacade.MAX_LOGICAL_INPUTS);
 
         data[0x33] = data[0x36] = data[0x37] = data[0x3d] = data[0x3e] = data[0x3f] = data[0x44] = data[0x45] = data[0x46] = data[0x49] =
         data[0x55] = data[0x56] = data[0x57] = data[0x5c] = data[0x5d] = data[0x5e] = data[0x5f] = data[0x60] = data[0x61] = data[0x62] = 
@@ -72,7 +70,7 @@ public class C200bParameters implements ElkrommSerializer<org.paternostro.elkrom
         }
 
         for (int i = 0; i < ElkrommFacade.MAX_LOGICAL_INPUTS; i++) {
-            retval.setInputCode(i, data[i + INPUT_CODES_OFFSET]);
+            retval.setInputCode(i, data[i + SerializersConstants.C200B_INPUT_CODES_OFFSET]);
         }
 
         return retval;

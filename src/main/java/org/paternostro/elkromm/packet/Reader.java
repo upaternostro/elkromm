@@ -1,6 +1,7 @@
 package org.paternostro.elkromm.packet;
 
 import org.paternostro.elkromm.ElkronCommand;
+import org.paternostro.elkromm.serializer.SerializersConstants;
 
 /**
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
@@ -11,6 +12,6 @@ public class Reader extends ElkrommPacket {
 
         assert totalPackets == 0 : "Reader: totalPackets: expected 0, found " + totalPackets;
         assert index == 0 : "Reader: index: expected 0, found " + index;
-        assert dataLength == 113 && data != null && data.length == dataLength : "Reader: data: mismatch in data length";
+        assert dataLength == SerializersConstants.READER_SIZE && data != null && data.length == dataLength : "Reader: data: mismatch in data length";
     }
 }

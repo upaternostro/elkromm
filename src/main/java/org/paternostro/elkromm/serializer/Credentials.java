@@ -11,8 +11,6 @@ import org.paternostro.elkromm.dto.Credential;
  */
 public abstract class Credentials implements ElkrommSerializer<Credential[]>
 {
-    public static final int CREDENTIAL_SIZE = 1+1+ElkrommFacade.NAME_LENGTH;
-
     @Override
     public byte[] serialize(Credential[] obj)
     {
@@ -25,7 +23,7 @@ public abstract class Credentials implements ElkrommSerializer<Credential[]>
         Arrays.fill(data, (byte)0x00);
 
         for (int i = 0; i < obj.length; i++) {
-            System.arraycopy(cSerializer.serialize(obj[i]), 0, data, i * CREDENTIAL_SIZE, CREDENTIAL_SIZE);
+            System.arraycopy(cSerializer.serialize(obj[i]), 0, data, i * SerializersConstants.CREDENTIAL_SIZE, SerializersConstants.CREDENTIAL_SIZE);
         }
         
         ElkrommUtils.setLong(data, data.length - 4, ElkrommUtils.computeBlockChecksum(data));
@@ -43,10 +41,10 @@ public abstract class Credentials implements ElkrommSerializer<Credential[]>
 
         Credential[]                    retval = new Credential[ElkrommFacade.MAX_CREDENTIALS];
         ElkrommSerializer<Credential>   cSerializer = allocateSerializer();
-        byte[]                          cData = new byte[CREDENTIAL_SIZE];
+        byte[]                          cData = new byte[SerializersConstants.CREDENTIAL_SIZE];
 
         for (byte i = 0; i < ElkrommFacade.MAX_CREDENTIALS; i++) {
-            System.arraycopy(data, i * CREDENTIAL_SIZE, cData, 0, CREDENTIAL_SIZE);
+            System.arraycopy(data, i * SerializersConstants.CREDENTIAL_SIZE, cData, 0, SerializersConstants.CREDENTIAL_SIZE);
             retval[i] = cSerializer.deserialize(cData);
         }
 
@@ -61,6 +59,6 @@ public abstract class Credentials implements ElkrommSerializer<Credential[]>
     @Override
     public int length()
     {
-        return ElkrommFacade.MAX_CREDENTIALS*(1+1+ElkrommFacade.NAME_LENGTH)+4; // 32 utenti (ognuno con 2 byte di flag e 24 di nome) + 4 byte di checksum
+        return ElkrommFacade.MAX_CREDENTIALS*(SerializersConstants.CREDENTIAL_SIZE)+4; // 32 utenti (ognuno con 2 byte di flag e 24 di nome) + 4 byte di checksum
     }
 }

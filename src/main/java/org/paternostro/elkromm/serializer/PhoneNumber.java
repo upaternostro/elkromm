@@ -114,6 +114,6 @@ public class PhoneNumber implements ElkrommSerializer<org.paternostro.elkromm.dt
     @Override
     public int length()
     {
-        return 17;
+        return SerializersConstants.PHONE_NUMBER_SIZE;
     }
 }

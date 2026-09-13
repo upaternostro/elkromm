@@ -49,6 +49,6 @@ public class ParametersEnablings implements ElkrommSerializer<org.paternostro.el
 
     @Override
     public int length() {
-        return 30;
+        return SerializersConstants.PARAMETERS_ENABLINGS_SIZE;
     }
 }

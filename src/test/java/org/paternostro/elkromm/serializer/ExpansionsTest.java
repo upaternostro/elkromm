@@ -35,7 +35,7 @@ public class ExpansionsTest {
 
         byte[]  data = ElkrommFactory.getFactory().getExpansionsSerializer().serialize(expansions);
 
-        assert data.length == expansions.length * Expansions.EXPANSION_SIZE + 4 : "Wrong length";
+        assert data.length == expansions.length * SerializersConstants.EXPANSION_SIZE + 4 : "Wrong length";
 
         Expansion[]  expansions2 = ElkrommFactory.getFactory().getExpansionsSerializer().deserialize(data);
 

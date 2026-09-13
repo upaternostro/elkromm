@@ -1,14 +1,10 @@
 package org.paternostro.elkromm.serializer;
 
-import org.paternostro.elkromm.ElkrommFacade;
-
 /**
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
  */
 public abstract class SingleCredential implements ElkrommSerializer<org.paternostro.elkromm.dto.SingleCredential>
 {
-    public static final int CREDENTIAL_SIZE = 1+1+ElkrommFacade.NAME_LENGTH;  // 2 byte di flag e 24 di nome
-
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.SingleCredential obj)
     {
@@ -18,7 +14,7 @@ public abstract class SingleCredential implements ElkrommSerializer<org.paternos
         ElkrommSerializer<org.paternostro.elkromm.dto.Credential>   credentialSerializer = getSerializer();
 
         data[0] = (byte)(obj.getIndex());
-        System.arraycopy(credentialSerializer.serialize(obj.getCredential()), 0, data, 1, CREDENTIAL_SIZE);
+        System.arraycopy(credentialSerializer.serialize(obj.getCredential()), 0, data, 1, SerializersConstants.CREDENTIAL_SIZE);
 
         return data;
     }
@@ -31,9 +27,9 @@ public abstract class SingleCredential implements ElkrommSerializer<org.paternos
         if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
 
         ElkrommSerializer<org.paternostro.elkromm.dto.Credential>   credentialSerializer = getSerializer();
-        byte[]                                                      credentialData = new byte[CREDENTIAL_SIZE];
+        byte[]                                                      credentialData = new byte[SerializersConstants.CREDENTIAL_SIZE];
 
-        System.arraycopy(data, 1, credentialData, 0, CREDENTIAL_SIZE);
+        System.arraycopy(data, 1, credentialData, 0, SerializersConstants.CREDENTIAL_SIZE);
 
         return new org.paternostro.elkromm.dto.SingleCredential(data[0], credentialSerializer.deserialize(credentialData));
     }
@@ -41,7 +37,7 @@ public abstract class SingleCredential implements ElkrommSerializer<org.paternos
     @Override
     public int length()
     {
-        return CREDENTIAL_SIZE + 1;
+        return SerializersConstants.CREDENTIAL_SIZE + 1;
     }
 
     protected ElkrommSerializer<org.paternostro.elkromm.dto.Credential> getSerializer()

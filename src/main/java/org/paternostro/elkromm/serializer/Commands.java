@@ -1,5 +1,6 @@
 package org.paternostro.elkromm.serializer;
 
+import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.dto.Command;
 import org.paternostro.elkromm.dto.Command.Action;
 import org.paternostro.elkromm.dto.Command.ObjectType;
@@ -9,20 +10,17 @@ import org.paternostro.elkromm.dto.Command.ObjectType;
  */
 public class Commands implements ElkrommSerializer<Command[]>
 {
-    public final static int COMMAND_LENGTH  = 5;
-    public final static int NUM_COMMANDS    = 8;
-
     @Override
     public byte[] serialize(Command[] obj)
     {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
-        if (obj.length != NUM_COMMANDS) throw new IllegalArgumentException("Wrong obj length");
+        if (obj.length != ElkrommFacade.NUM_COMMANDS) throw new IllegalArgumentException("Wrong obj length");
 
         byte[]  data = new byte[length()];
         int     offset;
 
-        for (int i = 0; i < NUM_COMMANDS; i++) {
-            offset = i * COMMAND_LENGTH;
+        for (int i = 0; i < ElkrommFacade.NUM_COMMANDS; i++) {
+            offset = i * SerializersConstants.COMMAND_LENGTH;
             data[offset] = obj[i].getAction().getValue();
 
             if (obj[i].getAction() != Action.CA_NONE) {
@@ -42,11 +40,11 @@ public class Commands implements ElkrommSerializer<Command[]>
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
         if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
 
-        Command[]   retval = new Command[NUM_COMMANDS];
+        Command[]   retval = new Command[ElkrommFacade.NUM_COMMANDS];
         int         offset;
 
-        for (int i = 0; i < NUM_COMMANDS; i++) {
-            offset = i * COMMAND_LENGTH;
+        for (int i = 0; i < ElkrommFacade.NUM_COMMANDS; i++) {
+            offset = i * SerializersConstants.COMMAND_LENGTH;
             retval[i] = new Command(Action.valueOf(data[offset]), data[offset + 1] , ObjectType.valueOf(data[offset + 2]), data[offset + 3], data[offset + 4]);
         }
 
@@ -56,6 +54,6 @@ public class Commands implements ElkrommSerializer<Command[]>
     @Override
     public int length()
     {
-        return 40;
+        return ElkrommFacade.NUM_COMMANDS * SerializersConstants.COMMAND_LENGTH;
     }
 }

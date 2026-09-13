@@ -38,6 +38,6 @@ public class Login implements ElkrommSerializer<org.paternostro.elkromm.dto.Logi
     @Override
     public int length()
     {
-        return 7;
+        return SerializersConstants.LOGIN_SIZE;
     }
 }

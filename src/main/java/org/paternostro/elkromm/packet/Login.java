@@ -2,6 +2,7 @@ package org.paternostro.elkromm.packet;
 
 import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.ElkronCommand;
+import org.paternostro.elkromm.serializer.SerializersConstants;
 
 /**
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
@@ -12,8 +13,8 @@ public class Login extends ElkrommPacket {
 
         assert totalPackets == 0 : "Login: totalPackets: expected 0, found " + totalPackets;
         assert index == 0 : "Login: index: expected 0, found " + index;
-        assert dataLength == 7 : "Login: dataLength: expected 7, found " + dataLength;
-        assert dataLength == 7 && data != null && data.length == 7 : "Login: data: mismatch in data length";
+        assert dataLength == SerializersConstants.LOGIN_SIZE : "Login: dataLength: expected " + SerializersConstants.LOGIN_SIZE + ", found " + dataLength;
+        assert data != null && data.length == SerializersConstants.LOGIN_SIZE : "Login: data: mismatch in data length";
     }
 
     public Login(int plantCode12, int plantCode34, org.paternostro.elkromm.dto.Login login) {

@@ -10,25 +10,22 @@ import org.paternostro.elkromm.dto.Input;
  */
 public class Keyboard implements ElkrommSerializer<org.paternostro.elkromm.dto.Keyboard>
 {
-    public static final int KEYBOARD_SIZE   = 111;
-    public static final int INPUT_SIZE      = 38;
-
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.Keyboard obj)
     {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
 
-        byte[]                      data = new byte[KEYBOARD_SIZE];
+        byte[]                      data = new byte[SerializersConstants.KEYBOARD_SIZE];
         ElkrommSerializer<Input>    iSerializer = ElkrommFactory.getFactory().getInputSerializer();
 
         data[0] = (byte)(obj.getAddress() & 0xFF);
         ElkrommUtils.setText(data, 2, obj.getVersion(), 4);
-        System.arraycopy(iSerializer.serialize(obj.getFirstInput()), 0, data, 6, INPUT_SIZE);
-        System.arraycopy(iSerializer.serialize(obj.getSecondInput()), 0, data, 6 + INPUT_SIZE, INPUT_SIZE);
-        data[6 + 2*INPUT_SIZE] = obj.getEnablings();
-        data[7 + 2*INPUT_SIZE] = ElkrommUtils.packPartitions(obj.getAssociatedPartitions());
-        data[8 + 2*INPUT_SIZE] = obj.getAudioFeatures();
-        ElkrommUtils.setText(data, 9 + 2*INPUT_SIZE, obj.getName(), ElkrommFacade.NAME_LENGTH);
+        System.arraycopy(iSerializer.serialize(obj.getFirstInput()), 0, data, 6, SerializersConstants.INPUT_SIZE);
+        System.arraycopy(iSerializer.serialize(obj.getSecondInput()), 0, data, 6 + SerializersConstants.INPUT_SIZE, SerializersConstants.INPUT_SIZE);
+        data[6 + 2*SerializersConstants.INPUT_SIZE] = obj.getEnablings();
+        data[7 + 2*SerializersConstants.INPUT_SIZE] = ElkrommUtils.packPartitions(obj.getAssociatedPartitions());
+        data[8 + 2*SerializersConstants.INPUT_SIZE] = obj.getAudioFeatures();
+        ElkrommUtils.setText(data, 9 + 2*SerializersConstants.INPUT_SIZE, obj.getName(), ElkrommFacade.NAME_LENGTH);
 
         return data;
     }
@@ -41,22 +38,22 @@ public class Keyboard implements ElkrommSerializer<org.paternostro.elkromm.dto.K
         if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
 
         ElkrommSerializer<Input>    iSerializer = ElkrommFactory.getFactory().getInputSerializer();
-        byte[]                      iData = new byte[INPUT_SIZE];
+        byte[]                      iData = new byte[SerializersConstants.INPUT_SIZE];
         Input                       input1;
         Input                       input2;
 
-        System.arraycopy(data, 6, iData, 0, INPUT_SIZE);
+        System.arraycopy(data, 6, iData, 0, SerializersConstants.INPUT_SIZE);
         input1 = iSerializer.deserialize(iData);
 
-        System.arraycopy(data, 6 + INPUT_SIZE, iData, 0, INPUT_SIZE);
+        System.arraycopy(data, 6 + SerializersConstants.INPUT_SIZE, iData, 0, SerializersConstants.INPUT_SIZE);
         input2 = iSerializer.deserialize(iData);
 
-        return new org.paternostro.elkromm.dto.Keyboard(data[0], ElkrommUtils.getText(data, 2, 4), input1, input2, data[6 + 2*INPUT_SIZE], ElkrommUtils.unpackPartitions(data[7 + 2*INPUT_SIZE]), data[8 + 2*INPUT_SIZE], ElkrommUtils.getText(data, 9 + 2*INPUT_SIZE, ElkrommFacade.NAME_LENGTH));
+        return new org.paternostro.elkromm.dto.Keyboard(data[0], ElkrommUtils.getText(data, 2, 4), input1, input2, data[6 + 2*SerializersConstants.INPUT_SIZE], ElkrommUtils.unpackPartitions(data[7 + 2*SerializersConstants.INPUT_SIZE]), data[8 + 2*SerializersConstants.INPUT_SIZE], ElkrommUtils.getText(data, 9 + 2*SerializersConstants.INPUT_SIZE, ElkrommFacade.NAME_LENGTH));
     }
 
     @Override
     public int length()
     {
-        return KEYBOARD_SIZE;
+        return SerializersConstants.KEYBOARD_SIZE;
     }
 }

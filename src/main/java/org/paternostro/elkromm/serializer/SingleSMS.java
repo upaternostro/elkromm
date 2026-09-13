@@ -8,8 +8,6 @@ import org.paternostro.elkromm.dto.SMSs.SMSIndex;
  */
 public class SingleSMS implements ElkrommSerializer<org.paternostro.elkromm.dto.SingleSMS>
 {
-    public static final int SMS_SIZE  = 40;
-
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.SingleSMS obj)
     {
@@ -19,7 +17,7 @@ public class SingleSMS implements ElkrommSerializer<org.paternostro.elkromm.dto.
         ElkrommSerializer<org.paternostro.elkromm.dto.SMS>  smsSerializer = ElkrommFactory.getFactory().getSMSSerializer();
 
         data[0] = (byte)(obj.getIndex().ordinal() + 1);
-        System.arraycopy(smsSerializer.serialize(obj.getSMS()), 0, data, 1, SMS_SIZE);
+        System.arraycopy(smsSerializer.serialize(obj.getSMS()), 0, data, 1, SerializersConstants.SMS_SIZE);
 
         return data;
     }
@@ -32,9 +30,9 @@ public class SingleSMS implements ElkrommSerializer<org.paternostro.elkromm.dto.
         if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
 
         ElkrommSerializer<org.paternostro.elkromm.dto.SMS>  smsSerializer = ElkrommFactory.getFactory().getSMSSerializer();
-        byte[]                                              smsData = new byte[SMS_SIZE];
+        byte[]                                              smsData = new byte[SerializersConstants.SMS_SIZE];
 
-        System.arraycopy(data, 1, smsData, 0, SMS_SIZE);
+        System.arraycopy(data, 1, smsData, 0, SerializersConstants.SMS_SIZE);
         org.paternostro.elkromm.dto.SMS sMSs = smsSerializer.deserialize(smsData);
 
         return new org.paternostro.elkromm.dto.SingleSMS(SMSIndex.valueOf(data[0] - 1), sMSs);
@@ -43,6 +41,6 @@ public class SingleSMS implements ElkrommSerializer<org.paternostro.elkromm.dto.
     @Override
     public int length()
     {
-        return SMS_SIZE + 1;
+        return SerializersConstants.SMS_SIZE + 1;
     }
 }

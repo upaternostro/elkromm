@@ -16,7 +16,7 @@ public class InputTest {
         Input       input = new Input(42, Input.Configuration.IC_NORMALLY_CLOSED_DOUBLE_BALANCED, Input.Specialization.IS_IMMEDIATE, Input.Sensitivity.IS_HIGH, Input.Flags.IF_EXCLUSION_ENABLED.getValue(), Input.Video.IV_CAMERA_3, associatedPartitions, "Input 42", Input.Delay.ID_10_SECS);
         byte[]      data = ElkrommFactory.getFactory().getInputSerializer().serialize(input);
 
-        assert data.length == 38 : "Wrong length";
+        assert data.length == SerializersConstants.INPUT_SIZE : "Wrong length";
 
         Input       input2 = ElkrommFactory.getFactory().getInputSerializer().deserialize(data);
 

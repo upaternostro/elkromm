@@ -16,42 +16,38 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
 {
     public static final Logger logger = LoggerFactory.getLogger(Expansions.class);
 
-    public static final int EXPANSION_SIZE  = 559;
-    public static final int INPUT_SIZE      = 38;
-    public static final int OUTPUT_SIZE     = 37;
-
     @Override
     public byte[] serialize(Expansion[] obj)
     {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
         if (obj.length == 0) throw new IllegalArgumentException("Empty mandatory obj");
 
-        byte[]                      data = new byte[obj.length * EXPANSION_SIZE + 4];
+        byte[]                      data = new byte[obj.length * SerializersConstants.EXPANSION_SIZE + 4];
         int                         offset;       
         ElkrommSerializer<Input>    iSerializer = ElkrommFactory.getFactory().getInputSerializer();
         ElkrommSerializer<Output>   oSerializer = ElkrommFactory.getFactory().getOutputSerializer();
 
         for (int i = 0; i < obj.length; i++) {
-            offset = i * EXPANSION_SIZE;
+            offset = i * SerializersConstants.EXPANSION_SIZE;
 
             data[offset + 1] = (byte)(obj[i].getAddress() & 0xFF);
             ElkrommUtils.setText(data, offset + 3, obj[i].getVersion(), 4);
             ElkrommUtils.setText(data, offset + 533, obj[i].getName(), ElkrommFacade.NAME_LENGTH);
 
             for (int j = 0; j < obj[i].getInputNum(); j++) {
-                offset = i * EXPANSION_SIZE + j * INPUT_SIZE + 7;
-                System.arraycopy(iSerializer.serialize(obj[i].getInput(j)), 0, data, offset, INPUT_SIZE);
+                offset = i * SerializersConstants.EXPANSION_SIZE + j * SerializersConstants.INPUT_SIZE + 7;
+                System.arraycopy(iSerializer.serialize(obj[i].getInput(j)), 0, data, offset, SerializersConstants.INPUT_SIZE);
             }
 
             for (int j = 0; j < obj[i].getOutputNum(); j++) {
-                offset = i * EXPANSION_SIZE + 8 * INPUT_SIZE + j * OUTPUT_SIZE + 7;
+                offset = i * SerializersConstants.EXPANSION_SIZE + 8 * SerializersConstants.INPUT_SIZE + j * SerializersConstants.OUTPUT_SIZE + 7;
 
                 if (obj[i].getOutput(j).getLogicNumber() == 0) {
                     // Unused input, skip
                     continue;
                 }
 
-                System.arraycopy(oSerializer.serialize(obj[i].getOutput(j)), 0, data, offset, OUTPUT_SIZE);
+                System.arraycopy(oSerializer.serialize(obj[i].getOutput(j)), 0, data, offset, SerializersConstants.OUTPUT_SIZE);
             }
 
             // FIXME: single expansion checksum???
@@ -67,7 +63,7 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
-        if (data.length % EXPANSION_SIZE != 4) throw new IllegalArgumentException("Wrong data size");
+        if (data.length % SerializersConstants.EXPANSION_SIZE != 4) throw new IllegalArgumentException("Wrong data size");
 
         /*
          * WARNING: my MP-508 v03.01 alarm computes the checksum excluding the last two bytes in each expansion
@@ -84,44 +80,44 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
          * computed in the block checksum. Please note that 0x10 is exactly {@link ElkrommFacade.InputStatus.IS_EXCLUDED}
          */
         int patchOffset = 0;
-        while ((patchOffset += EXPANSION_SIZE - 2) < data.length) data[patchOffset++] = data[patchOffset++] = 0x00;
+        while ((patchOffset += SerializersConstants.EXPANSION_SIZE - 2) < data.length) data[patchOffset++] = data[patchOffset++] = 0x00;
         // clear not-checksummed excluded bit from inputs
         patchOffset = 0;
         while (patchOffset < data.length - 4) {
             for (int j = 0; j < 8; j++) {
-                data[patchOffset + 7 + j * INPUT_SIZE + 3] &= ~0x10;
+                data[patchOffset + 7 + j * SerializersConstants.INPUT_SIZE + 3] &= ~0x10;
             }
-            patchOffset += EXPANSION_SIZE;
+            patchOffset += SerializersConstants.EXPANSION_SIZE;
         }
 
         if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getLong(data, data.length - 4)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getLong(data, data.length - 4));
 
-        Expansion[]                 retval = new Expansion[(data.length - 4) / EXPANSION_SIZE];
+        Expansion[]                 retval = new Expansion[(data.length - 4) / SerializersConstants.EXPANSION_SIZE];
         int                         offset;
         ElkrommSerializer<Input>    iSerializer = ElkrommFactory.getFactory().getInputSerializer();
-        byte[]                      iData = new byte[INPUT_SIZE];
+        byte[]                      iData = new byte[SerializersConstants.INPUT_SIZE];
         ElkrommSerializer<Output>   oSerializer = ElkrommFactory.getFactory().getOutputSerializer();
-        byte[]                      oData = new byte[OUTPUT_SIZE];
+        byte[]                      oData = new byte[SerializersConstants.OUTPUT_SIZE];
 
-        for (int i = 0; i < data.length / EXPANSION_SIZE; i++) {
-            offset = i * EXPANSION_SIZE;
+        for (int i = 0; i < data.length / SerializersConstants.EXPANSION_SIZE; i++) {
+            offset = i * SerializersConstants.EXPANSION_SIZE;
             retval[i] = new Expansion(data[offset + 1], ElkrommUtils.getText(data, offset + 3, 4), ElkrommUtils.getText(data, offset + 533, ElkrommFacade.NAME_LENGTH));
 
             for (int j = 0; j < 8; j++) {
-                offset = i * EXPANSION_SIZE + j * INPUT_SIZE + 7;
-                System.arraycopy(data, offset, iData, 0, INPUT_SIZE);
+                offset = i * SerializersConstants.EXPANSION_SIZE + j * SerializersConstants.INPUT_SIZE + 7;
+                System.arraycopy(data, offset, iData, 0, SerializersConstants.INPUT_SIZE);
                 retval[i].addInput(iSerializer.deserialize(iData));
             }
 
             for (int j = 0; j < 6; j++) {
-                offset = i * EXPANSION_SIZE + 8 * INPUT_SIZE + j * OUTPUT_SIZE + 7;
+                offset = i * SerializersConstants.EXPANSION_SIZE + 8 * SerializersConstants.INPUT_SIZE + j * SerializersConstants.OUTPUT_SIZE + 7;
 
                 if (data[offset] == 0x00) {
                     // Unused output, skip
                     continue;
                 }
 
-                System.arraycopy(data, offset, oData, 0, OUTPUT_SIZE);
+                System.arraycopy(data, offset, oData, 0, SerializersConstants.OUTPUT_SIZE);
                 retval[i].addOutput(oSerializer.deserialize(oData));
             }
         }

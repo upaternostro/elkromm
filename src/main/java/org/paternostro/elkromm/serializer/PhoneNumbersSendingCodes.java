@@ -10,10 +10,6 @@ import org.paternostro.elkromm.dto.PhoneNumber.Event;
  */
 public class PhoneNumbersSendingCodes implements ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumbersSendingCodes>
 {
-    public static final int EXPANSION_SIZE  = 559;
-    public static final int INPUT_SIZE      = 38;
-    public static final int PHONE_NUMBER_SIZE     = 17;
-
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.PhoneNumbersSendingCodes obj)
     {
@@ -23,7 +19,7 @@ public class PhoneNumbersSendingCodes implements ElkrommSerializer<org.paternost
         ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumber>  pnSerializer = ElkrommFactory.getFactory().getPhoneNumberSerializer();
 
         for (int i = 0; i < ElkrommFacade.MAX_PHONE_NUMBERS; i++) {
-            System.arraycopy(pnSerializer.serialize(obj.getPhoneNumbers()[i]), 0, data, i * PHONE_NUMBER_SIZE, PHONE_NUMBER_SIZE);
+            System.arraycopy(pnSerializer.serialize(obj.getPhoneNumbers()[i]), 0, data, i * SerializersConstants.PHONE_NUMBER_SIZE, SerializersConstants.PHONE_NUMBER_SIZE);
         }
 
         int value;
@@ -71,12 +67,12 @@ public class PhoneNumbersSendingCodes implements ElkrommSerializer<org.paternost
         org.paternostro.elkromm.dto.PhoneNumber[]                   phoneNumbers = new org.paternostro.elkromm.dto.PhoneNumber[ElkrommFacade.MAX_PHONE_NUMBERS];
         int                                                         offset;
         ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumber>  pnSerializer = ElkrommFactory.getFactory().getPhoneNumberSerializer();
-        byte[]                                                      pnData = new byte[PHONE_NUMBER_SIZE];
+        byte[]                                                      pnData = new byte[SerializersConstants.PHONE_NUMBER_SIZE];
 
         for (int i = 0; i < ElkrommFacade.MAX_PHONE_NUMBERS; i++) {
-            offset = i * PHONE_NUMBER_SIZE;
+            offset = i * SerializersConstants.PHONE_NUMBER_SIZE;
 
-            System.arraycopy(data, offset, pnData, 0, PHONE_NUMBER_SIZE);
+            System.arraycopy(data, offset, pnData, 0, SerializersConstants.PHONE_NUMBER_SIZE);
             phoneNumbers[i] = pnSerializer.deserialize(pnData);
         }
         
