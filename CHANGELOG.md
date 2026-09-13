@@ -22,15 +22,46 @@ following the [Keep a Changelog](https://keepachangelog.com/) convention (Added 
 - Iterator-style accessors (iterator, stream, parallelStream, listIterator, spliterator)
   for the Areas, Partitions, Inputs and Outputs collections
 - `getRawInputStatus()` API, returning the raw per-input status byte array
+- Full Javadoc across the library's public API, `impl` and `dto` packages, plus
+  `package-info.java` for every package
+- `CHANGELOG.md` (this file) and substantially expanded `PROTOCOL-ITA.md`, including a
+  byte-level payload table for every command, verified against the serializers rather than
+  deduced from captures alone
+- `setUser()`/`setKey()` on `ElkrommFacade`, to write a single user/key credential
+  (`USER_PROGRAMMING`/`KEY_PROGRAMMING`), previously implemented at the protocol level but
+  unreachable from the public API (fixes #4)
+- Optional round-trip integration test suite (`mvn verify`, Maven Failsafe), connecting to
+  a real panel to verify that deserializing and re-serializing its actual configuration
+  reproduces the exact same bytes — see the README for setup
 
 ### Fixed
 - Accept a zero phone number as a valid test-call number when cyclic test calls are disabled
 - Use `-1` (`0xffffff`) to represent "no GSM PIN configured", instead of an invalid sentinel value
 - Flush the output stream after each write, avoiding unnecessary delays
+- `PSTNGSM.setEnableIncomingSMS()` validating the wrong field due to a copy-paste error (fixes #1)
+- Incorrect handling of `Input.Sensitivity` (fixes #6)
+- Block checksum verification failing on `EXPANSIONS`/`KEYPADS`, caused by two
+  previously-undocumented behaviors of the physical panel: a couple of trailing,
+  panel-computed bytes per expansion record never covered by the checksum, and a "ghost"
+  bit (`0x10`) that the panel raises on an input's configuration byte when that input is
+  currently excluded — live status living inside an otherwise-static configuration byte,
+  identical in value to `ElkrommFacade.InputStatus.IS_EXCLUDED`. The same fix was applied,
+  by analogy and untested, to `READERS` (kept as a logged warning rather than a hard
+  failure, pending confirmation on real hardware) (fixes #8)
+- `PhoneNumbersSendingCodes` writing the "partitions/system on-off" event's assignment bits
+  to the wrong offset, found by the new round-trip test suite
 
 ### Changed
+- Removed `ordinal` from `Credential`: redundant with the position in its containing array,
+  and with the index carried explicitly by `SingleCredential` for single-instance writes (fixes #7)
+- `Input` deserialization no longer skips "not used" slots: the panel does not reliably
+  reset their other fields (in particular `Specialization`, observed to retain the value
+  from the input's last real configuration), so the only way to preserve round-trip
+  fidelity is to keep whatever is actually there
+- `AreasAndPartitions` now tracks the actual number of areas/partitions in dedicated
+  fields, rather than inferring it from list size — a consequence of no longer discarding
+  unused slots
 - Updated the `mock-ipc` dependency version
-- Documentation updates (README, `PROTOCOL-ITA.md`, Javadoc)
 
 ## [0.4] — 2026-07-20
 

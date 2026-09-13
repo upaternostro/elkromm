@@ -40,6 +40,8 @@ Use entirely at your own risk.
 - Commands: arm/disarm partitions, exclude/include inputs, enable/disable users
 - Bundled panel emulator, usable standalone or embedded in tests, to develop and test
   against without real hardware
+- Optional round-trip integration test suite that validates the library against a real
+  panel's actual configuration (see below)
 - Protocol reference documentation ([PROTOCOL-ITA.md](PROTOCOL-ITA.md), Italian)
 
 ## Requirements
@@ -148,6 +150,64 @@ org.paternostro.elkron.sector.1.exit.time=30
 ```
 
 If the file is missing entirely, the emulator still starts, using every default above.
+
+## Round-trip integration tests
+
+Besides the regular unit test suite (which runs against the bundled emulator), elkromm
+includes a set of `mvn verify`-only integration tests that connect to a **real** panel,
+read back its actual configuration, and verify that deserializing and re-serializing it
+reproduces the exact same bytes. This is how several protocol quirks documented in
+[PROTOCOL-ITA.md](PROTOCOL-ITA.md) were found — most notably the "ghost bit" that Elkron
+panels raise on an excluded input, in a byte otherwise dedicated to static configuration.
+
+Unlike the unit tests, these are **not** run by `mvn install`/`mvn test`, precisely
+because they require a real panel to be reachable on the network — they use the Maven
+Failsafe plugin (test classes named `*IT.java`, as opposed to the `*Test.java` picked up
+by Surefire) instead.
+
+### Configuration
+
+The integration tests read an optional `elkron-it.properties` file from the classpath, at
+`org/paternostro/elkromm/impl/elkron-it.properties` (i.e.
+`src/test/resources/org/paternostro/elkromm/impl/` if building from source). **If the file
+is missing, or any required property is empty, the integration tests are silently
+skipped** rather than failing — so a plain `mvn install`/`mvn test` on a fresh clone is
+never affected, and no personal panel configuration needs to be committed to run the
+regular build.
+
+| Property | Required | Notes |
+|---|---|---|
+| `org.paternostro.elkromm.impl.IT.host` | Yes | Hostname/IP of the panel's LAN expansion board |
+| `org.paternostro.elkromm.impl.IT.port` | Yes | TCP port (usually `8030`) |
+| `org.paternostro.elkromm.impl.IT.plantCode` | Yes | Installer/plant identification code |
+| `org.paternostro.elkromm.impl.IT.technicalPin` | Yes | Installer's technical access code |
+
+Example:
+
+```properties
+org.paternostro.elkromm.impl.IT.host=192.168.1.100
+org.paternostro.elkromm.impl.IT.port=8030
+org.paternostro.elkromm.impl.IT.plantCode=12345678
+org.paternostro.elkromm.impl.IT.technicalPin=123456
+```
+
+### Running
+
+```
+mvn verify
+```
+
+runs the full suite (unit tests, then integration tests, then checks the results). To run
+only the integration tests, without repeating the unit tests:
+
+```
+mvn failsafe:integration-test
+```
+
+**This connects to and reads from a real, live alarm panel.** No configuration is ever
+written back — the tests only read and compare — but running them requires the panel to
+be reachable and its access codes to be known; use only against a system you own or are
+authorized to access (see [Disclaimer](#disclaimer)).
 
 ## Compile
 
