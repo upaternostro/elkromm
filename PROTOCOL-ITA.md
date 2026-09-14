@@ -45,7 +45,7 @@ Tenere presente il significato dei seguenti codici ASCII:
 0x15: NAK (negative acknowledge)  
 0x16: SYN (synchronous idle)
 
-La conversazione origina sempre dal software Hi-Connect, la centrale è slave e risponde ai comandi ricevuti. Dato che l’hardware della centrale non è particolarmente performante, è bene introdurre dei delay (sleep di qualche centinaio di microsecondi) tra invio e tentativo di ricezione, o gestire l’eventuale mancanza dei dati.
+La conversazione origina sempre dal software Hi-Connect, la centrale è slave e risponde ai comandi ricevuti. Dato che l’hardware della centrale non è particolarmente performante, è bene introdurre dei delay (sleep di qualche centinaio di millisecondi) tra invio e tentativo di ricezione, o gestire l’eventuale mancanza dei dati.
 
 I pacchetti possono essere distinti in due tipi:
 
@@ -68,8 +68,8 @@ Offset	| Carattere	| Significato
 0	| 0x01		| SOH
 1	| 0x55		| Prime due cifre BCD del codice impianto
 2	| 0x55		| Terza e quarta cifra BCD del codice impianto
-3	| (variabile)	| numero dei pacchetti costituenti la sequenza
-4	| (variabile)	| progressivo del pacchetto nella sequenza
+3	| (variabile)	| numero dei pacchetti costituenti la sequenza (base 0)
+4	| (variabile)	| progressivo del pacchetto nella sequenza (base 0)
 5	| (variabile)	| lunghezza dei dati inviati
 6	| 0x00		| ??? costante?
 7	| (variabile)	| comando
@@ -77,16 +77,16 @@ Offset	| Carattere	| Significato
 n+1 → n+2	| (variabile)	| checksum big endian del pacchetto calcolato in modo che la somma di tutti i byte dall'offset 1 a n (quindi escludendo il SOH iniziale), sommato a questo checksum, fornisca 0x10000. In altre parole, il checksum è `0x10000 – SUM(offset1... offsetn)`
 n+3	| 0x03		| ETX
 
-Nota: il byte 3 e 4 valgono entrambi 0x00 se la risposta è contenuta in un solo pacchetto (max 140 (0x8c) byte di dati, al netto degli escape). Se viceversa i dati da trasmettere eccedono il massimo indicato, la risposta viene spezzata in più pacchetti, il byte 3 viene valorizzato con l'indice dl pacchetto massimo e il byte 4 con l'indice del pacchetto corrente (base 0). In altre parole, se la risposta è spezzata in 3 pacchetti, il byte 3 vale 0x02 ed il byte 4 rispettivamente 0x00, 0x01 e 0x02 per il primo, secondo e terzo pacchetto. Il ricevitore conferma la ricezione con un pacchetto di tipo 0x65 (SEND).
+Nota: il byte 3 e 4 valgono entrambi 0x00 se la risposta è contenuta in un solo pacchetto (max 140 (0x8c) byte di dati, al netto degli escape). Se viceversa i dati da trasmettere eccedono il massimo indicato, la risposta viene spezzata in più pacchetti, il byte 3 viene valorizzato con l'indice dl pacchetto massimo e il byte 4 con l'indice del pacchetto corrente (base 0). In altre parole, se la risposta è spezzata in 3 pacchetti, il byte 3 vale 0x02 ed il byte 4 rispettivamente 0x00, 0x01 e 0x02 per il primo, secondo e terzo pacchetto. Il ricevitore conferma la ricezione di ogni frammento con un pacchetto di tipo 0x65 (SEND).
 
 ## Tipologie di comando
 
 Escludendo i pacchetti di controllo a byte singolo (SYN/ACK/NAK), i comandi applicativi si distinguono in:
 
 * **Controllo sessione**: apertura, mantenimento e chiusura della connessione applicativa (HELLO, LOGIN, SEND, LOGOUT); non legge né scrive dati di configurazione.
-* **Lettura**: il client invia il codice senza dati (salvo eventuali parametri di richiesta), la centrale risponde con SYN seguito da uno o più pacchetti dati con lo stesso codice comando.
+* **Lettura**: il client invia il codice senza dati (salvo eventuali parametri di richiesta), la centrale risponde con SYN seguito dal primo pacchetto dati con lo stesso codice comando, il client invia SEND e la centrale risponde SYN seguito dal secondo pacchetto se presente, e così via.
 * **Azione**: il client invia il codice con pochi byte di dati che rappresentano un comando puntuale e immediato (es. armare un settore, escludere un ingresso, abilitare un utente); la centrale risponde solo con SYN, senza restituire un pacchetto dati.
-* **Scrittura**: il client invia il codice comando con l'intero blocco dati, strutturalmente analogo a quanto restituito dalla corrispondente lettura; la centrale risponde con SYN.
+* **Scrittura**: il client invia il codice comando con l'intero blocco dati, suddividendolo in pacchetti se la dimensione dei dati supera i 140 byte, (strutturalmente analogo a quanto restituito dalla corrispondente lettura); la centrale risponde con SYN ed il client procede con l'invio del pcchetto successivo e così via.
 * **Scrittura singola istanza**: il client invia il codice comando con l'indice dell'elemento all'interno del proprio array (es. l'i-esimo utente, tastiera, lettore, chiave, SMS, day class) seguito dai soli dati di quell'istanza; la centrale risponde con SYN. A differenza della scrittura di blocco, non richiede di ritrasmettere l'intero array e non presenta il checksum di blocco. Nota: alcuni oggetti (ad es. [Espansioni](#blocco-b)) hanno l'indice al loro interno, quindi non viene aggiunto un ulteriore indice in vetta al pacchetto.
 
 
@@ -111,9 +111,9 @@ Comando	| Tipo	| Significato	| Dati		| Risposta centrale	| Note
 0x80	| Lettura	| SYSTEM STATUS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x80 con un singolo byte di dati, 1 bit ogni settore, LSB = settore 1	
 0x81	| Azione	| ARM/DISARM SYSTEM	| due byte di dati, 1 bit ogni settore, LSB = settore 1, in caso di attivazione i due byte sono uguali (ad es. 0x02 + 0x02 per armare il settore 2), mentre in caso di disattivazione il primo indica il settore, il secondo vale 0x00. È possibile attivare/disattivare oiù settori contemporaneamente effettuando l'OR logico dei bit che rappsentano i settori, ad es. 0xFF 0x00 per disattivare tutto.	| 0x16 (SYN)	
 0x96	| Scrittura	| WRITE PARAMETERS & ENABLINGS	| vedi dati di 0x26, [Parametri](#parametri). Attenzione: ESCAPE con 0x11 anche di 0x01	| 0x16 (SYN)	
-0x95	| Scrittura singola istanza	| AGGIUNTA UTENTE	| Progressivo utente incrementato di 1 + aree + settori + nome (24 byte)	| 0x16 (SYN)	| Confermato da DTO `SingleCredential`(index, `User`); gestito anche dall'emulatore
+0x95	| Scrittura singola istanza	| AGGIUNTA UTENTE	| Progressivo utente incrementato di 1 + aree + settori + nome (24 byte)	| 0x16 (SYN)
 0xe7	| Scrittura	| MODIFICA NUMERI TELEFONICI	| pacchetto dati 0xe7, vedi [Numeri telefonici](#numeri-telefonici)	| 0x16 (SYN)	
-0x51	| Lettura	| EXPANSIONS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x51, vedi [Blocco B](#blocco-b)	| Aka Blocco B
+0x51	| Lettura	| EXPANSIONS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x51, vedi [Blocco B](#blocco-b)	| Aka Blocco B aka Nodi
 0x83	| Azione	| EXCLUDE/INCLUDE INPUT	| due byte di dati, il primo indica il numero di ingresso, il secondo vale 0x01 (attenzione all’escape) per escludere l’ingresso, 0x00 per includerlo	| 0x16 (SYN)	
 0x87	| Lettura	| USER STATUS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x87 contenente 4 byte di dati con i flag che indicano l’attivazione degli utenti. Il primo byte contiene nell’MSB (0x80) lo stato dell’utente 0 (TECNICO), nel bit immediatamente successivo (0x40) lo stato dell’utente 1 (MASTER) e così via per gli altri bit. Il secondo byte indica gli stati degli utenti 8-15, il terzo 16-23 e l’ultimo 24-31	
 0x88	| Azione	| ENABLE/DISABLE USER	| due byte di dati, il primo indica il numero di utente (base 1 = TECNICO), il secondo vale 0x01 (attenzione all’escape) per attivare l’utente, 0x00 per disattivarlo	| 0x16 (SYN)	
@@ -124,7 +124,7 @@ Comando	| Tipo	| Significato	| Dati		| Risposta centrale	| Note
 0x58	| Lettura	| C200B	| nessuno	| 0x16 (SYN) + pacchetto dati 0x58
 0x54	| Lettura	| TIME PROGRAMMER	| nessuno	| 0x16 (SYN) + pacchetto dati 0x54
 0x8b	| Lettura (ipotesi)	| KEY STATUS	| TBD	| TBD	| packetClass non implementata (FIXME nel codice); ipotesi basata sull'analogia col naming di INPUT/SYSTEM/USER STATUS
-0x70	| Lettura (ipotesi)	| EVENT LOG	| TBD	| TBD	| packetClass non implementata (FIXME nel codice) — lettura log, vedi chat dedicata
+0x70	| Lettura (ipotesi)	| EVENT LOG	| TBD	| TBD	| packetClass non implementata (FIXME nel codice) — lettura log
 0x91	| Scrittura singola istanza	| EXPANSION PROGRAMMING	| TBD	| TBD	| packetClass non implementata (FIXME nel codice)
 0xe1	| Scrittura singola istanza (ipotesi)	| EXPANSIONS PROGRAMMING	| TBD	| TBD	| packetClass non implementata (FIXME nel codice); ipotesi basata sull'analogia col naming "PROGRAMMING"
 0xe2	| Scrittura	| KEYPADS PROGRAMMING	| TBD	| TBD	| packetClass non implementata (FIXME nel codice)
@@ -149,7 +149,7 @@ Comando	| Tipo	| Significato	| Dati		| Risposta centrale	| Note
 
 La centrale risponde con 0x06 (ACK) solo fintanto che non sia stato effettuato il login, compreso il pacchetto di login stesso. Hi-Connect quindi invia un SEND dopo il login per verificare che la risposta sia 0x16 (SYN). L'intera procedura di login è quindi costituita da tre pacchetti: HELLO, LOGIN, SEND. Se si invia il LOGIN senza HELLO, si ottiene in risposta 0x15 (NAK).
 
-Il software Hi-Connect continua ad inviare pacchetti di tipo SEND anche mentre è in idle (uno ogni 500 ms). Da tentativi empirici, è bene che questi pacchetti vengano inviati, altrimenti ad un certo punto la centrale inizia a rispondere NAK anche ai pacchetti corretti. Hp.: keepalive?
+Il software Hi-Connect continua ad inviare pacchetti di tipo SEND anche mentre è in idle (uno ogni 500 ms). Da tentativi empirici, è bene che questi pacchetti vengano inviati, altrimenti ad un certo punto la centrale inizia a rispondere NAK anche ai pacchetti corretti. Hp.: keepalive? Nota: se si effettua la sequenza di login prima di ogni comando, seguita dalla logout, non è necessario inviare keepalive e la socket può addirittura essere chiusa e riaperta al comando successivo. Questo ovviamente comporta un rallentamento nell'interazione, ma garantisce che non ci siano disallineamenti di sorta tra centrale e client (che sono stati osservati nonostante i keepalive).
 
 La centrale risponde con 0x15 (NAK) nel caso in cui il pacchetto inviato da Hi-Connect contenga un checksum errato, o a fronte di altri errori (ad es. login non effettuato, sequenza di login errata).
 
@@ -327,6 +327,8 @@ Offset (relativo all'utente)	| Significato	| Note
 0	| Abilitazione	| `Credential.Enabling`: 0=disabilitato, 1=abilitato, 2=sempre abilitato
 1	| Partizioni associate	| Bitmask, LSB = partizione 1
 2-25	| Nome	| 24 byte
+
+ATTENIONE: lo stato di abilitazione dell'utente **NON** implica che l'utente non possa accedere alla tastiera per attivare/disattivare l'allarme, in quanto per la login su tastiera fa fede lo stato riportato dal comanzo 0x87 (ed eventualmente modificato con 0x88). Il byte di abilitazione qui vale sempre 0x00 per gli utenti non di sistema.
 
 ### Esempio payload
 
@@ -509,7 +511,7 @@ Dati chiavi:
 
 ## Parametri
 
-Parametri della conigurazione di sistema.
+Parametri della configurazione di sistema.
 
 ### Cattura stream
 
