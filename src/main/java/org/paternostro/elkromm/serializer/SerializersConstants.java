@@ -3,7 +3,7 @@ package org.paternostro.elkromm.serializer;
 import org.paternostro.elkromm.ElkrommFacade;
 
 /**
- * Costants defining payload sizes and other useful costants.
+ * Costants defining payload sizes and other useful values.
  * 
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
  */
@@ -30,7 +30,7 @@ public class SerializersConstants {
     /** Login payload size */
     public static final int LOGIN_SIZE                  = 7;
     
-    /** Parameters & enablings (aka system parameters) payload size */
+    /** Parameters &amp; enablings (aka system parameters) payload size */
     public static final int PARAMETERS_ENABLINGS_SIZE   = 30;
 
     /** Single phone number payload size */

@@ -22,7 +22,6 @@ public class Area implements Serializable
     /**
      * Creates a new area.
      *
-     * @param ordinal 1-based position of this area, in range [1, {@link ElkrommFacade#MAX_AREAS}]
      * @param name display name
      * @param associatedPartitions per-partition association flags, length {@link ElkrommFacade#MAX_PARTITIONS}
      */
