@@ -230,7 +230,7 @@ public class ElkrommUtils
             }
 
             sb.append(String.format("%02x ", payload[i]));    
-            sb2.append((Character.isLetterOrDigit((char)payload[i]) || !Character.isISOControl((char)payload[i])) ? (char)payload[i] : '.');
+            sb2.append(payload[i] > 31 && payload[i] < 128 ? (char)payload[i] : '.');
 
             i++;
 
