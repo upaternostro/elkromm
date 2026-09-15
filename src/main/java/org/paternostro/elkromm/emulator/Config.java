@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.dto.Partition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,88 +30,27 @@ public class Config {
     public static final String D_EXPANSIONS     = "0";
     public static final String K_AREAS          = "org.paternostro.elkron.areas";
     public static final String D_AREAS          = "0";
-    public static final String K_AREA_1_SECTORS = "org.paternostro.elkron.area.1.sectors";
-    public static final String D_AREA_1_SECTORS = "1";
-    public static final String K_AREA_2_SECTORS = "org.paternostro.elkron.area.2.sectors";
-    public static final String D_AREA_2_SECTORS = "0";
-    public static final String K_AREA_3_SECTORS = "org.paternostro.elkron.area.3.sectors";
-    public static final String D_AREA_3_SECTORS = "0";
-    public static final String K_AREA_4_SECTORS = "org.paternostro.elkron.area.4.sectors";
-    public static final String D_AREA_4_SECTORS = "0";
-    public static final String K_AREA_1_NAME    = "org.paternostro.elkron.area.1.name";
-    public static final String D_AREA_1_NAME    = "...";
-    public static final String K_AREA_2_NAME    = "org.paternostro.elkron.area.2.name";
-    public static final String D_AREA_2_NAME    = "...                     ";
-    public static final String K_AREA_3_NAME    = "org.paternostro.elkron.area.3.name";
-    public static final String D_AREA_3_NAME    = "...                     ";
-    public static final String K_AREA_4_NAME    = "org.paternostro.elkron.area.4.name";
-    public static final String D_AREA_4_NAME    = "...                     ";
+
+    public static final String K_AREA_SECTORS   = "org.paternostro.elkron.area.%d.sectors";
+    public static final String[] D_AREA_SECTORS = {"1", "0", "0", "0"};
+
+    public static final String K_AREA_NAME      = "org.paternostro.elkron.area.%d.name";
+    public static final String[] D_AREA_NAME    = {"...", "...                     ", "...                     ", "...                     "};
+    
     public static final String K_SECTORS        = "org.paternostro.elkron.sectors";
     public static final String D_SECTORS        = "1";
-    public static final String K_SECTOR_1_ENTRY_TIME  = "org.paternostro.elkron.sector.1.entry.time";
-    public static final String D_SECTOR_1_ENTRY_TIME  = "0";
-    public static final String K_SECTOR_2_ENTRY_TIME  = "org.paternostro.elkron.sector.2.entry.time";
-    public static final String D_SECTOR_2_ENTRY_TIME  = "0";
-    public static final String K_SECTOR_3_ENTRY_TIME  = "org.paternostro.elkron.sector.3.entry.time";
-    public static final String D_SECTOR_3_ENTRY_TIME  = "0";
-    public static final String K_SECTOR_4_ENTRY_TIME  = "org.paternostro.elkron.sector.4.entry.time";
-    public static final String D_SECTOR_4_ENTRY_TIME  = "0";
-    public static final String K_SECTOR_5_ENTRY_TIME  = "org.paternostro.elkron.sector.5.entry.time";
-    public static final String D_SECTOR_5_ENTRY_TIME  = "0";
-    public static final String K_SECTOR_6_ENTRY_TIME  = "org.paternostro.elkron.sector.6.entry.time";
-    public static final String D_SECTOR_6_ENTRY_TIME  = "0";
-    public static final String K_SECTOR_7_ENTRY_TIME  = "org.paternostro.elkron.sector.7.entry.time";
-    public static final String D_SECTOR_7_ENTRY_TIME  = "0";
-    public static final String K_SECTOR_8_ENTRY_TIME  = "org.paternostro.elkron.sector.8.entry.time";
-    public static final String D_SECTOR_8_ENTRY_TIME  = "0";
-    public static final String K_SECTOR_1_EXIT_TIME   = "org.paternostro.elkron.sector.1.exit.time";
-    public static final String D_SECTOR_1_EXIT_TIME   = "0";
-    public static final String K_SECTOR_2_EXIT_TIME   = "org.paternostro.elkron.sector.2.exit.time";
-    public static final String D_SECTOR_2_EXIT_TIME   = "0";
-    public static final String K_SECTOR_3_EXIT_TIME   = "org.paternostro.elkron.sector.3.exit.time";
-    public static final String D_SECTOR_3_EXIT_TIME   = "0";
-    public static final String K_SECTOR_4_EXIT_TIME   = "org.paternostro.elkron.sector.4.exit.time";
-    public static final String D_SECTOR_4_EXIT_TIME   = "0";
-    public static final String K_SECTOR_5_EXIT_TIME   = "org.paternostro.elkron.sector.5.exit.time";
-    public static final String D_SECTOR_5_EXIT_TIME   = "0";
-    public static final String K_SECTOR_6_EXIT_TIME   = "org.paternostro.elkron.sector.6.exit.time";
-    public static final String D_SECTOR_6_EXIT_TIME   = "0";
-    public static final String K_SECTOR_7_EXIT_TIME   = "org.paternostro.elkron.sector.7.exit.time";
-    public static final String D_SECTOR_7_EXIT_TIME   = "0";
-    public static final String K_SECTOR_8_EXIT_TIME   = "org.paternostro.elkron.sector.8.exit.time";
-    public static final String D_SECTOR_8_EXIT_TIME   = "0";
-    public static final String K_SECTOR_1_NAME  = "org.paternostro.elkron.sector.1.name";
-    public static final String D_SECTOR_1_NAME  = "...                     ";
-    public static final String K_SECTOR_2_NAME  = "org.paternostro.elkron.sector.2.name";
-    public static final String D_SECTOR_2_NAME  = "...                     ";
-    public static final String K_SECTOR_3_NAME  = "org.paternostro.elkron.sector.3.name";
-    public static final String D_SECTOR_3_NAME  = "...                     ";
-    public static final String K_SECTOR_4_NAME  = "org.paternostro.elkron.sector.4.name";
-    public static final String D_SECTOR_4_NAME  = "...                     ";  
-    public static final String K_SECTOR_5_NAME  = "org.paternostro.elkron.sector.5.name";
-    public static final String D_SECTOR_5_NAME  = "...                     ";
-    public static final String K_SECTOR_6_NAME  = "org.paternostro.elkron.sector.6.name";
-    public static final String D_SECTOR_6_NAME  = "...                     ";
-    public static final String K_SECTOR_7_NAME  = "org.paternostro.elkron.sector.7.name";
-    public static final String D_SECTOR_7_NAME  = "...                     ";
-    public static final String K_SECTOR_8_NAME  = "org.paternostro.elkron.sector.8.name";
-    public static final String D_SECTOR_8_NAME  = "...                     ";
-    public static final String K_SECTOR_1_TYPE  = "org.paternostro.elkron.sector.1.type";
-    public static final String D_SECTOR_1_TYPE  = "STANDARD";
-    public static final String K_SECTOR_2_TYPE  = "org.paternostro.elkron.sector.2.type";
-    public static final String D_SECTOR_2_TYPE  = "STANDARD";
-    public static final String K_SECTOR_3_TYPE  = "org.paternostro.elkron.sector.3.type";
-    public static final String D_SECTOR_3_TYPE  = "STANDARD";
-    public static final String K_SECTOR_4_TYPE  = "org.paternostro.elkron.sector.4.type";
-    public static final String D_SECTOR_4_TYPE  = "STANDARD";
-    public static final String K_SECTOR_5_TYPE  = "org.paternostro.elkron.sector.5.type";
-    public static final String D_SECTOR_5_TYPE  = "STANDARD";
-    public static final String K_SECTOR_6_TYPE  = "org.paternostro.elkron.sector.6.type";
-    public static final String D_SECTOR_6_TYPE  = "STANDARD";
-    public static final String K_SECTOR_7_TYPE  = "org.paternostro.elkron.sector.7.type";
-    public static final String D_SECTOR_7_TYPE  = "STANDARD";
-    public static final String K_SECTOR_8_TYPE  = "org.paternostro.elkron.sector.8.type";
-    public static final String D_SECTOR_8_TYPE  = "STANDARD";
+
+    public static final String K_SECTOR_ENTRY_TIME    = "org.paternostro.elkron.sector.%d.entry.time";
+    public static final String[] D_SECTOR_ENTRY_TIME  = {"0", "0", "0", "0", "0", "0", "0", "0"};
+
+    public static final String K_SECTOR_EXIT_TIME     = "org.paternostro.elkron.sector.%d.exit.time";
+    public static final String[] D_SECTOR_EXIT_TIME   = {"0", "0", "0", "0", "0", "0", "0", "0"};
+
+    public static final String K_SECTOR_NAME    = "org.paternostro.elkron.sector.%d.name";
+    public static final String[] D_SECTOR_NAME  = {"...                     ", "...                     ", "...                     ", "...                     ", "...                     ", "...                     ", "...                     ", "...                     "};
+
+    public static final String K_SECTOR_TYPE    = "org.paternostro.elkron.sector.%d.type";
+    public static final String[] D_SECTOR_TYPE  = {"STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD"};
 
     protected static Config instance = null;
 
@@ -182,27 +122,13 @@ public class Config {
         String  key,
                 defaultValue;
         
-        switch (area) {
-            case 1:
-                key = K_AREA_1_SECTORS;
-                defaultValue = D_AREA_1_SECTORS;
-                break;
-            case 2:
-                key = K_AREA_2_SECTORS;
-                defaultValue = D_AREA_2_SECTORS;
-                break;
-            case 3:
-                key = K_AREA_3_SECTORS;
-                defaultValue = D_AREA_3_SECTORS;
-                break;
-            case 4:
-                key = K_AREA_4_SECTORS;
-                defaultValue = D_AREA_4_SECTORS;
-                break;
-            default:
-                logger.warn("Invalid area number: " + area + ", must be between 1 and 4");
-                return 0;
+        if (area < 1 || area > ElkrommFacade.MAX_AREAS) {
+            logger.warn("Invalid area number: " + area + ", must be between 1 and " + ElkrommFacade.MAX_AREAS);
+            return 0;
         }
+        
+        key = String.format(K_AREA_SECTORS, area);
+        defaultValue = D_AREA_SECTORS[area - 1];
 
         return getIntProperty(key, defaultValue, "area " + area + " sectors");
     }
@@ -211,27 +137,13 @@ public class Config {
         String  key,
                 defaultValue;
         
-        switch (area) {
-            case 1:
-                key = K_AREA_1_NAME;
-                defaultValue = D_AREA_1_NAME;
-                break;
-            case 2:
-                key = K_AREA_2_NAME;
-                defaultValue = D_AREA_2_NAME;
-                break;
-            case 3:
-                key = K_AREA_3_NAME;
-                defaultValue = D_AREA_3_NAME;
-                break;
-            case 4:
-                key = K_AREA_4_NAME;
-                defaultValue = D_AREA_4_NAME;
-                break;
-            default:
-                logger.warn("Invalid area number: " + area + ", must be between 1 and 4");
-                return "...";
+        if (area < 1 || area > ElkrommFacade.MAX_AREAS) {
+            logger.warn("Invalid area number: " + area + ", must be between 1 and " + ElkrommFacade.MAX_AREAS);
+            return "...";
         }
+        
+        key = String.format(K_AREA_NAME, area);
+        defaultValue = D_AREA_NAME[area - 1];
 
         return properties.getProperty(key, defaultValue);
     }
@@ -244,43 +156,13 @@ public class Config {
         String  key,
                 defaultValue;
         
-        switch (sector) {
-            case 1:
-                key = K_SECTOR_1_ENTRY_TIME;
-                defaultValue = D_SECTOR_1_ENTRY_TIME;
-                break;
-            case 2:
-                key = K_SECTOR_2_ENTRY_TIME;
-                defaultValue = D_SECTOR_2_ENTRY_TIME;
-                break;
-            case 3:
-                key = K_SECTOR_3_ENTRY_TIME;
-                defaultValue = D_SECTOR_3_ENTRY_TIME;
-                break;
-            case 4:
-                key = K_SECTOR_4_ENTRY_TIME;
-                defaultValue = D_SECTOR_4_ENTRY_TIME;
-                break;
-            case 5:
-                key = K_SECTOR_5_ENTRY_TIME;
-                defaultValue = D_SECTOR_5_ENTRY_TIME;
-                break;
-            case 6:
-                key = K_SECTOR_6_ENTRY_TIME;
-                defaultValue = D_SECTOR_6_ENTRY_TIME;
-                break;
-            case 7:
-                key = K_SECTOR_7_ENTRY_TIME;
-                defaultValue = D_SECTOR_7_ENTRY_TIME;
-                break;
-            case 8:
-                key = K_SECTOR_8_ENTRY_TIME;
-                defaultValue = D_SECTOR_8_ENTRY_TIME;
-                break;    
-            default:
-                logger.warn("Invalid sector number: " + sector + ", must be between 1 and 8");
-                return 0;
+        if (sector < 1 || sector > ElkrommFacade.MAX_PARTITIONS) {
+            logger.warn("Invalid sector number: " + sector + ", must be between 1 and " + ElkrommFacade.MAX_PARTITIONS);
+            return 0;
         }
+        
+        key = String.format(K_SECTOR_ENTRY_TIME, sector);
+        defaultValue = D_SECTOR_ENTRY_TIME[sector - 1];
 
         return getIntProperty(key, defaultValue, "sector " + sector + " entry time");
     }
@@ -289,44 +171,14 @@ public class Config {
         String  key,
                 defaultValue;
         
-        switch (sector) {
-            case 1:
-                key = K_SECTOR_1_EXIT_TIME;
-                defaultValue = D_SECTOR_1_EXIT_TIME;
-                break;
-            case 2:
-                key = K_SECTOR_2_EXIT_TIME;
-                defaultValue = D_SECTOR_2_EXIT_TIME;
-                break;
-            case 3:
-                key = K_SECTOR_3_EXIT_TIME;
-                defaultValue = D_SECTOR_3_EXIT_TIME;
-                break;
-            case 4:
-                key = K_SECTOR_4_EXIT_TIME;
-                defaultValue = D_SECTOR_4_EXIT_TIME;
-                break;
-            case 5:
-                key = K_SECTOR_5_EXIT_TIME;
-                defaultValue = D_SECTOR_5_EXIT_TIME;
-                break;
-            case 6:
-                key = K_SECTOR_6_EXIT_TIME;
-                defaultValue = D_SECTOR_6_EXIT_TIME;
-                break;
-            case 7:
-                key = K_SECTOR_7_EXIT_TIME;
-                defaultValue = D_SECTOR_7_EXIT_TIME;
-                break;
-            case 8:
-                key = K_SECTOR_8_EXIT_TIME;
-                defaultValue = D_SECTOR_8_EXIT_TIME;
-                break;    
-            default:
-                logger.warn("Invalid sector number: " + sector + ", must be between 1 and 8");
-                return 0;
+        if (sector < 1 || sector > ElkrommFacade.MAX_PARTITIONS) {
+            logger.warn("Invalid sector number: " + sector + ", must be between 1 and " + ElkrommFacade.MAX_PARTITIONS);
+            return 0;
         }
-
+        
+        key = String.format(K_SECTOR_EXIT_TIME, sector);
+        defaultValue = D_SECTOR_EXIT_TIME[sector - 1];
+        
         return getIntProperty(key, defaultValue, "sector " + sector + " exit time");
     }
 
@@ -334,44 +186,14 @@ public class Config {
         String  key,
                 defaultValue;
         
-        switch (sector) {
-            case 1:
-                key = K_SECTOR_1_NAME;
-                defaultValue = D_SECTOR_1_NAME;
-                break;
-            case 2:
-                key = K_SECTOR_2_NAME;
-                defaultValue = D_SECTOR_2_NAME;
-                break;
-            case 3:
-                key = K_SECTOR_3_NAME;
-                defaultValue = D_SECTOR_3_NAME;
-                break;
-            case 4:
-                key = K_SECTOR_4_NAME;
-                defaultValue = D_SECTOR_4_NAME;
-                break;
-            case 5:
-                key = K_SECTOR_5_NAME;
-                defaultValue = D_SECTOR_5_NAME;
-                break;
-            case 6:
-                key = K_SECTOR_6_NAME;
-                defaultValue = D_SECTOR_6_NAME;
-                break;
-            case 7:
-                key = K_SECTOR_7_NAME;
-                defaultValue = D_SECTOR_7_NAME;
-                break;
-            case 8:
-                key = K_SECTOR_8_NAME;
-                defaultValue = D_SECTOR_8_NAME;
-                break;    
-            default:
-                logger.warn("Invalid sector number: " + sector + ", must be between 1 and 8");
-                return "...";
+        if (sector < 1 || sector > ElkrommFacade.MAX_PARTITIONS) {
+            logger.warn("Invalid sector number: " + sector + ", must be between 1 and " + ElkrommFacade.MAX_PARTITIONS);
+            return "...";
         }
-
+        
+        key = String.format(K_SECTOR_NAME, sector);
+        defaultValue = D_SECTOR_NAME[sector - 1];
+        
         return properties.getProperty(key, defaultValue);
     }
 
@@ -379,44 +201,14 @@ public class Config {
         String  key,
                 defaultValue;
         
-        switch (sector) {
-            case 1:
-                key = K_SECTOR_1_TYPE;
-                defaultValue = D_SECTOR_1_TYPE;
-                break;
-            case 2:
-                key = K_SECTOR_2_TYPE;
-                defaultValue = D_SECTOR_2_TYPE;
-                break;
-            case 3:
-                key = K_SECTOR_3_TYPE;
-                defaultValue = D_SECTOR_3_TYPE;
-                break;
-            case 4:
-                key = K_SECTOR_4_TYPE;
-                defaultValue = D_SECTOR_4_TYPE;
-                break;
-            case 5:
-                key = K_SECTOR_5_TYPE;
-                defaultValue = D_SECTOR_5_TYPE;
-                break;
-            case 6:
-                key = K_SECTOR_6_TYPE;
-                defaultValue = D_SECTOR_6_TYPE;
-                break;
-            case 7:
-                key = K_SECTOR_7_TYPE;
-                defaultValue = D_SECTOR_7_TYPE;
-                break;
-            case 8:
-                key = K_SECTOR_8_TYPE;
-                defaultValue = D_SECTOR_8_TYPE;
-                break;
-            default:
-                logger.warn("Invalid sector number: " + sector + ", must be between 1 and 8");
-                return null;
+        if (sector < 1 || sector > ElkrommFacade.MAX_PARTITIONS) {
+            logger.warn("Invalid sector number: " + sector + ", must be between 1 and " + ElkrommFacade.MAX_PARTITIONS);
+            return null;
         }
-
+        
+        key = String.format(K_SECTOR_TYPE, sector);
+        defaultValue = D_SECTOR_TYPE[sector - 1];
+        
         return Partition.Type.valueOf(properties.getProperty(key, defaultValue));
     }
 }
