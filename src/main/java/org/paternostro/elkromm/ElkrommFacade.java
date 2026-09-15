@@ -73,6 +73,8 @@ public interface ElkrommFacade
 
     /** Number of logical inputs (sensors) supported by the panel. */
     public static final int MAX_LOGICAL_INPUTS = 64;
+    /** Number of logical output (actuators) supported by the panel. */
+    public static final int MAX_LOGICAL_OUTPUTS = 48;
     /** Number of physical inputs on a single expansion unit. */
     public static final int MAX_EXP_INPUTS = 8;
     /** Number of physical outputs on a single expansion unit. */
@@ -90,6 +92,8 @@ public interface ElkrommFacade
     public static final int MAX_DATA_LENGTH = 140;
     /** Maximum length of a user/key/etc. display name. */
     public static final int NAME_LENGTH = 24;
+    /** Default user/key/etc. display name. */
+    public static final String DEFAULT_NAME = "...                     ";
     /** Maximum length of a single SMS message. */
     public static final int SMS_LENGTH = 40;
     /** Number of scheduled commands per day class ({@link org.paternostro.elkromm.dto.DayClassCommands}). */

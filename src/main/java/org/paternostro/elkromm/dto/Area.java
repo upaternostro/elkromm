@@ -14,7 +14,7 @@ import org.paternostro.elkromm.ElkrommUtils;
  */
 public class Area implements Serializable
 {
-    public static final Area    UNUSED = new Area("...                     ", ElkrommUtils.unpackPartitions((byte)0x01));
+    public static final Area    UNUSED = new Area(ElkrommFacade.DEFAULT_NAME, ElkrommUtils.unpackPartitions((byte)0x01));
 
     private String      name;
     private boolean[]   associatedPartitions;

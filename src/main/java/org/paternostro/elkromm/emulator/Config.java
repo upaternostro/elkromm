@@ -35,7 +35,7 @@ public class Config {
     public static final String[] D_AREA_SECTORS = {"1", "0", "0", "0"};
 
     public static final String K_AREA_NAME      = "org.paternostro.elkron.area.%d.name";
-    public static final String[] D_AREA_NAME    = {"...", "...                     ", "...                     ", "...                     "};
+    public static final String[] D_AREA_NAME    = {"...", ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME};
     
     public static final String K_SECTORS        = "org.paternostro.elkron.sectors";
     public static final String D_SECTORS        = "1";
@@ -47,7 +47,7 @@ public class Config {
     public static final String[] D_SECTOR_EXIT_TIME   = {"0", "0", "0", "0", "0", "0", "0", "0"};
 
     public static final String K_SECTOR_NAME    = "org.paternostro.elkron.sector.%d.name";
-    public static final String[] D_SECTOR_NAME  = {"...                     ", "...                     ", "...                     ", "...                     ", "...                     ", "...                     ", "...                     ", "...                     "};
+    public static final String[] D_SECTOR_NAME  = {ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME};
 
     public static final String K_SECTOR_TYPE    = "org.paternostro.elkron.sector.%d.type";
     public static final String[] D_SECTOR_TYPE  = {"STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD"};

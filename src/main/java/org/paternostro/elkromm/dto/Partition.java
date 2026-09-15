@@ -2,6 +2,8 @@ package org.paternostro.elkromm.dto;
 
 import java.io.Serializable;
 
+import org.paternostro.elkromm.ElkrommFacade;
+
 /**
  * A partition (a.k.a. sector): the smallest independently armable unit of
  * the panel, with its own entry/exit delays.
@@ -13,7 +15,7 @@ import java.io.Serializable;
  */
 public class Partition implements Serializable
 {
-    public static final Partition   UNUSED = new Partition("...                     ", false, Type.STANDARD, 0, 0);
+    public static final Partition   UNUSED = new Partition(ElkrommFacade.DEFAULT_NAME, false, Type.STANDARD, 0, 0);
 
     /** How a partition behaves with respect to self-exclusion/arming restrictions. */
     public enum Type
