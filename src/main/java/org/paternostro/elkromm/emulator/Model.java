@@ -137,12 +137,12 @@ public class Model {
             this.expansions[i] = new Expansion(i, String.format("%01d.%02d", 1, i), String.format("Espansione %02d", i));
 
             for (int j = 1; j <= ElkrommFacade.MAX_EXP_INPUTS; j++) {
-                this.expansions[i].addInput(new Input(inputNum, Input.Configuration.IC_NORMALLY_CLOSED_DOUBLE_BALANCED, Input.Specialization.IS_IMMEDIATE, Input.Sensitivity.IS_HIGH, Input.Flags.IF_NONE.getValue(), Input.Video.IV_NONE, ElkrommUtils.unpackPartitions((byte)0x01), String.format("Input %d", inputNum), null));
+                this.expansions[i].addInput(new Input(inputNum, config.getInputConfiguration(inputNum), config.getInputSpecialization(inputNum), config.getInputSensitivity(inputNum), config.getInputFlags(inputNum), config.getInputVideo(inputNum), ElkrommUtils.unpackPartitions(config.getInputPartitions(inputNum)), config.getInputName(inputNum), config.getInputDelay(inputNum)));
                 inputNum++;
             }
 
             for (int j = 1; j <= ElkrommFacade.MAX_EXP_OUTPUTS; j++) {
-                this.expansions[i].addOutput(new Output(outputNum, Output.Type.OT_NORMALLY_LOW, ElkrommUtils.unpackPartitions((byte)0x01), Output.Specialization.OS_OR_TC, String.format("Output %d", outputNum)));
+                this.expansions[i].addOutput(new Output(outputNum, config.getOutputType(outputNum), ElkrommUtils.unpackPartitions(config.getOutputPartitions(outputNum)), config.getOutputSpecialization(outputNum), config.getOutputName(outputNum)));
                 outputNum++;
             }
         }
