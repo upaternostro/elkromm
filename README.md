@@ -133,8 +133,8 @@ not present falls back to its default value below. Note the property key prefix 
 | `org.paternostro.elkron.area.<N>.sectors` | `1` for area 1, `0` otherwise | Partitions belonging to area `<N>` (1-4), expressed as bitmask |
 | `org.paternostro.elkron.area.<N>.name` | `...` | Display name of area `<N>` |
 | `org.paternostro.elkron.sectors` | `1` | Number of emulated partitions (1-8) |
-| `org.paternostro.elkron.sector.<N>.entry.time` | `30` for sector 2, `0` otherwise | Entry delay, in seconds, for partition `<N>` (1-8) |
-| `org.paternostro.elkron.sector.<N>.exit.time` | `30` for sector 2, `0` otherwise | Exit delay, in seconds, for partition `<N>` (1-8) |
+| `org.paternostro.elkron.sector.<N>.entry.time` | `0` | Entry delay, in seconds, for partition `<N>` (1-8) |
+| `org.paternostro.elkron.sector.<N>.exit.time` | `0` | Exit delay, in seconds, for partition `<N>` (1-8) |
 | `org.paternostro.elkron.sector.<N>.name` | `...` | Display name of partition `<N>` |
 | `org.paternostro.elkron.sector.<N>.type` | `STANDARD` | Partition behavior type: `STANDARD`, `SELF_EXCLUSION`, or `ARMING_BLOCK` |
 

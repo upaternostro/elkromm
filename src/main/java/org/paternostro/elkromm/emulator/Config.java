@@ -50,7 +50,7 @@ public class Config {
     public static final String K_SECTOR_1_ENTRY_TIME  = "org.paternostro.elkron.sector.1.entry.time";
     public static final String D_SECTOR_1_ENTRY_TIME  = "0";
     public static final String K_SECTOR_2_ENTRY_TIME  = "org.paternostro.elkron.sector.2.entry.time";
-    public static final String D_SECTOR_2_ENTRY_TIME  = "30";
+    public static final String D_SECTOR_2_ENTRY_TIME  = "0";
     public static final String K_SECTOR_3_ENTRY_TIME  = "org.paternostro.elkron.sector.3.entry.time";
     public static final String D_SECTOR_3_ENTRY_TIME  = "0";
     public static final String K_SECTOR_4_ENTRY_TIME  = "org.paternostro.elkron.sector.4.entry.time";
@@ -66,7 +66,7 @@ public class Config {
     public static final String K_SECTOR_1_EXIT_TIME   = "org.paternostro.elkron.sector.1.exit.time";
     public static final String D_SECTOR_1_EXIT_TIME   = "0";
     public static final String K_SECTOR_2_EXIT_TIME   = "org.paternostro.elkron.sector.2.exit.time";
-    public static final String D_SECTOR_2_EXIT_TIME   = "30";
+    public static final String D_SECTOR_2_EXIT_TIME   = "0";
     public static final String K_SECTOR_3_EXIT_TIME   = "org.paternostro.elkron.sector.3.exit.time";
     public static final String D_SECTOR_3_EXIT_TIME   = "0";
     public static final String K_SECTOR_4_EXIT_TIME   = "org.paternostro.elkron.sector.4.exit.time";
