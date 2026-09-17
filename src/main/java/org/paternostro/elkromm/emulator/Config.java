@@ -33,26 +33,26 @@ public class Config {
     public static final String K_AREAS          = "org.paternostro.elkron.areas";
     public static final String D_AREAS          = "0";
 
-    public static final String K_AREA_SECTORS   = "org.paternostro.elkron.area.%d.sectors";
-    public static final String[] D_AREA_SECTORS = {"1", "0", "0", "0"};
+    public static final String K_AREA_PARTITIONS    = "org.paternostro.elkron.area.%d.partitions";
+    public static final String[] D_AREA_PARTITIONS  = {"1", "0", "0", "0"};
 
     public static final String K_AREA_NAME      = "org.paternostro.elkron.area.%d.name";
     public static final String[] D_AREA_NAME    = {"...", ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME};
     
-    public static final String K_SECTORS        = "org.paternostro.elkron.sectors";
-    public static final String D_SECTORS        = "1";
+    public static final String K_PARTITIONS     = "org.paternostro.elkron.partitions";
+    public static final String D_PARTITIONS     = "1";
 
-    public static final String K_SECTOR_ENTRY_TIME    = "org.paternostro.elkron.sector.%d.entry.time";
-    public static final String[] D_SECTOR_ENTRY_TIME  = {"0", "0", "0", "0", "0", "0", "0", "0"};
+    public static final String K_PARTITION_ENTRY_TIME   = "org.paternostro.elkron.partition.%d.entry.time";
+    public static final String[] D_PARTITION_ENTRY_TIME = {"0", "0", "0", "0", "0", "0", "0", "0"};
 
-    public static final String K_SECTOR_EXIT_TIME     = "org.paternostro.elkron.sector.%d.exit.time";
-    public static final String[] D_SECTOR_EXIT_TIME   = {"0", "0", "0", "0", "0", "0", "0", "0"};
+    public static final String K_PARTITION_EXIT_TIME    = "org.paternostro.elkron.partition.%d.exit.time";
+    public static final String[] D_PARTITION_EXIT_TIME  = {"0", "0", "0", "0", "0", "0", "0", "0"};
 
-    public static final String K_SECTOR_NAME    = "org.paternostro.elkron.sector.%d.name";
-    public static final String[] D_SECTOR_NAME  = {ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME};
+    public static final String K_PARTITION_NAME     = "org.paternostro.elkron.partition.%d.name";
+    public static final String[] D_PARTITION_NAME   = {ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME};
 
-    public static final String K_SECTOR_TYPE    = "org.paternostro.elkron.sector.%d.type";
-    public static final String[] D_SECTOR_TYPE  = {"STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD"};
+    public static final String K_PARTITION_TYPE     = "org.paternostro.elkron.partition.%d.type";
+    public static final String[] D_PARTITION_TYPE   = {"STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD"};
 
     public static final String K_INPUT_CONFIGURATION    = "org.paternostro.elkron.input.%d.configuration";
     public static final String D_INPUT_CONFIGURATION    = "NORMALLY_CLOSED_DOUBLE_BALANCED";
@@ -156,7 +156,7 @@ public class Config {
         return getIntProperty(K_AREAS, D_AREAS, "areas");
     }
 
-    public int getAreaSectors(int area) {
+    public int getAreaPartitions(int area) {
         String  key,
                 defaultValue;
         
@@ -165,10 +165,10 @@ public class Config {
             return 0;
         }
         
-        key = String.format(K_AREA_SECTORS, area);
-        defaultValue = D_AREA_SECTORS[area - 1];
+        key = String.format(K_AREA_PARTITIONS, area);
+        defaultValue = D_AREA_PARTITIONS[area - 1];
 
-        return getIntProperty(key, defaultValue, "area " + area + " sectors");
+        return getIntProperty(key, defaultValue, "area " + area + " partitions");
     }
 
     public String getAreaName(int area) {
@@ -186,66 +186,66 @@ public class Config {
         return properties.getProperty(key, defaultValue);
     }
 
-    public int getSectors() {
-        return getIntProperty(K_SECTORS, D_SECTORS, "sectors");
+    public int getPartitions() {
+        return getIntProperty(K_PARTITIONS, D_PARTITIONS, "partitions");
     }
 
-    public int getSectorEntryTime(int sector) {
+    public int getPartitionEntryTime(int partition) {
         String  key,
                 defaultValue;
         
-        if (sector < 1 || sector > ElkrommFacade.MAX_PARTITIONS) {
-            logger.warn("Invalid sector number: " + sector + ", must be between 1 and " + ElkrommFacade.MAX_PARTITIONS);
+        if (partition < 1 || partition > ElkrommFacade.MAX_PARTITIONS) {
+            logger.warn("Invalid partition number: " + partition + ", must be between 1 and " + ElkrommFacade.MAX_PARTITIONS);
             return 0;
         }
         
-        key = String.format(K_SECTOR_ENTRY_TIME, sector);
-        defaultValue = D_SECTOR_ENTRY_TIME[sector - 1];
+        key = String.format(K_PARTITION_ENTRY_TIME, partition);
+        defaultValue = D_PARTITION_ENTRY_TIME[partition - 1];
 
-        return getIntProperty(key, defaultValue, "sector " + sector + " entry time");
+        return getIntProperty(key, defaultValue, "partition " + partition + " entry time");
     }
 
-    public int getSectorExitTime(int sector) {
+    public int getPartitionExitTime(int partition) {
         String  key,
                 defaultValue;
         
-        if (sector < 1 || sector > ElkrommFacade.MAX_PARTITIONS) {
-            logger.warn("Invalid sector number: " + sector + ", must be between 1 and " + ElkrommFacade.MAX_PARTITIONS);
+        if (partition < 1 || partition > ElkrommFacade.MAX_PARTITIONS) {
+            logger.warn("Invalid partition number: " + partition + ", must be between 1 and " + ElkrommFacade.MAX_PARTITIONS);
             return 0;
         }
         
-        key = String.format(K_SECTOR_EXIT_TIME, sector);
-        defaultValue = D_SECTOR_EXIT_TIME[sector - 1];
+        key = String.format(K_PARTITION_EXIT_TIME, partition);
+        defaultValue = D_PARTITION_EXIT_TIME[partition - 1];
         
-        return getIntProperty(key, defaultValue, "sector " + sector + " exit time");
+        return getIntProperty(key, defaultValue, "partition " + partition + " exit time");
     }
 
-    public String getSectorName(int sector) {
+    public String getPartitionName(int partition) {
         String  key,
                 defaultValue;
         
-        if (sector < 1 || sector > ElkrommFacade.MAX_PARTITIONS) {
-            logger.warn("Invalid sector number: " + sector + ", must be between 1 and " + ElkrommFacade.MAX_PARTITIONS);
+        if (partition < 1 || partition > ElkrommFacade.MAX_PARTITIONS) {
+            logger.warn("Invalid partition number: " + partition + ", must be between 1 and " + ElkrommFacade.MAX_PARTITIONS);
             return "...";
         }
         
-        key = String.format(K_SECTOR_NAME, sector);
-        defaultValue = D_SECTOR_NAME[sector - 1];
+        key = String.format(K_PARTITION_NAME, partition);
+        defaultValue = D_PARTITION_NAME[partition - 1];
         
         return properties.getProperty(key, defaultValue);
     }
 
-    public Partition.Type getSectorType(int sector) {
+    public Partition.Type getPartitionType(int partition) {
         String  key,
                 defaultValue;
         
-        if (sector < 1 || sector > ElkrommFacade.MAX_PARTITIONS) {
-            logger.warn("Invalid sector number: " + sector + ", must be between 1 and " + ElkrommFacade.MAX_PARTITIONS);
+        if (partition < 1 || partition > ElkrommFacade.MAX_PARTITIONS) {
+            logger.warn("Invalid partition number: " + partition + ", must be between 1 and " + ElkrommFacade.MAX_PARTITIONS);
             return null;
         }
         
-        key = String.format(K_SECTOR_TYPE, sector);
-        defaultValue = D_SECTOR_TYPE[sector - 1];
+        key = String.format(K_PARTITION_TYPE, partition);
+        defaultValue = D_PARTITION_TYPE[partition - 1];
         
         return Partition.Type.valueOf(properties.getProperty(key, defaultValue));
     }

@@ -1,7 +1,7 @@
 package org.paternostro.elkromm;
 
 import org.paternostro.elkromm.packet.AreasAndPartitions;
-import org.paternostro.elkromm.packet.ArmDisarmSector;
+import org.paternostro.elkromm.packet.ArmDisarmPartition;
 import org.paternostro.elkromm.packet.C200bParameters;
 import org.paternostro.elkromm.packet.Checksums;
 import org.paternostro.elkromm.packet.DayClassCommands;
@@ -68,7 +68,7 @@ public enum ElkronCommand {
     /** Read: which partitions are currently armed. */
     SYSTEM_STATUS(0x80, SystemStatus.class),
     /** Action: arms or disarms a single partition. */
-    ARM_DISARM_SECTOR(0x81, ArmDisarmSector.class),
+    ARM_DISARM_PARTITION(0x81, ArmDisarmPartition.class),
     /** Read: per-input status flags. */
     INPUT_STATUS(0x84, InputStatus.class), // No block checksum!
     /** Read: expansion units configuration ("blocco B"). */

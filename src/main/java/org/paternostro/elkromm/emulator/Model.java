@@ -105,16 +105,16 @@ public class Model {
 
         // Init AreasAndPartitions
         for (int i = 1; i <= config.getAreas(); i++) {
-            this.areasAndPartitions.addArea(new Area(config.getAreaName(i), ElkrommUtils.unpackPartitions((byte)(config.getAreaSectors(i) & 0xFF))));
+            this.areasAndPartitions.addArea(new Area(config.getAreaName(i), ElkrommUtils.unpackPartitions((byte)(config.getAreaPartitions(i) & 0xFF))));
         }
 
         this.areasAndPartitions.setAreaNum((byte)config.getAreas());
 
-        for (int i = 1; i <= config.getSectors(); i++) {
-            this.areasAndPartitions.addPartition(new Partition(config.getSectorName(i), false, config.getSectorType(i), config.getSectorEntryTime(i), config.getSectorExitTime(i)));
+        for (int i = 1; i <= config.getPartitions(); i++) {
+            this.areasAndPartitions.addPartition(new Partition(config.getPartitionName(i), false, config.getPartitionType(i), config.getPartitionEntryTime(i), config.getPartitionExitTime(i)));
         }
 
-        this.areasAndPartitions.setPartitionNum((byte)config.getSectors());
+        this.areasAndPartitions.setPartitionNum((byte)config.getPartitions());
 
         // Init Users
         this.users[0] = new User("TECNICO                 ", User.Enabling.DISABLED, ElkrommUtils.unpackPartitions((byte)0xFF));
@@ -151,7 +151,7 @@ public class Model {
         for (int i = 0; i < keyboards.length; i++) {
             this.keyboards[i] = new Keyboard(i+1, "2.71", 
                                                 new Input(inputNum, Input.Configuration.IC_NORMALLY_CLOSED_DOUBLE_BALANCED, Input.Specialization.IS_WAY, Input.Sensitivity.IS_HIGH, Input.Flags.IF_EXCLUSION_ENABLED.getValue(), Input.Video.IV_CAMERA_3, ElkrommUtils.unpackPartitions((byte)0x01), "input " + inputNum++, Input.Delay.ID_30_SECS),
-                                                new Input(inputNum, Input.Configuration.IC_NORMALLY_CLOSED_BALANCED, Input.Specialization.IS_DELAYED, Input.Sensitivity.IS_HIGH, Input.Flags.IF_OR_SECTORS.getValue(), Input.Video.IV_CAMERA_2, ElkrommUtils.unpackPartitions((byte)0x01), "input " + inputNum++, Input.Delay.ID_20_SECS),
+                                                new Input(inputNum, Input.Configuration.IC_NORMALLY_CLOSED_BALANCED, Input.Specialization.IS_DELAYED, Input.Sensitivity.IS_HIGH, Input.Flags.IF_OR_PARTITIONS.getValue(), Input.Video.IV_CAMERA_2, ElkrommUtils.unpackPartitions((byte)0x01), "input " + inputNum++, Input.Delay.ID_20_SECS),
                                             Keyboard.Enablings.KE_ENTRY.getValue(), ElkrommUtils.unpackPartitions((byte)0x01), i % 2 == 0 ? Keyboard.AudioFeatures.KA_CAPABLE.getValue() : Keyboard.AudioFeatures.KA_NONE.getValue(), "Keyboard " + (i + 1));
         }
 
@@ -159,7 +159,7 @@ public class Model {
         for (int i = 0; i < readers.length; i++) {
             this.readers[i] = new Reader(i+1, 
                                             new Input(i*2 + 1, Input.Configuration.IC_NORMALLY_CLOSED_DOUBLE_BALANCED, Input.Specialization.IS_WAY, Input.Sensitivity.IS_HIGH, Input.Flags.IF_EXCLUSION_ENABLED.getValue(), Input.Video.IV_CAMERA_3, ElkrommUtils.unpackPartitions((byte)0x01), "input " + (i*2+1), Input.Delay.ID_30_SECS),
-                                            new Input(i*2 + 2, Input.Configuration.IC_NORMALLY_CLOSED_BALANCED, Input.Specialization.IS_DELAYED, Input.Sensitivity.IS_HIGH, Input.Flags.IF_OR_SECTORS.getValue(), Input.Video.IV_CAMERA_2, ElkrommUtils.unpackPartitions((byte)0x01), "input " + (i*2+2), Input.Delay.ID_20_SECS),
+                                            new Input(i*2 + 2, Input.Configuration.IC_NORMALLY_CLOSED_BALANCED, Input.Specialization.IS_DELAYED, Input.Sensitivity.IS_HIGH, Input.Flags.IF_OR_PARTITIONS.getValue(), Input.Video.IV_CAMERA_2, ElkrommUtils.unpackPartitions((byte)0x01), "input " + (i*2+2), Input.Delay.ID_20_SECS),
                                         ElkrommFacade.Partition.P_ONE, ElkrommFacade.Partition.P_TWO, ElkrommFacade.Partition.P_THREE, ElkrommFacade.Partition.P_FOUR, Reader.Enablings.RE_MASKING.getValue(), "Reader " + (i + 1));
         }
 

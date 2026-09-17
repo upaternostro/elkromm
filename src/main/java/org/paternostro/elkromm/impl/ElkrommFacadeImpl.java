@@ -219,21 +219,21 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     }
 
     @Override
-    public void armDisarmSector(Partition partition, boolean arm) throws ElkrommException
+    public void armDisarmPartition(Partition partition, boolean arm) throws ElkrommException
     {
         PartitionArming pa = new PartitionArming(partition.getValue(), arm ? partition.getValue() : 0x00);
         byte[]          data = ElkrommFactory.getFactory().getPartitionArmingSerializer().serialize(pa);
 
-        sendCommand(ElkronCommand.ARM_DISARM_SECTOR, data);
+        sendCommand(ElkronCommand.ARM_DISARM_PARTITION, data);
     }
 
     @Override
-    public void armDisarmSectors(byte partitions, byte armingMask) throws ElkrommException
+    public void armDisarmPartitions(byte partitions, byte armingMask) throws ElkrommException
     {
         PartitionArming pa = new PartitionArming(partitions, armingMask);
         byte[]          data = ElkrommFactory.getFactory().getPartitionArmingSerializer().serialize(pa);
 
-        sendCommand(ElkronCommand.ARM_DISARM_SECTOR, data);
+        sendCommand(ElkronCommand.ARM_DISARM_PARTITION, data);
     }
 
     /**

@@ -60,12 +60,12 @@ public class Command implements Serializable {
     /**
      * What kind of object a scheduled {@link Command} targets.
      * <p>
-     * Only sectors (partitions) and users are known so far; the underlying
+     * Only partitions (sectors) and users are known so far; the underlying
      * protocol likely supports more (keys, outputs).
      */
     public enum ObjectType {
         /** The target is a partition/sector. */
-        COT_SECTORS(0x10),
+        COT_PARTITIONS(0x10),
         /** The target is a user. */
         COT_USER(0x40);
         // FIXME: More to come (keys, outputs)

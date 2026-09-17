@@ -354,11 +354,11 @@ public interface ElkrommFacade
     /**
      * Arms or disarms a single partition.
      *
-     * @param sector the partition to act on
+     * @param partition the partition to act on
      * @param arm {@code true} to arm, {@code false} to disarm
      * @throws ElkrommException if the command fails
      */
-    void armDisarmSector(Partition sector, boolean arm) throws ElkrommException;
+    void armDisarmPartition(Partition partition, boolean arm) throws ElkrommException;
 
     /**
      * Reads the raw per-input status byte array, one byte per input, exactly
@@ -531,7 +531,7 @@ public interface ElkrommFacade
      * @param armingMask bitmask of the same shape, with a bit set for each partition to arm
      * @throws ElkrommException if the command fails
      */
-    void armDisarmSectors(byte partitions, byte armingMask) throws ElkrommException;
+    void armDisarmPartitions(byte partitions, byte armingMask) throws ElkrommException;
 
     // setters
     /**

@@ -210,7 +210,7 @@ public class Input implements Serializable, Comparable<Input>
         /** Requires two separate triggers (double release) before alarming. */
         IF_DOUBLE_RELEASE(0x02),
         /** Alarms if any of its associated partitions is armed (OR), rather than all of them (AND). */
-        IF_OR_SECTORS(0x08),
+        IF_OR_PARTITIONS(0x08),
         IF_ALL(0x0b);
 
         private byte value;

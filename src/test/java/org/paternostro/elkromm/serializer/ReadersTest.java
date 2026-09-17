@@ -20,7 +20,7 @@ public class ReadersTest {
         for (int i = 0; i < readers.length; i++) {
             readers[i] = new Reader(i+1, 
                                         new Input(i*2 + 1, Input.Configuration.IC_NORMALLY_CLOSED_DOUBLE_BALANCED, Input.Specialization.IS_WAY, Input.Sensitivity.IS_HIGH, Input.Flags.IF_EXCLUSION_ENABLED.getValue(), Input.Video.IV_CAMERA_3, associatedPartitions, "input " + (i*2+1), Input.Delay.ID_30_SECS),
-                                        new Input(i*2 + 2, Input.Configuration.IC_NORMALLY_CLOSED_BALANCED, Input.Specialization.IS_DELAYED, Input.Sensitivity.IS_HIGH, Input.Flags.IF_OR_SECTORS.getValue(), Input.Video.IV_CAMERA_2, associatedPartitions, "input " + (i*2+2), Input.Delay.ID_20_SECS),
+                                        new Input(i*2 + 2, Input.Configuration.IC_NORMALLY_CLOSED_BALANCED, Input.Specialization.IS_DELAYED, Input.Sensitivity.IS_HIGH, Input.Flags.IF_OR_PARTITIONS.getValue(), Input.Video.IV_CAMERA_2, associatedPartitions, "input " + (i*2+2), Input.Delay.ID_20_SECS),
                                     ElkrommFacade.Partition.P_ONE, ElkrommFacade.Partition.P_TWO, ElkrommFacade.Partition.P_THREE, ElkrommFacade.Partition.P_FOUR, Reader.Enablings.RE_MASKING.getValue(), "Reader " + (i + 1));
         }
 

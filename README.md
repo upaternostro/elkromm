@@ -86,7 +86,7 @@ facade.connect();
 facade.login(plantCode, technicalCode);
 
 SystemStatus status = facade.getSystemStatus();
-facade.armDisarmSector(ElkrommFacade.Partition.P_ONE, true);
+facade.armDisarmPartition(ElkrommFacade.Partition.P_ONE, true);
 
 facade.logout();
 facade.disconnect();
@@ -130,23 +130,35 @@ not present falls back to its default value below. Note the property key prefix 
 | `org.paternostro.elkron.readers` | `0` | Number of emulated proximity readers |
 | `org.paternostro.elkron.expansions` | `0` | Number of emulated expansion units |
 | `org.paternostro.elkron.areas` | `0` | Number of emulated areas (0-4), zero means no areas |
-| `org.paternostro.elkron.area.<N>.sectors` | `1` for area 1, `0` otherwise | Partitions belonging to area `<N>` (1-4), expressed as bitmask |
-| `org.paternostro.elkron.area.<N>.name` | `...` | Display name of area `<N>` |
-| `org.paternostro.elkron.sectors` | `1` | Number of emulated partitions (1-8) |
-| `org.paternostro.elkron.sector.<N>.entry.time` | `0` | Entry delay, in seconds, for partition `<N>` (1-8) |
-| `org.paternostro.elkron.sector.<N>.exit.time` | `0` | Exit delay, in seconds, for partition `<N>` (1-8) |
-| `org.paternostro.elkron.sector.<N>.name` | `...` | Display name of partition `<N>` |
-| `org.paternostro.elkron.sector.<N>.type` | `STANDARD` | Partition behavior type: `STANDARD`, `SELF_EXCLUSION`, or `ARMING_BLOCK` |
+| `org.paternostro.elkron.area.<N>.partitions` | `1` for area 1, `0` otherwise | Partitions belonging to area `<N>` (1-4), expressed as bitmask |
+| `org.paternostro.elkron.area.<N>.name` | `...` for area 1, `...               ` otherwise | Display name of area `<N>` |
+| `org.paternostro.elkron.partitions` | `1` | Number of emulated partitions (1-8) |
+| `org.paternostro.elkron.partition.<N>.entry.time` | `0` | Entry delay, in seconds, for partition `<N>` (1-8) |
+| `org.paternostro.elkron.partition.<N>.exit.time` | `0` | Exit delay, in seconds, for partition `<N>` (1-8) |
+| `org.paternostro.elkron.partition.<N>.name` | `...               `| Display name of partition `<N>` |
+| `org.paternostro.elkron.partition.<N>.type` | `STANDARD` | Partition behavior type: `STANDARD`, `SELF_EXCLUSION`, or `ARMING_BLOCK` |
+| `org.paternostro.elkron.input.<N>.configuration` | `NORMALLY_CLOSED_DOUBLE_BALANCED` | Input `<N>` (1-64) configuration: `NOT_USED`, `NORMALLY_CLOSED`, `NORMALLY_OPEN`, `NORMALLY_CLOSED_BALANCED`, `NORMALLY_CLOSED_DOUBLE_BALANCED`, `SHOCK` or `ROLLER` | |
+| `org.paternostro.elkron.input.<N>.specialization` | `IMMEDIATE` | Input `<N>` (1-64) specialization |
+| `org.paternostro.elkron.input.<N>.sensitivity` | `HIGH` | Input `<N>` (1-64) sensitivity |
+| `org.paternostro.elkron.input.<N>.flags` | `0` | Input `<N>` (1-64) flags (bitmask) |
+| `org.paternostro.elkron.input.<N>.video` | `NONE` | Input `<N>` (1-64) video |
+| `org.paternostro.elkron.input.<N>.partitions` | `1` | Partitions belonging to input `<N>` (1-64), expressed as bitmask |
+| `org.paternostro.elkron.input.<N>.name` | `Input <N>` | Input `<N>` (1-64) name |
+| `org.paternostro.elkron.input.<N>.delay` | `5_SECS` | Input `<N>` (1-64) delay |
+| `org.paternostro.elkron.output.<N>.type` | `NORMALLY_LOW` | Output `<N>` (1-64) type |
+| `org.paternostro.elkron.output.<N>.partitions` | `1` | Partitions belonging to output `<N>` (1-48), expressed as bitmask |
+| `org.paternostro.elkron.output.<N>.specialization` | `OR_TC` | Output `<N>` (1-64) specialization |
+| `org.paternostro.elkron.output.<N>.name` | `Output <N>` | Output `<N>` (1-64) name |
 
 Minimal example, a single area/partition setup listening on the default port:
 
 ```properties
 org.paternostro.elkron.areas=1
 org.paternostro.elkron.area.1.name=Home
-org.paternostro.elkron.sectors=1
-org.paternostro.elkron.sector.1.name=Ground floor
-org.paternostro.elkron.sector.1.entry.time=30
-org.paternostro.elkron.sector.1.exit.time=30
+org.paternostro.elkron.partitions=1
+org.paternostro.elkron.partition.1.name=Ground floor
+org.paternostro.elkron.partition.1.entry.time=30
+org.paternostro.elkron.partition.1.exit.time=30
 ```
 
 If the file is missing entirely, the emulator still starts, using every default above.

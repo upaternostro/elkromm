@@ -205,7 +205,7 @@ public class ClientConnection extends Thread {
                     this.model.getKeyboards()[singleKeyboard.getIndex() - 1] = singleKeyboard.getKeyboard();
                     this.model.computeChecksum();
                     break;
-                case ARM_DISARM_SECTOR:
+                case ARM_DISARM_PARTITION:
                     PartitionArming pa = ElkrommFactory.getFactory().getPartitionArmingSerializer().deserialize(totalPayload);
                     byte            value;
 
@@ -952,7 +952,7 @@ public class ClientConnection extends Thread {
 // power lack: 2 h -> 11: 0x00 = 1 h. 0x01 = 2 h, 0x02 = 4 h
 
 // play fault: false -> 24, lsb 0x01
-// play sectors: false -> 24, bit 1 0x02
+// play partitions: false -> 24, bit 1 0x02
 // play system: false -> 24, bit 2 0x04
 // play service: false -> 24, bit 3 0x08
 
@@ -1118,7 +1118,7 @@ public class ClientConnection extends Thread {
 
 // byte 0: command, 1=enable, 2=disable 0=no action
 // byte 1: object (see next byte)
-// byte 2: object type 0x40 = user, 0x10 = sectors
+// byte 2: object type 0x40 = user, 0x10 = partitions
 // byte 3: hour
 // byte 4: minute
 
@@ -1134,7 +1134,7 @@ public class ClientConnection extends Thread {
 // 0000: 01 08 ff 61 6e 74 61 6e  69 00 00 00 00 00 00 00   ..￿antan i....... 
 // 0010: 00 00 00 00 00 00 00 00  00 00 00                  ........ ...
 // Checksum 00000000 is invalid
-                            case ARM_DISARM_SECTOR:
+                            case ARM_DISARM_PARTITION:
                             case EXCLUDE_INCLUDE_INPUT:
                             case ENABLE_DISABLE_USER:
                             case KEYPAD_PROGRAMMING:
