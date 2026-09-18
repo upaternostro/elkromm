@@ -20,6 +20,7 @@
 * [Keypads](#keypads)
 * [Readers](#readers)
 * [Keypad programming](#keypad-programming)
+* [Ringraziamenti](#ringraziamenti)
 
 ## Premessa
 
@@ -41,7 +42,7 @@ Tenere presente il significato dei seguenti codici ASCII:
 0x01: SOH (start of heading)  
 0x03: ETX (end of text)  
 0x06: ACK (acknowledge)  
-0x11: DC1 (device control 1, usato come escape dello 0x03 nella comunicazione centrale -> Hi-Connect nei blocchi di configurazione, non conteggiato nei checksum di blocco, né in quello di pacchetto, né nelle lunghezze dei dati, evidentemente aggiunto subito prima di sparare il pacchetto on the wire. ATTENZIONE: nella comunicazione Hi-Connect -> centrale si fa escape sia di 0x03 che di 0x01,pena un NAK da parte della centrale)  
+0x11: DC1 (device control 1, usato come escape dello 0x03 nella comunicazione centrale → Hi-Connect nei blocchi di configurazione, non conteggiato nei checksum di blocco, né in quello di pacchetto, né nelle lunghezze dei dati, evidentemente aggiunto subito prima di sparare il pacchetto on the wire. ATTENZIONE: nella comunicazione Hi-Connect → centrale si fa escape sia di 0x03 che di 0x01, pena un NAK da parte della centrale)  
 0x15: NAK (negative acknowledge)  
 0x16: SYN (synchronous idle)
 
@@ -70,7 +71,7 @@ Offset	| Carattere	| Significato
 2	| 0x55		| Terza e quarta cifra BCD del codice impianto
 3	| (variabile)	| numero dei pacchetti costituenti la sequenza (base 0)
 4	| (variabile)	| progressivo del pacchetto nella sequenza (base 0)
-5	| (variabile)	| lunghezza dei dati inviati
+5	| (variabile)	| lunghezza dei dati inviati (max 140 (0x8c) byte di dati, al netto degli escape)
 6	| 0x00		| ??? costante?
 7	| (variabile)	| comando
 8 → n	| (variabile)	| dati trasmessi (possono essere assenti se il byte di posizione 5 vale zero)
@@ -97,12 +98,12 @@ Comando	| Tipo	| Significato	| Dati		| Risposta centrale	| Note
 0x60	| Controllo sessione	| HELLO		| nessuno	| 0x06 (ACK)	
 0x49	| Controllo sessione	| LOGIN		| codice impianto e codice installatore in BCD (rispettivamente 4 + 3 byte)	| 0x06 (ACK)	
 0x65	| Controllo sessione	| SEND		| nessuno	| 0x16 (SYN) se non deve inviare nulla	| Hp: richiesta di invio dati
- |	|	| 		| 		| oppure
- |	|	| 		| 		| pacchetti dati successivi al primo
+ |	|	| 		| oppure	| oppure
+ |	|	| 		| 0x16 (SYN) + successivo pacchetto dati		| pacchetti dati successivi al primo
  |	|	|		|		| ipotesi: eventi?
-0x62	| Lettura	| ADDRESSES	| nessuno	| 0x16 (SYN) + pacchetto dati 0x62 contente il numero di tastiere (1 byte), i loro indirizzi, il numero di lettori (1 byte), i loro indirizzi, il numero di espansioni (1 byte) ed i loro indirizzi	| indirizzi delle periferiche
-0x50	| Lettura	| CHECKSUM	| nessuno	| 0x16 (SYN) + pacchetto dati 0x50 13 long word (32 bit) dati di checksum big endian, rispettivamente: nodi, tastiere, inseritori, sistema, programmatore orario, aree settori, com tel, num tel, eventi, sms, pstn gsm, utenti, chiavi. Nota: i checksum sono contenuti nei rispettivi payload.
-0x84	| Lettura	| INPUT STATUS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x84 con un byte per ogni ingresso attivo (in ordine di indirizzo?). Il byte vale 0x00 se l'ingresso è chiuso, 0x02 se l'ingresso è aperto, 0x10 se l’ingresso è escluso, 0x04 in caso di memoria di allarme, ...
+0x62	| Lettura	| ADDRESSES	| nessuno	| 0x16 (SYN) + pacchetto dati 0x62 contente il numero di tastiere (1 byte), i loro indirizzi (1 byte l'uno), il numero di lettori (1 byte), i loro indirizzi (1 byte l'uno), il numero di espansioni (1 byte) ed i loro indirizzi (1 byte l'uno)	| indirizzi delle periferiche
+0x50	| Lettura	| CHECKSUM	| nessuno	| 0x16 (SYN) + pacchetto dati 0x50 13 long word (32 bit) dati di checksum big endian, rispettivamente: nodi, tastiere, inseritori, sistema, programmatore orario, aree settori, com tel, num tel, eventi, sms, pstn gsm, utenti, chiavi. Nota: i checksum sono contenuti nei rispettivi payload.	| Hi-Connect usa questo comando per capire velocemente se c'è un disallineamento tra la configurazione del pannello e quella memorizzata nell'applicativo.
+0x84	| Lettura	| INPUT STATUS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x84 con un byte per ogni ingresso attivo (in ordine di indirizzo?). Il byte vale 0x00 se l'ingresso è chiuso, 0x02 se l'ingresso è aperto, 0x10 se l’ingresso è escluso, 0x04 in caso di memoria di allarme, ...	| Vedi ElkrommFacade.InpuStatus
 0x63	| Controllo sessione	| LOGOUT	| nessuno	| 0x16 (SYN)	
 0x55	| Lettura	| AREE & SETTORI	| nessuno	| 0x16 (SYN) + pacchetto dati 0x55, vedi [Settori](#settori)	| Questo ed i successivi 3 comandi (UTENTI, CHIAVI, PARAMETERS & ENABLINGS) coprono il “blocco A”, che a differenza del “blocco B” non esiste come comando singolo
 0x5b	| Lettura	| UTENTI	| nessuno	| 0x16 (SYN) + pacchetto dati 0x5b, vedi [Utenti](#utenti)	
@@ -111,18 +112,18 @@ Comando	| Tipo	| Significato	| Dati		| Risposta centrale	| Note
 0x80	| Lettura	| SYSTEM STATUS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x80 con un singolo byte di dati, 1 bit ogni settore, LSB = settore 1	
 0x81	| Azione	| ARM/DISARM SYSTEM	| due byte di dati, 1 bit ogni settore, LSB = settore 1, in caso di attivazione i due byte sono uguali (ad es. 0x02 + 0x02 per armare il settore 2), mentre in caso di disattivazione il primo indica il settore, il secondo vale 0x00. È possibile attivare/disattivare oiù settori contemporaneamente effettuando l'OR logico dei bit che rappsentano i settori, ad es. 0xFF 0x00 per disattivare tutto.	| 0x16 (SYN)	
 0x96	| Scrittura	| WRITE PARAMETERS & ENABLINGS	| vedi dati di 0x26, [Parametri](#parametri). Attenzione: ESCAPE con 0x11 anche di 0x01	| 0x16 (SYN)	
-0x95	| Scrittura singola istanza	| AGGIUNTA UTENTE	| Progressivo utente incrementato di 1 + aree + settori + nome (24 byte)	| 0x16 (SYN)
+0x95	| Scrittura singola istanza	| SCRITTURA UTENTE	| Progressivo utente incrementato di 1 + aree + settori + nome (24 byte)	| 0x16 (SYN)
 0xe7	| Scrittura	| MODIFICA NUMERI TELEFONICI	| pacchetto dati 0xe7, vedi [Numeri telefonici](#numeri-telefonici)	| 0x16 (SYN)	
 0x51	| Lettura	| EXPANSIONS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x51, vedi [Blocco B](#blocco-b)	| Aka Blocco B aka Nodi
-0x83	| Azione	| EXCLUDE/INCLUDE INPUT	| due byte di dati, il primo indica il numero di ingresso, il secondo vale 0x01 (attenzione all’escape) per escludere l’ingresso, 0x00 per includerlo	| 0x16 (SYN)	
+0x83	| Azione	| EXCLUDE/INCLUDE INPUT	| due byte di dati, il primo indica il numero di ingresso, il secondo vale 0x01 (attenzione all’escape) per escludere l’ingresso, 0x00 per includerlo	| 0x16 (SYN)	| ATTENZIONE: qui la semantica è invertita dato che 0x01 = TRUE significa EXCLUDE, cioè disattivare l'ingresso, mentre 0x00 = FALSE significa INCLUDE
 0x87	| Lettura	| USER STATUS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x87 contenente 4 byte di dati con i flag che indicano l’attivazione degli utenti. Il primo byte contiene nell’MSB (0x80) lo stato dell’utente 0 (TECNICO), nel bit immediatamente successivo (0x40) lo stato dell’utente 1 (MASTER) e così via per gli altri bit. Il secondo byte indica gli stati degli utenti 8-15, il terzo 16-23 e l’ultimo 24-31	
 0x88	| Azione	| ENABLE/DISABLE USER	| due byte di dati, il primo indica il numero di utente (base 1 = TECNICO), il secondo vale 0x01 (attenzione all’escape) per attivare l’utente, 0x00 per disattivarlo	| 0x16 (SYN)	
-0x57	| Lettura	| PHONE NUMBERS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x57
-0x56	| Lettura	| PHONE PARAMETERS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x56
-0x5a	| Lettura	| PSTN GSM	| nessuno	| 0x16 (SYN) + pacchetto dati 0x5a
+0x57	| Lettura	| PHONE NUMBERS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x57, vedi [Numeri telefonici](#numeri-telefonici)
+0x56	| Lettura	| PHONE PARAMETERS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x56, vedi [Parametri telefonici](#parametri-telefonici)
+0x5a	| Lettura	| PSTN GSM	| nessuno	| 0x16 (SYN) + pacchetto dati 0x5a, vedi [PSTN GSM](#pstn-gsm)
 0x59	| Lettura	| SMS	| nessuno	| 0x16 (SYN) + pacchetto dati 0x59, vedi [SMS](#sms)	| vedi anche 0xa0 SMS PROGRAMMING per la scrittura del singolo SMS
-0x58	| Lettura	| C200B	| nessuno	| 0x16 (SYN) + pacchetto dati 0x58
-0x54	| Lettura	| TIME PROGRAMMER	| nessuno	| 0x16 (SYN) + pacchetto dati 0x54
+0x58	| Lettura	| C200B	| nessuno	| 0x16 (SYN) + pacchetto dati 0x58, vedi [C200B](#c200b)
+0x54	| Lettura	| TIME PROGRAMMER	| nessuno	| 0x16 (SYN) + pacchetto dati 0x54, vedi [Time programmer e Day class commands](#time-programmer-e-day-class-commands)
 0x8b	| Lettura (ipotesi)	| KEY STATUS	| TBD	| TBD	| packetClass non implementata (FIXME nel codice); ipotesi basata sull'analogia col naming di INPUT/SYSTEM/USER STATUS
 0x70	| Lettura (ipotesi)	| EVENT LOG	| TBD	| TBD	| packetClass non implementata (FIXME nel codice) — lettura log
 0x91	| Scrittura singola istanza	| EXPANSION PROGRAMMING	| TBD	| TBD	| packetClass non implementata (FIXME nel codice)
@@ -543,7 +544,7 @@ Offset	| Significato	| Note
 17-20	| ?	| Non mappato da nessun campo del DTO
 21	| Mese OFF DST	| `Month`: 1-12
 22	| Mese ON DST	| `Month`: 1-12
-23	| LAN	| `Enabling`: **qui `0x00`=disabilitato** (convenzione invertita rispetto agli altri campi enable/disable del protocollo, dove tipicamente 0=disabilitato ma con valore di default diverso)
+23	| LAN	| `Enabling`: 0=disabilitato, 1=abilitato
 24	| Play	| Bitmask: bit0=fault, bit1=settori, bit2=sistema, bit3=servizio
 25	| Help	| Bit 7 (`0x80`)=abilitato, bit 0-2=indirizzo tastiera - 1
 26-29	| Checksum blocco	|
@@ -1209,3 +1210,8 @@ Dati keypad:
 `0040: 20 20 20 20 20 20 20 20  20 20 00 00 00 00 00 ff              .....￿ `  
 `0050: ff 00 07 ff 06 49 4e 47  52 45 53 53 4f 00 00 00   ￿..￿.ING RESSO... `  
 `0060: 00 00 00 00 00 00 00 00  00 00 00 00 00 00 00      ........ .......`  
+
+## Ringraziamenti
+
+Claude di Anthrop\c per l'aggiunta delle strutture dei vari payload, l'indice, i riferimenti ed altro.
+Basato su un lavoro embrionale dell'autore.

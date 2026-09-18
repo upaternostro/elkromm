@@ -110,7 +110,7 @@ public enum ElkronCommand {
     
     /** Single-instance write (hypothesis, by naming analogy with the other {@code *_PROGRAMMING} commands). Not yet implemented. */
     EXPANSION_PROGRAMMING(0x91, null), // FIXME: MISSING ***SINGLE EXPANSION!!!
-    /** Single-instance write: adds/updates a single user credential. Not wired to {@link ElkrommFacade}. */
+    /** Single-instance write: adds/updates a single user credential. */
     USER_PROGRAMMING(0x95, UserProgramming.class), // No block checksum!
     /** Write: general system parameters and enablings (shares data layout with {@link #PARAMETERS_ENABLINGS}). */
     SET_PARAMETERS_ENABLINGS(0x96, SetParametersEnablings.class),
