@@ -41,7 +41,7 @@ import org.paternostro.elkromm.dto.C200bParameters.Event;
  *  <tr><td>0x50</td><td>Input exclusion/inclusion</td><td>{@link Event#C2PE_INPUT_INCLUSION_EXCLUSION}; also mirrored at {@code 0x51}</td></tr>
  *  <tr><td>0x51</td><td>(mirror of 0x50)</td></tr>
  *  <tr><td>0x52</td><td>Cyclical test call</td><td>{@link Event#C2PE_CYCLICAL_TEST_CALL}</td></tr>
- *  <tr><td>0x53</td><td>Maintenance</td><td>{@link Event#C2PE_MAINTENANCE}</td></tr>
+ *  <tr><td>0x53</td><td>Maintenance in progress</td><td>{@link Event#C2PE_MAINTENANCE}</td></tr>
  *  <tr><td>0x54</td><td>False code</td><td>{@link Event#C2PE_FALSE_CODE}</td></tr>
  *  <tr><td>0x55-0x57</td><td>?</td></tr>
  *  <tr><td>0x58</td><td>Technical alarm type 1</td><td>{@link Event#C2PE_TECHNOLOGICAL_ALARM_TYPE_1}</td></tr>

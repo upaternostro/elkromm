@@ -50,7 +50,7 @@ public class C200bParameters implements Serializable {
         C2PE_SYSTEM_ON_OFF(0x4c), // prima occorrenza, poi 4d, 4f
         /** Partition armed or disarmed. */
         C2PE_PARTITIONS_ON_OFF(0x4a),
-        /** Maintenance required. */
+        /** Maintenance in progress. */
         C2PE_MAINTENANCE(0x53),
         /** Input excluded or re-included. */
         C2PE_INPUT_INCLUSION_EXCLUSION(0x50), // prima occorrenza, poi 51
