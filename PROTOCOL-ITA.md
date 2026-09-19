@@ -225,7 +225,7 @@ Offset	| Significato	| Note
 53-76	| Nome terza area	|
 77-100	| Nome quarta area	|
 101	| Numero di settori	|
-102	| Bitmask self exclusion	| LSB = settore 1
+102	| Bitmask self exclusion	| LSB = settore 1. Un settore non può essere contemporaneamente self exclusion e arming block. Per default, i settori hanno entrambi i flag a zero.
 103	| Bitmask arming block	| LSB = settore 1
 104-119 | Entry delay	| 2 byte per settore (partendo da 104-105 per settore 1 e così via), big endian
 120-135 | Exit delay	| 2 byte per settore (partendo da 120-121 per settore 1 e così via), big endian
@@ -237,7 +237,7 @@ Offset	| Significato	| Note
 256-279	| Nome del sesto settore	|
 280-303	| Nome del settimo settore	|
 304-327	| Nome del ottavo settore	|
-328	| ?	| Il serializer lo azzera esplicitamente in scrittura (`data[328] = 0; // ???`); stessa firma degli altri byte "di stato" già documentati (vedi [Input](#input)) — sospetto contenuto dinamico non gestito dal client, non ancora identificato
+328	| ?	| Il serializer lo azzera esplicitamente in scrittura (`data[328] = 0; // ???`); stessa firma degli altri byte "di stato" già documentati (vedi [Input](#input)) — sospetto contenuto dinamico non gestito dal client, non ancora identificato ma incluso nel checksum
 329-332	| Checksum blocco	|
 
 ` `  
@@ -726,9 +726,9 @@ Offset	| Significato	| Note
 9	| Modalità invio messaggi vocali	| `VoiceMessagesSendingMode`: 0=nessuno, 1-4=modalità 1-4
 10	| ?	| Non mappato da nessun campo del DTO
 11	| Frequenza chiamata di test ciclica	| `CyclicTestCallFrequency`: 0=disabilitato, 1=24h, 2=a sistema inserito
-12	| Indice numero telefonico per la chiamata di test	|
-13	| Ora chiamata di test	|
-14	| Minuto chiamata di test	|
+12	| Indice numero telefonico per la chiamata di test	| 0-12 (0 se disabilitato)
+13	| Ora chiamata di test	| 0-23
+14	| Minuto chiamata di test	| 0-59
 15	| Intervallo chiamata di test	| `CyclicTestCallInterval`: 0=1h, 1=4h, 2=8h, 3=12h, 4=24h, 5=48h, 6=72h, 7=96h, 8=120h, 9=144h, 10=168h
 16-19	| Checksum blocco	|
 
@@ -747,7 +747,7 @@ Offset	| Significato	| Note
 0	| Abilita rete PSTN	| `Enabling`
 1	| Paese	| `Country`: 0=Italia, 1=Francia, 2=Germania, 3=Rep. Ceca, 4=Polonia, 5=Spagna, 6=Portogallo, 7=Grecia, 8=Inghilterra
 2-3	| ?	| Non mappato da nessun campo del DTO
-4	| Cifra accesso PABX locale	| `PABXLocalAccessDigit`: 0-9, 0xff=disabilitato
+4	| Cifra accesso PABX locale	| `PABXLocalAccessDigit`: 0-9, `0xff`=disabilitato
 5	| Controllo tono	| `Enabling`
 6	| Controllo risposta	| `Enabling`
 7	| Test linea PSTN	| `PSTNLineTestFrequency`: 0=disabilitato, 1=24h, 2=a sistema inserito
@@ -981,13 +981,16 @@ Ogni espansione occupa un blocco fisso di 559 byte (`EXPANSION_SIZE`), ripetuto 
 Offset (relativo all'espansione)	| Significato	| Note
 --------|---------------|-----
 0	| ?	| Non mappato da nessun campo del DTO
-1	| Indirizzo bus	| `0x00` = espansione non presente/non usata
+1	| Indirizzo bus	| `0x00` = unità centrale, `0x01` = prima espansione etc
 2	| ?	| Non mappato da nessun campo del DTO
 3-6	| Versione firmware	| stringa ASCII, es. `"0301"`
 7-310	| 8 ingressi	| 38 byte ciascuno, vedi [Input](#input)
-311-532	| 6 uscite	| 37 byte ciascuna, vedi [Output](#output)
+311-532	| 6 uscite	| 37 byte ciascuna, vedi [Output](#output). **ATTENZIONE:** le espansioni hanno 3 output, solo quella inglobata nell'unità centrale (indirizzo 0x00) ne ha 6
 533-556	| Nome	| 24 byte
 557-558	| ?	| **Non fornito dal client in scrittura** (Hi-Connect invia sempre `0x00 0x00` su `EXPANSION PROGRAMMING`/0x91), valorizzato dalla centrale in lettura con contenuto non ancora identificato — va escluso dal calcolo del checksum di blocco (vedi nota sotto)
+559	| Seconda espansione	| Si ripetono i campi precedenti
+...	|
+x-3,x	| Checksum	| Gli ultimi 4 byte sono il checksum di blocco
 
 **Nota sul checksum**: su una centrale MP-508 v03.01 reale, il checksum di blocco calcolato secondo l'algoritmo standard (vedi [Tipologie di comando](#tipologie-di-comando)) non combacia con quello incorporato dalla centrale, a meno di azzerare preventivamente, per ciascuna espansione: i 2 byte a offset relativo 557-558 sopra descritti, **e** il bit `0x10` di *ogni* ingresso (offset relativo `7 + i*38 + 3` per l'ingresso i-esimo) — vedi [Input](#input). Il codice attuale (`serializer.Expansions`) applica questa doppia correzione prima di verificare il checksum, e lancia eccezione se ancora non combacia.
 

@@ -225,7 +225,7 @@ Offset	| Meaning	| Note
 53-76	| Third area name	|
 77-100	| Fourth area name	|
 101	| Number of partitions	|
-102	| Self-exclusion bitmask	| LSB = partition 1
+102	| Self-exclusion bitmask	| LSB = partition 1. A partition cannot be both self-exclusion and arming block. Standard partitions have both flags to zero.
 103	| Arming block bitmask	| LSB = partition 1
 104-119 | Entry delay	| 2 bytes per partition (starting at 104-105 for partition 1 and so on), big endian
 120-135 | Exit delay	| 2 bytes per partition (starting at 120-121 for partition 1 and so on), big endian
@@ -237,7 +237,7 @@ Offset	| Meaning	| Note
 256-279	| Sixth partition name	|
 280-303	| Seventh partition name	|
 304-327	| Eighth partition name	|
-328	| ?	| The serializer explicitly zeroes it on write (`data[328] = 0; // ???`); same signature as the other "status" bytes already documented (see [Input](#input)) — suspected dynamic content not handled by the client, not yet identified
+328	| ?	| The serializer explicitly zeroes it on write (`data[328] = 0; // ???`); same signature as the other "status" bytes already documented (see [Input](#input)) — suspected dynamic content not handled by the client, not yet identified but computed in checksum
 329-332	| Block checksum	|
 
 ` `  
@@ -726,9 +726,9 @@ Offset	| Meaning	| Note
 9	| Voice message sending mode	| `VoiceMessagesSendingMode`: 0=none, 1-4=mode 1-4
 10	| ?	| Not mapped by any DTO field
 11	| Cyclic test call frequency	| `CyclicTestCallFrequency`: 0=disabled, 1=24h, 2=when system armed
-12	| Phone number index for the test call	|
-13	| Test call hour	|
-14	| Test call minute	|
+12	| Phone number index for the test call	| 0-12 (0 if disabled)
+13	| Test call hour	| 0-23
+14	| Test call minute	| 0-59
 15	| Test call interval	| `CyclicTestCallInterval`: 0=1h, 1=4h, 2=8h, 3=12h, 4=24h, 5=48h, 6=72h, 7=96h, 8=120h, 9=144h, 10=168h
 16-19	| Block checksum	|
 
@@ -747,7 +747,7 @@ Offset	| Meaning	| Note
 0	| Enable PSTN network	| `Enabling`
 1	| Country	| `Country`: 0=Italy, 1=France, 2=Germany, 3=Czech Rep., 4=Poland, 5=Spain, 6=Portugal, 7=Greece, 8=England
 2-3	| ?	| Not mapped by any DTO field
-4	| PABX local access digit	| `PABXLocalAccessDigit`: 0-9, 0xff=disabled
+4	| PABX local access digit	| `PABXLocalAccessDigit`: 0-9, `0xff`=disabled
 5	| Tone control	| `Enabling`
 6	| Answer control	| `Enabling`
 7	| PSTN line test	| `PSTNLineTestFrequency`: 0=disabled, 1=24h, 2=when system armed
@@ -811,7 +811,7 @@ Command: `0xe8 SET C200B` (write, never read/linked to `0x58 C200B` in the comma
 Offset	| Meaning	| Note
 --------|---------------|-----
 0x00-0x31	| ?	| Not mapped by any DTO field
-0x32	| Tampering	| `Event.C2PE_TAMPERING`; the serializer also writes the same value at `0x40` and `0x5b` (mirror, not distinct events)
+0x32	| Tampering	| `Event.C2PE_TAMPERING`; the serializer also writes the same value at `0x40` and `0x5b` (mirrors, not distinct events)
 0x33	| ?	|
 0x34	| Low battery	| `Event.C2PE_LOW_BATTERY`
 0x35	| Mains power	| `Event.C2PE_MAINS_POWER`
@@ -981,13 +981,16 @@ Each expansion occupies a fixed 559-byte block (`EXPANSION_SIZE`), repeated for 
 Offset (relative to the expansion)	| Meaning	| Note
 --------|---------------|-----
 0	| ?	| Not mapped by any DTO field
-1	| Bus address	| `0x00` = expansion not present/unused
+1	| Bus address	| `0x00` = central unit, `0x01` = first expansion and so on
 2	| ?	| Not mapped by any DTO field
 3-6	| Firmware version	| ASCII string, e.g. `"0301"`
 7-310	| 8 inputs	| 38 bytes each, see [Input](#input)
-311-532	| 6 outputs	| 37 bytes each, see [Output](#output)
+311-532	| 6 outputs	| 37 bytes each, see [Output](#output). **WARNING:** actual expansions just have 3 outputs, only the one embedded in the central unit (address = 0x00) has 6 outputs
 533-556	| Name	| 24 bytes
 557-558	| ?	| **Never sent by the client on write** (Hi-Connect always sends `0x00 0x00` on `EXPANSION PROGRAMMING`/0x91), populated by the panel on read with content not yet identified — must be excluded from the block checksum calculation (see note below)
+559	| Second expansion	| The preceding fields repeat
+...	|
+x-3,x	| Checksum	| Last four bytes are block checksum
 
 **Note on the checksum**: on a real MP-508 v03.01 panel, the block checksum computed with the standard algorithm (see [Command types](#command-types)) doesn't match the one embedded by the panel, unless, for each expansion, the following are zeroed out beforehand: the 2 bytes at relative offset 557-558 described above, **and** bit `0x10` of *every* input (relative offset `7 + i*38 + 3` for the i-th input) — see [Input](#input). The current code (`serializer.Expansions`) applies this double correction before verifying the checksum, and throws an exception if it still doesn't match.
 
