@@ -98,7 +98,7 @@ public class Reader implements Serializable, Comparable<Reader>
      * <p>
      * Unlike other units, a reader is identified by its own {@code address}
      * field, not by a separate index (see {@code READER_PROGRAMMING} in
-     * {@code PROTOCOL-ITA.md}).
+     * {@code PROTOCOL.md}).
      *
      * @param address bus address of this reader, greater than 0
      * @param firstInput configuration of the reader's first onboard input

@@ -624,7 +624,70 @@ Consistent with the `// FIXME: IP addresses in phone numbers!` comment still pre
 
 * The word is a **bitmask of the phones** assigned to that event (bit *i* = phone *i+1*), confirmed empirically: a capture with only phone 1 enabled on an event → `0x0001`; same event with phone 1 **and** 2 → `0x0003`
 * The offsets are **not consecutive/ordered** as in the enum: they're scattered across the remaining ~200 bytes of the payload (between the end of the phone records and the checksum), with large unused stretches between one event and the next — consistent with the long `00 00 00 00...` sequences observed in the dumps
-* The serializer also **duplicates** some events' value across multiple offsets at once (mirroring, as already seen for [C200B](#c200b)): `PNSCE_BURGLAR_ALARM` → also `0x00e8`, `0x00ec`, `0x00f0`; `PNSCE_INPUT_INCLUSION_EXCLUSION` → also `0x0148`; `PNSCE_TAMPERING` → also `0x0104`, `0x0170`; `PNSCE_SYSTEM_FAULT` → also `0x0130`; `PNSCE_PARTITIONS_SYSTEM_ON_OFF` → primary offset `0x0134` (not `0x0140` as reported in a previous version of this document — a mirroring bug found and fixed thanks to the round-trip test suite), also mirrored at `0x0138` and `0x0140`
+* The serializer also **duplicates** some events' value across multiple offsets at once (mirroring, as already seen for [C200B](#c200b)): `PNSCE_BURGLAR_ALARM` → also `0x00e8`, `0x00ec`, `0x00f0`; `PNSCE_INPUT_INCLUSION_EXCLUSION` → also `0x0148`; `PNSCE_TAMPERING` → also `0x0104`, `0x0170`; `PNSCE_SYSTEM_FAULT` → also `0x0130`; `PNSCE_PARTITIONS_SYSTEM_ON_OFF` → primary offset `0x0134` → also `0x0138` and `0x0140` (not only `0x0140` as reported in a previous version of this document — a mirroring bug found and fixed thanks to the round-trip test suite)
+
+The complete layout of the 408-byte payload, verified against `serializer.PhoneNumbersSendingCodes` (rows marked `?` are not mapped by any DTO field):
+
+Offset	| Meaning	| Note
+--------|---------------|-----
+0x00-0xcb	| Phone numbers	| 12 records of 17 bytes each, see above
+0xcc-0xcd	| Tampering	| `Event.PNSCE_TAMPERING`; the serializer also writes the same value at `0x104-0x105` and `0x170-0x171` (mirrors, not distinct events)
+0xce-0xd3	| ?	| Not mapped by any DTO field
+0xd4-0xd5	| Low battery	| `Event.PNSCE_LOW_BATTERY`
+0xd6-0xd7	| ?	|
+0xd8-0xd9	| Mains power	| `Event.PNSCE_MAINS_POWER`
+0xda-0xe3	| ?	|
+0xe4-0xe5	| Burglary alarm	| `Event.PNSCE_BURGLAR_ALARM`; the serializer also writes the same value at `0xe8-0xe9`, `0xec-0xed`, `0xf0-0xf1` (mirrors, not distinct events)
+0xe6-0xe7	| ?	|
+0xe8-0xe9	| (mirror of 0xe4-0xe5, burglary alarm)	|
+0xea-0xeb	| ?	|
+0xec-0xed	| (mirror of 0xe4-0xe5, burglary alarm)	|
+0xee-0xef	| ?	|
+0xf0-0xf1	| (mirror of 0xe4-0xe5, burglary alarm)	|
+0xf2-0xf3	| ?	|
+0xf4-0xf5	| Pre-alarm	| `Event.PNSCE_PRE_ALARM`
+0xf6-0x103	| ?	|
+0x104-0x105	| (mirror of 0xcc-0xcd, tampering)	|
+0x106-0x107	| ?	|
+0x108-0x109	| Panic	| `Event.PNSCE_PANIC`
+0x10a-0x10b	| ?	|
+0x10c-0x10d	| Silent panic	| `Event.PNSCE_SILENT_PANIC`
+0x10e-0x10f	| ?	|
+0x110-0x111	| Fire	| `Event.PNSCE_FIRE_ALARM`
+0x112-0x11f	| ?	|
+0x120-0x121	| Medical emergency	| `Event.PNSCE_MEDICAL_EMERGENCY`
+0x122-0x123	| ?	|
+0x124-0x125	| System fault	| `Event.PNSCE_SYSTEM_FAULT`; the serializer also writes the same value at `0x130-0x131` (mirror, not a distinct event)
+0x126-0x12f	| ?	|
+0x130-0x131	| (mirror of 0x124-0x125, system fault)	|
+0x132-0x133	| ?	|
+0x134-0x135	| Partition/system arm/disarm	| `Event.PNSCE_PARTITIONS_SYSTEM_ON_OFF`; the serializer also writes the same value at `0x138-0x139` and `0x140-0x141` (mirrors, not distinct events)
+0x136-0x137	| ?	|
+0x138-0x139	| (mirror of 0x134-0x135, partition/system arm/disarm)	|
+0x13a-0x13b	| ?	|
+0x13c-0x13d	| Hold-up	| `Event.PNSCE_HOLD_UP`
+0x13e-0x13f	| ?	|
+0x140-0x141	| (mirror of 0x134-0x135, partition/system arm/disarm)	|
+0x142-0x143	| ?	|
+0x144-0x145	| Input exclusion/inclusion	| `Event.PNSCE_INPUT_INCLUSION_EXCLUSION`; the serializer also writes the same value at `0x148-0x149` (mirror, not a distinct event)
+0x146-0x147	| ?	|
+0x148-0x149	| (mirror of 0x144-0x145, input exclusion/inclusion)	|
+0x14a-0x14f	| ?	|
+0x150-0x151	| Maintenance	| `Event.PNSCE_MAINTENANCE`
+0x152-0x153	| ?	|
+0x154-0x155	| False code	| `Event.PNSCE_FALSE_CODE`
+0x156-0x157	| ?	|
+0x158-0x159	| Generic notice	| `Event.PNSCE_NOTICES`
+0x15a-0x163	| ?	|
+0x164-0x165	| Technical alarm type 1	| `Event.PNSCE_TECHNOLOGICAL_ALARM_TYPE_1`
+0x166-0x167	| ?	|
+0x168-0x169	| Technical alarm type 2	| `Event.PNSCE_TECHNOLOGICAL_ALARM_TYPE_2`
+0x16a-0x16b	| ?	|
+0x16c-0x16d	| Technical alarm type 3	| `Event.PNSCE_TECHNOLOGICAL_ALARM_TYPE_3`
+0x16e-0x16f	| ?	|
+0x170-0x171	| (mirror of 0xcc-0xcd, tampering)	|
+0x172-0x193	| ?	|
+0x194-0x197	| Block checksum	|
 
 ### Payload example
 

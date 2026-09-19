@@ -19,7 +19,7 @@ public class C200bParameters implements Serializable {
      * An event the panel can report to the remote receiver.
      * <p>
      * Each constant carries the byte offset of its code within the
-     * {@code SET_C200B} on-the-wire payload; see {@code PROTOCOL-ITA.md}
+     * {@code SET_C200B} on-the-wire payload; see {@code PROTOCOL.md}
      * for the full capture this was derived from. Offsets marked as
      * "prima occorrenza" (first occurrence) were seen to shift across
      * repeated events of the same kind during reverse engineering; only

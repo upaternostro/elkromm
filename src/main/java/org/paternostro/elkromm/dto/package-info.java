@@ -13,7 +13,7 @@
  * Naming convention: a plain class name (e.g. {@code Keyboard}) represents one instance; a
  * {@code Single}-prefixed class (e.g. {@link org.paternostro.elkromm.dto.SingleKeyboard})
  * pairs one instance with the index needed to write it individually, for the protocol's
- * single-instance write commands (see {@code PROTOCOL-ITA.md}). {@link org.paternostro.elkromm.dto.Reader}
+ * single-instance write commands (see {@code PROTOCOL.md}). {@link org.paternostro.elkromm.dto.Reader}
  * is the one exception: it carries its own {@code address} field and is used directly,
  * with no {@code SingleReader} wrapper.
  * <p>

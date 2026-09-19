@@ -119,7 +119,7 @@ public class PhoneNumber implements Serializable {
      * <p>
      * Each constant carries the byte offset of its assignment bit within the
      * {@code SET_PHONE_NUMBERS}/{@code PHONE_NUMBERS} on-the-wire payload;
-     * see {@code PROTOCOL-ITA.md} for the full capture this was derived
+     * see {@code PROTOCOL.md} for the full capture this was derived
      * from. Some offsets were seen to shift across repeated events of the
      * same kind during reverse engineering (noted where observed); only the
      * first observed offset is kept here.

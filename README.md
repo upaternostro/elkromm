@@ -42,7 +42,8 @@ Use entirely at your own risk.
   against without real hardware
 - Optional round-trip integration test suite that validates the library against a real
   panel's actual configuration (see below)
-- Protocol reference documentation ([PROTOCOL-ITA.md](PROTOCOL-ITA.md), Italian)
+- Protocol reference documentation ([PROTOCOL.md](PROTOCOL.md), English; also available in
+  Italian as [PROTOCOL-ITA.md](PROTOCOL-ITA.md))
 
 ## Requirements
 
@@ -169,7 +170,7 @@ Besides the regular unit test suite (which runs against the bundled emulator), e
 includes a set of `mvn verify`-only integration tests that connect to a **real** panel,
 read back its actual configuration, and verify that deserializing and re-serializing it
 reproduces the exact same bytes. This is how several protocol quirks documented in
-[PROTOCOL-ITA.md](PROTOCOL-ITA.md) were found — most notably the "ghost bit" that Elkron
+[PROTOCOL.md](PROTOCOL.md) were found — most notably the "ghost bit" that Elkron
 panels raise on an excluded input, in a byte otherwise dedicated to static configuration.
 
 Unlike the unit tests, these are **not** run by `mvn install`/`mvn test`, precisely

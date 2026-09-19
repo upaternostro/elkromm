@@ -49,7 +49,7 @@ import org.paternostro.elkromm.packet.Users;
  * <p>
  * Commands whose {@code packetClass} is {@code null} are known to exist
  * (from captured Hi-Connect traffic) but have no implementation yet; see
- * {@code PROTOCOL-ITA.md} in the project root for the full protocol
+ * {@code PROTOCOL.md} in the project root for the full protocol
  * reference, including read/write/action semantics for each command.
  * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.

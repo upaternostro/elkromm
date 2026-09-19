@@ -46,8 +46,8 @@ import org.paternostro.elkromm.dto.PhoneNumber.Event;
  *      with large unused stretches between one event and the next — consistent with the long {@code 00 00 00 00...} sequences observed in the dumps</li>
  *  <li>The serializer also <b>duplicates</b> some events' value across multiple offsets at once (mirroring, as already seen for {@link C200bParameters}): {@code PNSCE_BURGLAR_ALARM} &rarr; 
  *      also {@code 0x00e8}, {@code 0x00ec}, {@code 0x00f0}; {@code PNSCE_INPUT_INCLUSION_EXCLUSION} &rarr; also {@code 0x0148}; {@code PNSCE_TAMPERING} &rarr; also {@code 0x0104}, 
- *      {@code 0x0170}; {@code PNSCE_SYSTEM_FAULT} &rarr; also {@code 0x0130}; {@code PNSCE_PARTITIONS_SYSTEM_ON_OFF} &rarr; primary offset {@code 0x0134} (not {@code 0x0140} as reported in a 
- *      previous version of this document — a mirroring bug found and fixed thanks to the round-trip test suite), also mirrored at {@code 0x0138} and {@code 0x0140}</li>
+ *      {@code 0x0170}; {@code PNSCE_SYSTEM_FAULT} &rarr; also {@code 0x0130}; {@code PNSCE_PARTITIONS_SYSTEM_ON_OFF} &rarr; primary offset {@code 0x0134} $rarr; also {@code 0x0138}, {@code 0x0140}
+ *      (not just {@code 0x0140} as in a previous version of this serializer — a mirroring bug found and fixed thanks to the round-trip test suite)</li>
  * </ul>
  * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.

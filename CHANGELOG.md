@@ -22,9 +22,11 @@ following the [Keep a Changelog](https://keepachangelog.com/) convention (Added 
 - Iterator-style accessors (iterator, stream, parallelStream, listIterator, spliterator)
   for the Areas, Partitions, Inputs and Outputs collections
 - `getRawInputStatus()` API, returning the raw per-input status byte array
-- Full Javadoc across the library's public API, `impl` and `dto` packages, plus
+- Full Javadoc across the library's public API, `impl`, `dto` and `serializer` packages (the
+  latter including the on-the-wire payload structure handled by each serializer), plus
   `package-info.java` for every package
-- `CHANGELOG.md` (this file) and substantially expanded `PROTOCOL-ITA.md`, including a
+- `CHANGELOG.md` (this file), a substantially expanded `PROTOCOL-ITA.md` and its English
+  translation `PROTOCOL.md` (now the primary protocol reference), both including a
   byte-level payload table for every command, verified against the serializers rather than
   deduced from captures alone
 - `setUser()`/`setKey()` on `ElkrommFacade`, to write a single user/key credential
@@ -33,6 +35,14 @@ following the [Keep a Changelog](https://keepachangelog.com/) convention (Added 
 - Optional round-trip integration test suite (`mvn verify`, Maven Failsafe), connecting to
   a real panel to verify that deserializing and re-serializing its actual configuration
   reproduces the exact same bytes — see the README for setup
+- `ElkrommFacade.setDelay()`, to tune the pause the library inserts while talking to the
+  panel (`DEFAULT_DELAY`, 100 ms, was previously a fixed constant); `0` gives maximum speed
+  and is what the unit tests use against the emulator
+- `ElkrommFacade.DEFAULT_NAME` (placeholder name of unused entries) and
+  `ElkrommFacade.MAX_LOGICAL_OUTPUTS` constants
+- Emulator: inputs and outputs are now configurable through properties
+  (`org.paternostro.elkron.input.<N>.*` and `org.paternostro.elkron.output.<N>.*`), see the
+  README
 
 ### Fixed
 - Accept a zero phone number as a valid test-call number when cyclic test calls are disabled
@@ -51,6 +61,10 @@ following the [Keep a Changelog](https://keepachangelog.com/) convention (Added 
 - `PhoneNumbersSendingCodes` writing the "partitions/system on-off" event's assignment bits
   to the wrong offset, found by the new round-trip test suite
 - `Keyboards` serializer now uses `Keyboard` serializer to transform each keyboard
+- Emulator: the number of areas and partitions is now taken from its configuration, instead of
+  being inferred from the size of the lists (see the `AreasAndPartitions` change below)
+- Emulator: the default entry/exit time of partition 2 was 30 seconds, unlike all the other
+  partitions; it is now 0
 
 ### Changed
 - Removed `ordinal` from `Credential`: redundant with the position in its containing array,
@@ -71,6 +85,19 @@ following the [Keep a Changelog](https://keepachangelog.com/) convention (Added 
   `packet`/`serializer` classes, into a single `serializer.SerializersConstants`
 - Factored the ghost-bit patching logic, previously duplicated across the round-trip test
   cases, into a shared helper
+- **Breaking:** "sector" renamed to "partition" throughout the library, to match the English
+  terminology of Hi-Connect (the panel itself, in Italian, says "settore"):
+  `ElkrommFacade.armDisarmSector()`/`armDisarmSectors()` → `armDisarmPartition()`/
+  `armDisarmPartitions()`, `ElkronCommand.ARM_DISARM_SECTOR` → `ARM_DISARM_PARTITION`,
+  `packet.ArmDisarmSector` → `packet.ArmDisarmPartition`, `Command.ObjectType.COT_SECTORS` →
+  `COT_PARTITIONS` and `Input.Flags.IF_OR_SECTORS` → `IF_OR_PARTITIONS`
+- **Breaking (emulator):** the emulator's properties follow the same rename:
+  `org.paternostro.elkron.sectors` → `partitions`, `sector.<N>.*` → `partition.<N>.*` and
+  `area.<N>.sectors` → `area.<N>.partitions` (and the matching `emulator.Config` constants and
+  accessors); an existing `elkron.properties` file must be updated
+- `ElkrommUtils.dumpPayload()` prints only ASCII characters in its text column
+- Factored the emulator's configuration handling (`emulator.Config`), removing a large amount
+  of duplicated code
 
 ## [0.4] — 2026-07-20
 
