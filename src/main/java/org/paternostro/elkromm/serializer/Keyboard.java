@@ -6,7 +6,30 @@ import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.dto.Input;
 
 /**
+ * {@link org.paternostro.elkromm.dto.Keyboard} serializer, DTO &harr; byte array.
+ * <p>
+ * Payload structure:
+ * <p>
+ * <table>
+ *  <tr><th>Offset (relative to the keyboard)</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0</td><td>Address</td><td>Keypad address (base 1)</td></tr>
+ *  <tr><td>1</td><td>?</td></tr>
+ *  <tr><td>2-5</td><td>Version</td><td>ASCII</td></tr>
+ *  <tr><td>6-43</td><td>First onboard input</td><td>38 bytes, see {@link Input}</td></tr>
+ *  <tr><td>44-81</td><td>Second onboard input</td><td>38 bytes, see {@link Input}</td></tr>
+ *  <tr><td>82</td><td>Enablings bitmask</td><td>GONG, ENTRY, EXIT, MASKING, FIRE, PANIC, HELP</td></tr>
+ *  <tr><td>83</td><td>Bitmask of associated partitions</td><td>LSB = partition 1</td></tr>
+ *  <tr><td>84</td><td>Audio feature bitmask</td><td>CAPABLE, ENABLED</td></tr>
+ *  <tr><td>85-108</td><td>Keypad name</td></tr>
+ *  <tr><td>109</td><td>?</td><td>Must be excluded from the block checksum calculation (see {@link Input} and the note in {@link Expansions}) — confirmed on real hardware</td></tr>
+ *  <tr><td>110</td><td>?</td><td>Always observed as {@code 0x00} in the available captures; the code zeroes it anyway for symmetry with the {@link Expansions} code, but it doesn't appear necessary</td></tr>
+ * </table>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ * 
+ * @see Input
+ * @usedby {@link Keyboards}
+ * @usedby {@link SingleKeyboard}
  */
 public class Keyboard implements ElkrommSerializer<org.paternostro.elkromm.dto.Keyboard>
 {

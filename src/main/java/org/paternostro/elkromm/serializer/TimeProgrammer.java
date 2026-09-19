@@ -7,7 +7,28 @@ import org.paternostro.elkromm.dto.Command;
 import org.paternostro.elkromm.dto.DayClassCommands.DayClass;
 
 /**
+ * {@link org.paternostro.elkromm.dto.TimeProgrammer} serializer, DTO &harr; byte array.
+ * <p>
+ * Payload structure:
+ * <p>
+ * <table>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0-39</td><td>Working day commands</td><td>8 commands × 5 bytes, see {@link Commands}</td></tr>
+ *  <tr><td>40-79</td><td>Pre-holiday commands</td><td>8 commands × 5 bytes</td></tr>
+ *  <tr><td>80-119</td><td>Holiday commands</td><td>8 commands × 5 bytes</td></tr>
+ *  <tr><td>120</td><td>Day class — Monday</td><td>{@link DayClass}: 0=working day, 1=pre-holiday, 2=holiday</td></tr>
+ *  <tr><td>121</td><td>Day class — Tuesday</td></tr>
+ *  <tr><td>122</td><td>Day class — Wednesday</td></tr>
+ *  <tr><td>123</td><td>Day class — Thursday</td></tr>
+ *  <tr><td>124</td><td>Day class — Friday</td></tr>
+ *  <tr><td>125</td><td>Day class — Saturday</td></tr>
+ *  <tr><td>126</td><td>Day class — Sunday</td></tr>
+ *  <tr><td>127-130</td><td>Block checksum</td></tr>
+ * </table>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ * 
+ * @see Commands
  */
 public class TimeProgrammer implements ElkrommSerializer<org.paternostro.elkromm.dto.TimeProgrammer>
 {

@@ -3,7 +3,19 @@ package org.paternostro.elkromm.serializer;
 import org.paternostro.elkromm.ElkrommFactory;
 
 /**
+ * {@link org.paternostro.elkromm.dto.SingleKeyboard} serializer, DTO &harr; byte array.
+ * <p>
+ * Payload structure:
+ * <p>
+ * <table>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0</td><td>Index</td><td>Keyboard index</td></tr>
+ *  <tr><td>1-111</td><td>Keyboard</td><td>See {@link Keyboard}</td></tr>
+ * </table>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ * 
+ * @see Keyboard
  */
 public class SingleKeyboard implements ElkrommSerializer<org.paternostro.elkromm.dto.SingleKeyboard>
 {

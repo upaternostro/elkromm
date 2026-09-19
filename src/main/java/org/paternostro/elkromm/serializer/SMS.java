@@ -5,7 +5,19 @@ import java.util.Arrays;
 import org.paternostro.elkromm.ElkrommUtils;
 
 /**
+ * {@link org.paternostro.elkromm.dto.SMS} serializer, DTO &harr; byte array.
+ * <p>
+ * Payload structure:
+ * <p>
+ * <table>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0-39</td><td>Message</td><td>40 ASCII bytes, padding {@code 0xff}</td></tr>
+ * </table>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ *
+ * @usedby {@link SingleSMS}
+ * @usedby {@link SMSs}
  */
 public class SMS implements ElkrommSerializer<org.paternostro.elkromm.dto.SMS>
 {

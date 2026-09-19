@@ -4,7 +4,24 @@ import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommUtils;
 
 /**
+ * {@link org.paternostro.elkromm.dto.Output} serializer, DTO &harr; byte array.
+ * <p>
+ * Payload structure:
+ * <p>
+ * <table>
+ *  <tr><td>Offset</td><td>Meaning</td><td>Note</td></tr>
+ *  <tr><td>0</td><td>Output's logical number</td><td>{@code 0x00} = unused slot</td></tr>
+ *  <tr><td>1</td><td>Type</td><td>{@link org.paternostro.elkromm.dto.Output.Type}: 0=unused, 1=normally low, 2=normally high</td></tr>
+ *  <tr><td>2</td><td>Associated partitions</td><td>Bitmask, LSB = partition 1</td></tr>
+ *  <tr><td>3</td><td>Specialization</td><td>{@link org.paternostro.elkromm.dto.Output.Specialization}: 31 values (burglar, pre-alarm, tamper, gong, buzzer, partition status, ...)</td></tr>
+ *  <tr><td>4-7</td><td>?</td><td>Not mapped by any DTO field</td></tr>
+ *  <tr><td>8-31</td><td>Name</td><td>24 bytes</td></tr>
+ *  <tr><td>32-36</td><td>?</td><td>Not mapped by any DTO field</td></tr>
+ * </table>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ * 
+ * @usedby {@link Expansions}
  */
 public class Output implements ElkrommSerializer<org.paternostro.elkromm.dto.Output>
 {

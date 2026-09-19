@@ -7,7 +7,28 @@ import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.ElkrommUtils;
 
 /**
+ * {@link org.paternostro.elkromm.dto.SMSs} serializer, DTOs &harr; byte array.
+ * <p>
+ * Payload structure: {@link ElkrommFacade#MAX_SMS} instances of {@link org.paternostro.elkromm.dto.SMS},
+ * each containing:
+ * <p>
+ * <table>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0-39</td><td>Message 1</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_BURLGAR} (burglary), see {@link SMS}</td></tr>
+ *  <tr><td>40-79</td><td>Message 2</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_TECHNICAL_ALARM_1}</td></tr>
+ *  <tr><td>80-119</td><td>Message 3</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_TECHNICAL_ALARM_2}</td></tr>
+ *  <tr><td>120-159</td><td>Message 4</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_TECHNICAL_ALARM_3}</td></tr>
+ *  <tr><td>160-199</td><td>Message 5</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_FIRE}</td></tr>
+ *  <tr><td>200-239</td><td>Message 6</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_PARTITION_ON}</td></tr>
+ *  <tr><td>240-279</td><td>Message 7</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_PARTITION_OFF}</td></tr>
+ *  <tr><td>280-319</td><td>Message 8</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_TAMPERING}</td></tr>
+ *  <tr><td>320-359</td><td>Message 9</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_NOTICE}</td></tr>
+ *  <tr><td>360-363</td><td>Block checksum</td></tr>
+ * </table>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ * 
+ * @see SMS
  */
 public class SMSs implements ElkrommSerializer<org.paternostro.elkromm.dto.SMSs>
 {

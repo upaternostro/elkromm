@@ -6,6 +6,35 @@ import org.paternostro.elkromm.dto.Area;
 import org.paternostro.elkromm.dto.Partition;
 
 /**
+ * {@link org.paternostro.elkromm.dto.AreasAndPartitions} serializer, DTO &harr; byte array.
+ * <p>
+ * Payload structure:
+ * <p>
+ * <table>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0</td><td>Number of areas</td><td>Can be zero if unused</td></tr>
+ *  <tr><td>1-4</td><td>Bitmask of partitions assigned to the area</td><td>LSB = partition 1, one byte per area</td></tr>
+ *  <tr><td>5-28</td><td>First area name</td></tr>
+ *  <tr><td>29-52</td><td>Second area name</td></tr>
+ *  <tr><td>53-76</td><td>Third area name</td></tr>
+ *  <tr><td>77-100</td><td>Fourth area name</td></tr>
+ *  <tr><td>101</td><td>Number of partitions</td></tr>
+ *  <tr><td>102</td><td>Self-exclusion bitmask</td><td>LSB = partition 1. A partition cannot be both self-exclusion and arming block. Standard partitions have both flags to zero.</td></tr>
+ *  <tr><td>103</td><td>Arming block bitmask</td><td>LSB = partition 1</td></tr>
+ *  <tr><td>104-119</td><td>Entry delay</td><td>2 bytes per partition (starting at 104-105 for partition 1 and so on), big endian</td></tr>
+ *  <tr><td>120-135</td><td>Exit delay</td><td>2 bytes per partition (starting at 120-121 for partition 1 and so on), big endian</td></tr>
+ *  <tr><td>136-159</td><td>First partition name</td></tr>
+ *  <tr><td>160-183</td><td>Second partition name</td></tr>
+ *  <tr><td>184-207</td><td>Third partition name</td></tr>
+ *  <tr><td>208-231</td><td>Fourth partition name</td></tr>
+ *  <tr><td>232-255</td><td>Fifth partition name</td></tr>
+ *  <tr><td>256-279</td><td>Sixth partition name</td></tr>
+ *  <tr><td>280-303</td><td>Seventh partition name</td></tr>
+ *  <tr><td>304-327</td><td>Eighth partition name</td></tr>
+ *  <tr><td>328</td><td>?</td><td>The serializer explicitly zeroes it on write ({@code data[328] = 0; // ???}); same signature as the other "status" bytes already documented (see {@link Input}) — suspected dynamic content not handled by the client, not yet identified but computed in checksum</td></tr>
+ *  <tr><td>329-332</td><td>Block checksum</td></tr>
+ * </table>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
  */
 public class AreasAndPartitions implements ElkrommSerializer<org.paternostro.elkromm.dto.AreasAndPartitions>

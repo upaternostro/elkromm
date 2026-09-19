@@ -6,7 +6,24 @@ import org.paternostro.elkromm.dto.Command.Action;
 import org.paternostro.elkromm.dto.Command.ObjectType;
 
 /**
+ * {@link Command}s serializer, DTOs &harr; byte array.
+ * <p>
+ * Payload structure: {@link ElkrommFacade#NUM_COMMANDS} instances of {@link Command},
+ * each containing:
+ * <p>
+ * <table>
+ *  <tr><th>Offset (relative to the command)</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0</td><td>Action</td><td>{@link Command.Action}: 0=none, 1=enable, 2=disable</td></tr>
+ *  <tr><td>1</td><td>Object</td><td>Object index (partition or user, depending on the next byte)</td></tr>
+ *  <tr><td>2</td><td>Object type</td><td>{@link Command.ObjectType}: {@code 0x10}=partitions, {@code 0x40}=user — a code comment notes "more to come: keys, outputs", so the list may not be complete</td></tr>
+ *  <tr><td>3</td><td>Hour</td></tr>
+ *  <tr><td>4</td><td>Minute</td></tr>
+ * </table>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ * 
+ * @usedby {@link DayClassCommands}
+ * @usedby {@link TimeProgrammer}
  */
 public class Commands implements ElkrommSerializer<Command[]>
 {

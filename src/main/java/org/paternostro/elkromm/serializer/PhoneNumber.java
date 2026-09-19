@@ -7,7 +7,38 @@ import org.paternostro.elkromm.dto.PhoneNumber.SendingMode;
 import org.paternostro.elkromm.dto.PhoneNumber.Type;
 
 /**
+ * {@link org.paternostro.elkromm.dto.PhoneNumber} serializer, DTO &harr; byte array.
+ * <p>
+ * Payload structure:
+ * <p>
+ * <table>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0-13</td><td>Phone number</td><td>Phone number encoded in BCD (14 bytes &rarr; 28 digits)</td></tr>
+ *  <tr><td>14</td><td>Bitmask of associated partitions</td><td>LSB = partition 1</td></tr>
+ *  <tr><td>15</td><td>Phone network</td><td>{@link Type}: 00 = PSTN, 01 = GSM, 02 = LAN</td></tr>
+ *  <tr><td>16</td><td>Sending mode</td><td>{@link SendingMode}: 00 = Voice, 01 = IDP, 02 = ADF, 04 = Modem, 06 = SMS, 07 = C200b</td></tr>
+ * </table>
+ * <p>
+ * <b>LAN/IP numbers</b>: when the "Phone network" field is {@code 0x02} (LAN), the phone number is replaced by an address in the fixed format {@code DDD.DDD.DDD.DDD:DDDDD} (each octet 
+ * zero-padded to 3 digits, trailing part to 5 digits). Encoding <b>directly confirmed by the code</b> — {@link PhoneNumber#serialize} implements exactly this logic: each decimal digit in 
+ * BCD, the dot {@code .} as nibble {@code 0x0B}, the colon {@code :} as nibble {@code 0x0C}, with the author's own original comment ("In generale gli IP sono 001B002B003B004C00005", i.e. 
+ * "IPs are generally 001B002B003B004C00005") present both there and in {@link org.paternostro.elkromm.emulator.ClientConnection}. The padding of the last, unpaired nibble (for an odd number of 
+ * digits/separators, as in the example below) is {@code 0x0F} — also in the code ({@code bcdByte | 0x0F}).
+ * <p>
+ * Example verified with a real capture, for the address `192.168.001.100:00080`:
+ * <p>
+ * <ul>
+ *  <li>digit/separator sequence: {@code 1 9 2 B 1 6 8 B 0 0 1 B 1 0 0 C 0 0 0 8 0}</li>
+ *  <li>resulting bytes: {@code 19 2b 16 8b 00 1b 10 0c 00 08 0f} (11 bytes, the last nibble {@code f} is padding) — matches the capture exactly</li>
+ * </ul>
+ * <p>
+ * Consistent with the {@code // FIXME: IP addresses in phone numbers!} comment still present in the DTO's {@link org.paternostro.elkromm.dto.PhoneNumber#setPhoneNumber} setter — that comment 
+ * only flags that the DTO doesn't yet explicitly validate/recognize the IP format (it accepts the string as-is), not that the encoding itself is uncertain: the encoding, on the serializer side, 
+ * is complete.
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ * 
+ * @usedby {@link PhoneNumbersSendingCodes}
  */
 public class PhoneNumber implements ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumber>
 {

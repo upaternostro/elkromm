@@ -7,7 +7,21 @@ import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.dto.Keyboard;
 
 /**
+ * {@link Keyboard}s serializer, DTOs &harr; byte array.
+ * <p>
+ * Payload structure: one or more {@link Keyboard}, max {@link org.paternostro.elkromm.ElkrommFacade#MAX_KEYPADS} keyboards.
+ * <p>
+ * <table>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0-110</td><td>First keyboard</td><td>See {@link Keyboard}</td></tr>
+ *  <tr><td>111-221</td><td>Second keyboard</td><td>The preceding fields repeat</td></tr>
+ *  <tr><td>...</td></tr>
+ *  <tr><td>x-3,x</td><td>Checksum</td><td>Last four bytes are block checksum</td></tr>
+ * </table>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ * 
+ * @see Keyboard
  */
 public class Keyboards implements ElkrommSerializer<Keyboard[]>
 {

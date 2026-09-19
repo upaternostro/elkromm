@@ -1,5 +1,6 @@
 package org.paternostro.elkromm.serializer;
 
+import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.dto.Reader;
@@ -7,7 +8,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * {@link Reader}s serializer, DTOs &harr; byte array.
+ * <p>
+ * Payload structure: at most {@link ElkrommFacade#MAX_READERS} instances of {@link Reader},
+ * each containing:
+ * <p>
+ * <table>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0-112</td><td>First reader</td><td>See {@link Reader}</td></tr>
+ *  <tr><td>113-225</td><td>Second reader</td></tr>
+ *  <tr><td>...</td></tr>
+ *  <tr><td>x-3,x</td><td>Checksum</td><td>Last four bytes are block checksum</td></tr>
+ * </table>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ * 
+ * @see Reader
  */
 public class Readers implements ElkrommSerializer<Reader[]>
 {

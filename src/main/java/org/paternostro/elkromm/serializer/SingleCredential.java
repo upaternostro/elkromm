@@ -1,7 +1,19 @@
 package org.paternostro.elkromm.serializer;
 
 /**
+ * Abstract {@link org.paternostro.elkromm.dto.SingleCredential} serializer, DTO &harr; byte array.
+ * <p>
+ * Payload structure:
+ * <p>
+ * <table>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0</td><td>Index</td><td>Credential index</td></tr>
+ *  <tr><td>1-26</td><td>Credential</td><td>See {@link Credential} and its subclass</td></tr>
+ * </table>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ * 
+ * @see Credential
  */
 public abstract class SingleCredential implements ElkrommSerializer<org.paternostro.elkromm.dto.SingleCredential>
 {

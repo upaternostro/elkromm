@@ -5,6 +5,16 @@ import java.util.List;
 import org.paternostro.elkromm.ElkrommUtils;
 
 /**
+ * {@link org.paternostro.elkromm.dto.Login} serializer, DTO &harr; byte array.
+ * <p>
+ * Payload structure:
+ * <p>
+ * <table>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0-3</td><td>Plant code</td><td>BCD coded</td></tr>
+ *  <tr><td>4-6</td><td>Technical PIN code</td><td>BCD coded</td></tr>
+ * </table>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
  */
 public class Login implements ElkrommSerializer<org.paternostro.elkromm.dto.Login>

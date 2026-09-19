@@ -5,7 +5,19 @@ import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.dto.DayClassCommands.DayClass;
 
 /**
+ * {@link org.paternostro.elkromm.dto.DayClassCommands} serializer, DTO &harr; byte array.
+ * <p>
+ * Payload structure:
+ * <p>
+ * <table>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0</td><td>Day class</td><td>{@link DayClass}, identifies which of the three command sets is being written</td></tr>
+ *  <tr><td>1-40</td><td>8 commands</td><td>5 bytes each, see {@link Commands} serializer</td></tr>
+ * </table>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ * 
+ * @see Commands
  */
 public class DayClassCommands implements ElkrommSerializer<org.paternostro.elkromm.dto.DayClassCommands>
 {

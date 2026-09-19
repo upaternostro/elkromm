@@ -4,7 +4,19 @@ import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.dto.SMSs.SMSIndex;
 
 /**
+ * {@link org.paternostro.elkromm.dto.SingleSMS} serializer, DTO &harr; byte array.
+ * <p>
+ * Payload structure:
+ * <p>
+ * <table>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0</td><td>Index</td><td><b>1-based</b> ({@code SMSIndex.ordinal() + 1}): 1=burglar, 2-4=tech.alarm 1-3, 5=fire, 6=partition on, 7=partition off, 8=tampering, 9=notice</td></tr>
+ *  <tr><td>1-40</td><td>SMS</td><td>See {@link SMS}</td></tr>
+ * </table>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ * 
+ * @see SMS
  */
 public class SingleSMS implements ElkrommSerializer<org.paternostro.elkromm.dto.SingleSMS>
 {

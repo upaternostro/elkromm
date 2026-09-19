@@ -6,7 +6,53 @@ import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.dto.PhoneNumber.Event;
 
 /**
+ * {@link org.paternostro.elkromm.dto.PhoneNumbersSendingCodes} serializer, DTO &harr; byte array.
+ * <p>
+ * Payload structure:
+ * <p>
+ * <table>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0-16</td><td>Phone number 1</td><td>First phone number, see {@link PhoneNumber}</td></tr>
+ *  <tr><td>17-33</td><td>Phone number 2</td><td>Second phone number</td></tr>
+ *  <tr><td>...</td></tr>
+ *  <tr><td>187-203</td><td>Phone number 12</td><td>Twelfth phone number</td></tr>
+ *  <tr><td>204</td><td>Tampering</td><td>{@link Event#PNSCE_TAMPERING}; the serializer also writes the same value at {@code 0x104} and {@code 0x170} (mirrors, not distinct events)</td></tr>
+ *  <tr><td>212</td><td>Low battery</td><td>{@link Event#PNSCE_LOW_BATTERY}</td></tr>
+ *  <tr><td>216</td><td>Mains power event</td><td>{@link Event#PNSCE_MAINS_POWER}</td></tr>
+ *  <tr><td>228</td><td>Burglary alarm</td><td>{@link Event#PNSCE_BURGLAR_ALARM}; the serializer also writes the same value at {@code 0xe8}, {@code 0xec} and {@code 0xf0} (mirrors, not distinct events)</td></tr>
+ *  <tr><td>244</td><td>Pre-alarm</td><td>{@link Event#PNSCE_PRE_ALARM}</td></tr>
+ *  <tr><td>264</td><td>Panic</td><td>{@link Event#PNSCE_PANIC}</td></tr>
+ *  <tr><td>268</td><td>Silent panic</td><td>{@link Event#PNSCE_SILENT_PANIC}</td></tr>
+ *  <tr><td>272</td><td>Fire alarm</td><td>{@link Event#PNSCE_FIRE_ALARM}</td></tr>
+ *  <tr><td>288</td><td>Medical emergency</td><td>{@link Event#PNSCE_MEDICAL_EMERGENCY}</td></tr>
+ *  <tr><td>292</td><td>System fault</td><td>{@link Event#PNSCE_SYSTEM_FAULT}; the serializer also writes the same value at {@code 0x130} (mirror, not distinct events)</td></tr>
+ *  <tr><td>308</td><td>Partition/system armed or disarmed</td><td>{@link Event#PNSCE_PARTITIONS_SYSTEM_ON_OFF}; the serializer also writes the same value at {@code 0x138} and {@code 0x140} (mirrors, not distinct events)</td></tr>
+ *  <tr><td>316</td><td>Hold-up</td><td>{@link Event#PNSCE_HOLD_UP}</td></tr>
+ *  <tr><td>324</td><td>Input excluded or re-included</td><td>{@link Event#PNSCE_INPUT_INCLUSION_EXCLUSION}; the serializer also writes the same value at {@code 0x148} (mirror, not distinct events)</td></tr>
+ *  <tr><td>336</td><td>Maintenance in progress</td><td>{@link Event#PNSCE_MAINTENANCE}</td></tr>
+ *  <tr><td>340</td><td>False code entered</td><td>{@link Event#PNSCE_FALSE_CODE}</td></tr>
+ *  <tr><td>344</td><td>Generic notice</td><td>{@link Event#PNSCE_NOTICES}</td></tr>
+ *  <tr><td>356</td><td>Technical alarm, first type</td><td>{@link Event#PNSCE_TECHNOLOGICAL_ALARM_TYPE_1}</td></tr>
+ *  <tr><td>360</td><td>Technical alarm, second type</td><td>{@link Event#PNSCE_TECHNOLOGICAL_ALARM_TYPE_2}</td></tr>
+ *  <tr><td>364</td><td>Technical alarm, third type</td><td>{@link Event#PNSCE_TECHNOLOGICAL_ALARM_TYPE_3}</td></tr>
+ * </table>
+ * <p>
+ * <b>Event assignment table</b>: after the 12 phone records (204 bytes) comes, at the absolute offsets returned by {@link org.paternostro.elkromm.dto.PhoneNumber.Event#getOffset()}, a 
+ * <b>2-byte word</b> for each reportable event:
+ * <ul>
+ *  <li>The word is a <b>bitmask of the phones</b> assigned to that event (bit <i>i</i> = phone <i>i+1</i>), confirmed empirically: a capture with only phone 1 enabled on an event → 
+ *      {@code 0x0001}; same event with phone 1 <b>and</b> 2 → {@code 0x0003}</li>
+ *  <li>The offsets are <b>not consecutive/ordered</b> as in the enum: they're scattered across the remaining ~200 bytes of the payload (between the end of the phone records and the checksum), 
+ *      with large unused stretches between one event and the next — consistent with the long {@code 00 00 00 00...} sequences observed in the dumps</li>
+ *  <li>The serializer also <b>duplicates</b> some events' value across multiple offsets at once (mirroring, as already seen for {@link C200bParameters}): {@code PNSCE_BURGLAR_ALARM} &rarr; 
+ *      also {@code 0x00e8}, {@code 0x00ec}, {@code 0x00f0}; {@code PNSCE_INPUT_INCLUSION_EXCLUSION} &rarr; also {@code 0x0148}; {@code PNSCE_TAMPERING} &rarr; also {@code 0x0104}, 
+ *      {@code 0x0170}; {@code PNSCE_SYSTEM_FAULT} &rarr; also {@code 0x0130}; {@code PNSCE_PARTITIONS_SYSTEM_ON_OFF} &rarr; primary offset {@code 0x0134} (not {@code 0x0140} as reported in a 
+ *      previous version of this document — a mirroring bug found and fixed thanks to the round-trip test suite), also mirrored at {@code 0x0138} and {@code 0x0140}</li>
+ * </ul>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ * 
+ * @see PhoneNumber
  */
 public class PhoneNumbersSendingCodes implements ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumbersSendingCodes>
 {

@@ -6,7 +6,29 @@ import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.dto.Input;
 
 /**
+ * {@link org.paternostro.elkromm.dto.Reader} serializer, DTO &harr; byte array.
+ * <p>
+ * Payload structure:
+ * <p>
+ * <table>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0</td><td>Bus address</td><td>Also identifies the reader in single-instance writes (there's no separate {@code SingleReader} wrapper)</td></tr>
+ *  <tr><td>1-5</td><td>?</td><td>Not mapped by any DTO field</td></tr>
+ *  <tr><td>6-43</td><td>First onboard input</td><td>38 bytes, see {@link org.paternostro.elkromm.serializer.Input}</td></tr>
+ *  <tr><td>44-81</td><td>Second onboard input</td><td>38 bytes, see {@link org.paternostro.elkromm.serializer.Input}</td></tr>
+ *  <tr><td>82</td><td>LED 1</td><td>Associated partition ({@link ElkrommFacade.Partition}), {@code 0x00} = unused</td></tr>
+ *  <tr><td>83</td><td>LED 2</td><td>Associated partition</td></tr>
+ *  <tr><td>84</td><td>LED 3</td><td>Associated partition</td></tr>
+ *  <tr><td>85</td><td>LED 4</td><td>Associated partition</td></tr>
+ *  <tr><td>86</td><td>Enablings bitmask</td><td>{@link org.paternostro.elkromm.dto.Reader.Enablings}: only {@code MASKING} (0x01) known</td></tr>
+ *  <tr><td>87-110</td><td>Name</td><td>24 bytes</td></tr>
+ *  <tr><td>111-112</td><td>?</td><td>Not mapped by any DTO field. Zeroed on write by {@link Readers} in analogy with {@link Expansions}/{@link Keyboards}, <b>unverified on real hardware</b> (the author owns no physical readers) — for this reason the block checksum remains a warning, not an exception, on this structure</td></tr>
+ * </table>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ * 
+ * @see Input
+ * @usedby {@link Readers}
  */
 public class Reader implements ElkrommSerializer<org.paternostro.elkromm.dto.Reader>
 {

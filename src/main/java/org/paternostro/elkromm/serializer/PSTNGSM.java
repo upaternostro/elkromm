@@ -8,6 +8,29 @@ import org.paternostro.elkromm.dto.PSTNGSM.PSTNAnsweringMachineRings;
 import org.paternostro.elkromm.dto.PSTNGSM.PSTNLineTestFrequency;
 
 /**
+ * {@link org.paternostro.elkromm.dto.PSTNGSM} serializer, DTO &harr; byte array.
+ * <p>
+ * Payload structure:
+ * <p>
+ * <table>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0</td><td>Enable PSTN network</td><td>{@link Enabling}</td></tr>
+ *  <tr><td>1</td><td>Country</td><td>{@link Country}: 0=Italy, 1=France, 2=Germany, 3=Czech Rep., 4=Poland, 5=Spain, 6=Portugal, 7=Greece, 8=England</td></tr>
+ *  <tr><td>2-3</td><td>?</td><td>Not mapped by any DTO field</td></tr>
+ *  <tr><td>4</td><td>PABX local access digit</td><td>{@link PABXLocalAccessDigit}: 0-9, {@code 0xff}=disabled</td></tr>
+ *  <tr><td>5</td><td>Tone control</td><td>{@link Enabling}</td></tr>
+ *  <tr><td>6</td><td>Answer control</td><td>{@link Enabling}</td></tr>
+ *  <tr><td>7</td><td>PSTN line test</td><td>{@link PSTNLineTestFrequency}: 0=disabled, 1=24h, 2=when system armed</td></tr>
+ *  <tr><td>8</td><td>PSTN answering machine rings</td><td>{@link PSTNAnsweringMachineRings}: 0=disabled, 2/4/8=number of rings</td></tr>
+ *  <tr><td>9</td><td>Enable GSM network</td><td>{@link Enabling}</td></tr>
+ *  <tr><td>10</td><td>GSM answering machine (no ring)</td><td>{@link Enabling}</td></tr>
+ *  <tr><td>11</td><td>Incoming SMS</td><td>{@link Enabling}</td></tr>
+ *  <tr><td>12-14</td><td>GSM PIN</td><td>BCD, 3 bytes; {@code 0xff 0xff 0xff} = no PIN set</td></tr>
+ *  <tr><td>15</td><td>Expiration month</td></tr>
+ *  <tr><td>16</td><td>Expiration year</td></tr>
+ *  <tr><td>17-20</td><td>Block checksum</td></tr>
+ * </table>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
  */
 public class PSTNGSM implements ElkrommSerializer<org.paternostro.elkromm.dto.PSTNGSM>

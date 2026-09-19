@@ -1,6 +1,16 @@
 package org.paternostro.elkromm.serializer;
 
 /**
+ * {@link org.paternostro.elkromm.dto.PartitionArming} serializer, DTO &harr; byte array.
+ * <p>
+ * Payload structure:
+ * <p>
+ * <table>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0</td><td>Partitions</td><td>Bitmask of {@link org.paternostro.elkromm.ElkrommFacade.Partition}</td></tr>
+ *  <tr><td>1</td><td>Arm status</td><td>Bitmask of armed partitions</td></tr>
+ * </table>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
  */
 public class PartitionArming implements ElkrommSerializer<org.paternostro.elkromm.dto.PartitionArming>

@@ -7,7 +7,13 @@ import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.dto.Credential;
 
 /**
+ * Abstract {@link Credential}s ({@link org.paternostro.elkromm.dto.User}s/{@link org.paternostro.elkromm.dto.Key}s) serializer, DTOs &harr; byte array.
+ * <p>
+ * Payload structure: {@link ElkrommFacade#MAX_CREDENTIALS} instances of {@link Credential}.
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ * 
+ * @see org.paternostro.elkromm.serializer.Credential
  */
 public abstract class Credentials implements ElkrommSerializer<Credential[]>
 {

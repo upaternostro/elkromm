@@ -4,7 +4,14 @@ import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommUtils;
 
 /**
+ * Abstract {@link org.paternostro.elkromm.dto.Credential} ({@link org.paternostro.elkromm.dto.User}/{@link org.paternostro.elkromm.dto.Key}) serializer, DTO &harr; byte array.
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ * 
+ * @see Key
+ * @see User
+ * @usedby {@link Credentials}
+ * @usedby {@link SingleCredential}
  */
 public abstract class Credential implements ElkrommSerializer<org.paternostro.elkromm.dto.Credential>
 {

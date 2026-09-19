@@ -1,6 +1,20 @@
 package org.paternostro.elkromm.serializer;
 
 /**
+ * {@link org.paternostro.elkromm.dto.PeripheralUnits} serializer, DTO &harr; byte array.
+ * <p>
+ * Payload structure:
+ * <p>
+ * <table>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0</td><td>Keyboards number</td><td>Number of keyboards connected to the system, {@code 0} if none</td></tr>
+ *  <tr><td>1 - k</td><td>Keyboard address</td><td>Address of the &lt;K&gt;th keyboard</td></tr>
+ *  <tr><td>k+1</td><td>Readers number</td><td>Number of readers connected to the system, {@code 0} if none</td></tr>
+ *  <tr><td>k+2 - k+r+1</td><td>Reader address</td><td>Address of the &lt;R&gt;th keyboard</td></tr>
+ *  <tr><td>k+r+2</td><td>Expansions number</td><td>Number of expansions connected to the system, {@code 0} if none</td></tr>
+ *  <tr><td>k+r+3 - k+r+e+2</td><td>Expansion address</td><td>Address of the &lt;E&gt;th keyboard</td></tr>
+ * </table>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
  */
 public class PeripheralUnits implements ElkrommSerializer<org.paternostro.elkromm.dto.PeripheralUnits>

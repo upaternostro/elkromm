@@ -3,6 +3,15 @@ package org.paternostro.elkromm.serializer;
 import org.paternostro.elkromm.ElkrommUtils;
 
 /**
+ * {@link org.paternostro.elkromm.dto.SystemStatus} serializer, DTO &harr; byte array.
+ * <p>
+ * Payload structure:
+ * <p>
+ * <table>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0</td><td>Active partitions</td><td>Bitmask, LSB = partition 1</td></tr>
+ * </table>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
  */
 public class SystemStatus implements ElkrommSerializer<org.paternostro.elkromm.dto.SystemStatus>

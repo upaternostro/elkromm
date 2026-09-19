@@ -4,6 +4,15 @@ import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommUtils;
 
 /**
+ * {@link org.paternostro.elkromm.dto.UserEnablings} serializer, DTO &harr; byte array.
+ * <p>
+ * Payload structure:
+ * <p>
+ * <table>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
+ *  <tr><td>0-3</td><td>Enabling</td><td>A single long word containing {@link ElkrommFacade#MAX_CREDENTIALS} flags, one for each user, starting with user 1 (TECHNICAL/INSTALLER) at MSB</td></tr>
+ * </table>
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
  */
 public class UserEnablings implements ElkrommSerializer<org.paternostro.elkromm.dto.UserEnablings>
