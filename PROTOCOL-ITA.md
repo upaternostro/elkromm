@@ -64,7 +64,7 @@ I pacchetti che non contengono dati sono tipicamente costituiti da un solo byte.
 I pacchetti contenenti dati sono così strutturati:  
 ` `  
 
-Offset	| Carattere	| Significato
+Offset	| Valore	| Significato
 --------|---------------|------------
 0	| 0x01		| SOH
 1	| 0x55		| Prime due cifre BCD del codice impianto

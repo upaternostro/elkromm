@@ -64,7 +64,7 @@ Packets with no data are typically made up of a single byte. They're mostly obse
 Data-carrying packets are structured as follows:  
 ` `  
 
-Offset	| Byte	| Meaning
+Offset	| Value	| Meaning
 --------|---------------|------------
 0	| 0x01		| SOH
 1	| 0x55		| First two BCD digits of the plant code
