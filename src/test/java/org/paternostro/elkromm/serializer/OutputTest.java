@@ -16,7 +16,7 @@ public class OutputTest {
         Output      output = new Output(69, Output.Type.OT_NORMALLY_HIGH, associatedPartitions, Output.Specialization.OS_TAMPERING, "Input 42");
         byte[]      data = ElkrommFactory.getFactory().getOutputSerializer().serialize(output);
 
-        assert data.length == SerializersConstants.OUTPUT_SIZE : "Wrong length";
+        assert data.length == 37 : "Wrong length";
 
         Output      output2 = ElkrommFactory.getFactory().getOutputSerializer().deserialize(data);
 

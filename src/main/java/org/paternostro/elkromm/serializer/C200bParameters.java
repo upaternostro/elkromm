@@ -57,11 +57,13 @@ import org.paternostro.elkromm.dto.C200bParameters.Event;
  */
 public class C200bParameters implements ElkrommSerializer<org.paternostro.elkromm.dto.C200bParameters> 
 {
+    public static final int PAYLOAD_SIZE = 168;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.C200bParameters obj) {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
 
-        byte[]  data = new byte[length()];
+        byte[]  data = new byte[PAYLOAD_SIZE];
 
         for (Entry<Event,Byte> pivot : obj.getEventCodes().entrySet()) {
             data[pivot.getKey().getOffset()] = pivot.getValue();
@@ -97,7 +99,7 @@ public class C200bParameters implements ElkrommSerializer<org.paternostro.elkrom
         data[0x55] = data[0x56] = data[0x57] = data[0x5c] = data[0x5d] = data[0x5e] = data[0x5f] = data[0x60] = data[0x61] = data[0x62] = 
         data[0x63] = (byte)0xff;
 
-        ElkrommUtils.setLong(data, data.length - 4, ElkrommUtils.computeBlockChecksum(data));
+        ElkrommUtils.setBlockChecksum(data);
 
         return data;
     }
@@ -105,8 +107,8 @@ public class C200bParameters implements ElkrommSerializer<org.paternostro.elkrom
     @Override
     public org.paternostro.elkromm.dto.C200bParameters deserialize(byte[] data) {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data length");
-        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getLong(data, data.length - 4)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getLong(data, data.length - 4));
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data length");
+        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getBlockChecksum(data)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getBlockChecksum(data));
 
         org.paternostro.elkromm.dto.C200bParameters retval = new org.paternostro.elkromm.dto.C200bParameters(new HashMap<>(), new byte[0]);
 
@@ -119,10 +121,5 @@ public class C200bParameters implements ElkrommSerializer<org.paternostro.elkrom
         }
 
         return retval;
-    }
-
-    @Override
-    public int length() {
-        return 168;
     }
 }

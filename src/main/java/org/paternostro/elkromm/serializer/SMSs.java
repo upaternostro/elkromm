@@ -32,21 +32,23 @@ import org.paternostro.elkromm.ElkrommUtils;
  */
 public class SMSs implements ElkrommSerializer<org.paternostro.elkromm.dto.SMSs>
 {
+    public static final int PAYLOAD_SIZE = ElkrommFacade.MAX_SMS*SMS.PAYLOAD_SIZE + ElkrommUtils.CHECKSUM_SIZE;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.SMSs obj)
     {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
 
-        byte[]                                              data = new byte[length()];
+        byte[]                                              data = new byte[PAYLOAD_SIZE];
         ElkrommSerializer<org.paternostro.elkromm.dto.SMS>  smsSerializer = ElkrommFactory.getFactory().getSMSSerializer();
 
-        Arrays.fill(data, 0, data.length - 4, (byte)0xff); // Pad with 0xff bytes
+        Arrays.fill(data, 0, data.length - ElkrommUtils.CHECKSUM_SIZE, (byte)0xff); // Pad with 0xff bytes
         
         for (int i = 0; i < obj.getSMSs().length; i++) {
-            System.arraycopy(smsSerializer.serialize(obj.getSMSs()[i]), 0, data, i * SerializersConstants.SMS_SIZE, SerializersConstants.SMS_SIZE);
+            System.arraycopy(smsSerializer.serialize(obj.getSMSs()[i]), 0, data, i * SMS.PAYLOAD_SIZE, SMS.PAYLOAD_SIZE);
         }
 
-        ElkrommUtils.setLong(data, data.length - 4, ElkrommUtils.computeBlockChecksum(data));
+        ElkrommUtils.setBlockChecksum(data);
 
         return data;
     }
@@ -56,24 +58,18 @@ public class SMSs implements ElkrommSerializer<org.paternostro.elkromm.dto.SMSs>
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
-        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getLong(data, data.length - 4)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getLong(data, data.length - 4));
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
+        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getBlockChecksum(data)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getBlockChecksum(data));
 
         org.paternostro.elkromm.dto.SMS[]                   sMSs = new org.paternostro.elkromm.dto.SMS[ElkrommFacade.MAX_SMS];
         ElkrommSerializer<org.paternostro.elkromm.dto.SMS>  smsSerializer = ElkrommFactory.getFactory().getSMSSerializer();
-        byte[]                                              smsData = new byte[SerializersConstants.SMS_SIZE];
+        byte[]                                              smsData = new byte[SMS.PAYLOAD_SIZE];
 
         for (int i = 0; i < ElkrommFacade.MAX_SMS; i++) {
-            System.arraycopy(data, i * SerializersConstants.SMS_SIZE, smsData, 0, SerializersConstants.SMS_SIZE);
+            System.arraycopy(data, i * SMS.PAYLOAD_SIZE, smsData, 0, SMS.PAYLOAD_SIZE);
             sMSs[i] = smsSerializer.deserialize(smsData);
         }
 
         return new org.paternostro.elkromm.dto.SMSs(sMSs);
-    }
-
-    @Override
-    public int length()
-    {
-        return ElkrommFacade.MAX_SMS*SerializersConstants.SMS_SIZE + 4;
     }
 }

@@ -22,6 +22,9 @@ public class ElkrommUtils
     /** Logger used for protocol-level dumps and warnings. */
     public static final Logger logger = LoggerFactory.getLogger(ElkrommUtils.class);
 
+    /** Size of a checksum */
+    public final static int CHECKSUM_SIZE   = 4;
+
     /**
      * Reads a fixed-length, NUL-terminated ASCII string out of a byte array.
      *
@@ -191,15 +194,42 @@ public class ElkrommUtils
     public static int computeBlockChecksum(byte[] data)
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory parameter");
-        if (data.length <= 4) throw new IllegalArgumentException("Not enough data to compute checksum");
+        if (data.length <= CHECKSUM_SIZE) throw new IllegalArgumentException("Not enough data to compute checksum");
 
         int checksum = 0;
 
-        for (int i = 0; i < data.length - 4; i++) {
+        for (int i = 0; i < data.length - CHECKSUM_SIZE; i++) {
             checksum -= data[i] & 0xFF;
         }
 
         return checksum;
+    }
+
+    /**
+     * Sets the checksum used at the end of a protocol data block using {@link #computeBlockChecksum}
+     * and writing in the trailing 4-byte checksum field.
+     *
+     * @param data the full block, including its trailing 4-byte checksum field
+     * @throws IllegalArgumentException if {@code data} is {@code null} or too short to contain a checksum
+     */
+    public static void setBlockChecksum(byte[] data)
+    {
+        // computeBlockChecksum above does sanity checks for us
+        setLong(data, data.length - CHECKSUM_SIZE, computeBlockChecksum(data));
+    }
+
+    /**
+     * Gets the checksum from the end of a protocol data block in the trailing 4-byte checksum field.
+     *
+     * @param data the full block, including its trailing 4-byte checksum field
+     * @throws IllegalArgumentException if {@code data} is {@code null} or too short to contain a checksum
+     */
+    public static int getBlockChecksum(byte[] data)
+    {
+        if (data == null) throw new IllegalArgumentException("Missing mandatory parameter");
+        if (data.length <= CHECKSUM_SIZE) throw new IllegalArgumentException("Not enough data to extract checksum");
+
+        return getLong(data, data.length - CHECKSUM_SIZE);
     }
 
     /**
@@ -220,7 +250,7 @@ public class ElkrommUtils
         StringBuffer    sb = new StringBuffer();
         StringBuffer    sb2 = new StringBuffer();
         int             i;
-        int             checksum = payload.length > 4 ? getLong(payload, payload.length - 4) : 0;
+        int             checksum = payload.length > CHECKSUM_SIZE ? getBlockChecksum(payload) : 0;
 
         logger.info("Dumping " + cmd + ", payload size: " + payload.length);
 
@@ -262,7 +292,7 @@ public class ElkrommUtils
             logger.info(sb.toString());
         }
 
-        if (payload.length > 4) {
+        if (payload.length > ElkrommUtils.CHECKSUM_SIZE) {
             if (checksum == computeBlockChecksum(payload)) {
                 logger.info(String.format("Checksum %08x is valid", checksum));
             } else {

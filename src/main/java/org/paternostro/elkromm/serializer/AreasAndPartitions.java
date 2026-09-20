@@ -39,15 +39,17 @@ import org.paternostro.elkromm.dto.Partition;
  */
 public class AreasAndPartitions implements ElkrommSerializer<org.paternostro.elkromm.dto.AreasAndPartitions>
 {
+    public static final int PAYLOAD_SIZE = 1+(1+ElkrommFacade.NAME_LENGTH)*ElkrommFacade.MAX_AREAS+1+1+1+(2+2+ElkrommFacade.NAME_LENGTH)*ElkrommFacade.MAX_PARTITIONS+1+ElkrommUtils.CHECKSUM_SIZE; // 333 w/ checksum
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.AreasAndPartitions obj) {
-        byte[]  data = new byte[length()];
+        byte[]  data = new byte[PAYLOAD_SIZE];
 
         data[0] = (byte)obj.getAreaNum(); // numero di aree
 
         for (int i = 0; i < ElkrommFacade.MAX_AREAS; i++) {
             data[i + 1] = (byte)ElkrommUtils.packPartitions(obj.getArea(i).getAssociatedPartitions()); // settori nell'area i-esima (bit mask)
-            ElkrommUtils.setText(data, 5 + i*24, obj.getArea(i).getName(), 24); // nome dell'area i-esima
+            ElkrommUtils.setText(data, 5 + i*ElkrommFacade.NAME_LENGTH, obj.getArea(i).getName(), ElkrommFacade.NAME_LENGTH); // nome dell'area i-esima
         }
         
         data[101] = (byte)obj.getPartitionNum(); // numero di settori
@@ -70,19 +72,21 @@ public class AreasAndPartitions implements ElkrommSerializer<org.paternostro.elk
 
             ElkrommUtils.setWord(data, 104 + i*2, obj.getPartition(i).getEntryDelay()); // tempo di ingresso
             ElkrommUtils.setWord(data, 120 + i*2, obj.getPartition(i).getExitDelay()); // tempo di uscita
-            ElkrommUtils.setText(data, 136 + i*24, obj.getPartition(i).getName(), 24); // nome del settore
+            ElkrommUtils.setText(data, 136 + i*ElkrommFacade.NAME_LENGTH, obj.getPartition(i).getName(), ElkrommFacade.NAME_LENGTH); // nome del settore
         }
 
         data[328] = 0; // ???
 
-        ElkrommUtils.setLong(data, data.length - 4, ElkrommUtils.computeBlockChecksum(data));
+        ElkrommUtils.setBlockChecksum(data);
 
         return data;
     }
 
     @Override
     public org.paternostro.elkromm.dto.AreasAndPartitions deserialize(byte[] data) {
-        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getLong(data, data.length - 4)) throw new IllegalArgumentException("Wrong checksum");
+        if (data == null) throw new IllegalArgumentException("Missing mandatory data");
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data length");
+        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getBlockChecksum(data)) throw new IllegalArgumentException("Wrong checksum");
 
         org.paternostro.elkromm.dto.AreasAndPartitions  retval = new org.paternostro.elkromm.dto.AreasAndPartitions();
         int                                             selfExclusion;
@@ -93,7 +97,7 @@ public class AreasAndPartitions implements ElkrommSerializer<org.paternostro.elk
         retval.setAreaNum(data[0]); // numero di aree
 
         for (byte i = 0; i < ElkrommFacade.MAX_AREAS; i++) {
-            retval.addArea(new Area(ElkrommUtils.getText(data, 5 + i * 24, 24), ElkrommUtils.unpackPartitions(data[i + 1])));
+            retval.addArea(new Area(ElkrommUtils.getText(data, 5 + i * ElkrommFacade.NAME_LENGTH, ElkrommFacade.NAME_LENGTH), ElkrommUtils.unpackPartitions(data[i + 1])));
         }
 
         retval.setPartitionNum(data[101]); // numero di settori
@@ -117,14 +121,9 @@ public class AreasAndPartitions implements ElkrommSerializer<org.paternostro.elk
                 }
             }
 
-            retval.addPartition(new Partition(ElkrommUtils.getText(data, 136 + i * 24, 24), false, type, ElkrommUtils.getWord(data, 104 + i * 2), ElkrommUtils.getWord(data, 120 + i * 2)));
+            retval.addPartition(new Partition(ElkrommUtils.getText(data, 136 + i * ElkrommFacade.NAME_LENGTH, ElkrommFacade.NAME_LENGTH), false, type, ElkrommUtils.getWord(data, 104 + i * 2), ElkrommUtils.getWord(data, 120 + i * 2)));
         }
 
         return retval;
-    }
-
-    @Override
-    public int length() {
-        return 1+(1+ElkrommFacade.NAME_LENGTH)*ElkrommFacade.MAX_AREAS+1+1+1+(2+2+ElkrommFacade.NAME_LENGTH)*ElkrommFacade.MAX_PARTITIONS+1+4; // 333 w/ checksum
     }
 }

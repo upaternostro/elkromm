@@ -25,12 +25,14 @@ import org.paternostro.elkromm.ElkrommUtils;
  */
 public class Output implements ElkrommSerializer<org.paternostro.elkromm.dto.Output>
 {
+    public static final int PAYLOAD_SIZE = 37;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.Output obj)
     {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
 
-        byte[]  data = new byte[length()];
+        byte[]  data = new byte[PAYLOAD_SIZE];
 
         if (obj.getLogicNumber() != 0) {
             data[0] = (byte)(obj.getLogicNumber() & 0xFF);
@@ -49,14 +51,8 @@ public class Output implements ElkrommSerializer<org.paternostro.elkromm.dto.Out
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
 
         return data[0] == 0 ? null : new org.paternostro.elkromm.dto.Output(data[0], org.paternostro.elkromm.dto.Output.Type.valueOf(data[1]), ElkrommUtils.unpackPartitions(data[2]), org.paternostro.elkromm.dto.Output.Specialization.valueOf(data[3]), ElkrommUtils.getText(data, 8, ElkrommFacade.NAME_LENGTH));
-    }
-
-    @Override
-    public int length()
-    {
-        return SerializersConstants.OUTPUT_SIZE;
     }
 }

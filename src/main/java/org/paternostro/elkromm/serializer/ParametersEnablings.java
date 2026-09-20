@@ -39,9 +39,11 @@ import org.paternostro.elkromm.dto.ParametersEnablings.Time;
  */
 public class ParametersEnablings implements ElkrommSerializer<org.paternostro.elkromm.dto.ParametersEnablings>
 {
+    public static final int PAYLOAD_SIZE = 30;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.ParametersEnablings obj) {
-        byte[]  data = new byte[length()];
+        byte[]  data = new byte[PAYLOAD_SIZE];
 
         // byte 5, 7 and 9 contain the same value
         data[ 5] = 
@@ -61,20 +63,18 @@ public class ParametersEnablings implements ElkrommSerializer<org.paternostro.el
         data[24] = obj.getPlay();
         data[25] = obj.getHelp();
         
-        ElkrommUtils.setLong(data, data.length - 4, ElkrommUtils.computeBlockChecksum(data));
+        ElkrommUtils.setBlockChecksum(data);
 
         return data;
     }
 
     @Override
     public org.paternostro.elkromm.dto.ParametersEnablings deserialize(byte[] data) {
-        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getLong(data, data.length - 4)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getLong(data, data.length - 4));
+        if (data == null) throw new IllegalArgumentException("Missing mandatory data");
+        if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
+        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getBlockChecksum(data)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getBlockChecksum(data));
 
         return new org.paternostro.elkromm.dto.ParametersEnablings(Time.valueOf(data[5]), Time.valueOf(data[8]), Time.valueOf(data[6]), AlarmCount.valueOf(data[13]), PowerLack.valueOf(data[11]), data[24], data[25], Enabling.valueOf(data[23]), Enabling.valueOf(data[15]), Notice.valueOf(data[14]), data[16], Month.valueOf(data[22]), Month.valueOf(data[21]));
-    }
-
-    @Override
-    public int length() {
-        return SerializersConstants.PARAMETERS_ENABLINGS_SIZE;
     }
 }

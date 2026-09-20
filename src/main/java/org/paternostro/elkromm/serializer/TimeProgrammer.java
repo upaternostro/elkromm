@@ -32,12 +32,14 @@ import org.paternostro.elkromm.dto.DayClassCommands.DayClass;
  */
 public class TimeProgrammer implements ElkrommSerializer<org.paternostro.elkromm.dto.TimeProgrammer>
 {
+    public static final int PAYLOAD_SIZE = 3 * Commands.PAYLOAD_SIZE + 7 + ElkrommUtils.CHECKSUM_SIZE;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.TimeProgrammer obj)
     {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
 
-        byte[]  data = new byte[length()];
+        byte[]  data = new byte[PAYLOAD_SIZE];
         int     offset = 3 * ElkrommFacade.NUM_COMMANDS * SerializersConstants.COMMAND_LENGTH;
 
         System.arraycopy(ElkrommFactory.getFactory().getCommandsSerializer().serialize(obj.getWorkingDaysCommands()), 0, data, 0, ElkrommFacade.NUM_COMMANDS * SerializersConstants.COMMAND_LENGTH);
@@ -48,7 +50,7 @@ public class TimeProgrammer implements ElkrommSerializer<org.paternostro.elkromm
             data[offset++] = pivot.getValue();
         }
 
-        ElkrommUtils.setLong(data, data.length - 4, ElkrommUtils.computeBlockChecksum(data));
+        ElkrommUtils.setBlockChecksum(data);
 
         return data;
     }
@@ -57,8 +59,8 @@ public class TimeProgrammer implements ElkrommSerializer<org.paternostro.elkromm
     public org.paternostro.elkromm.dto.TimeProgrammer deserialize(byte[] data)
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
-        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getLong(data, data.length - 4)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getLong(data, data.length - 4));
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
+        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getBlockChecksum(data)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getBlockChecksum(data));
 
         byte[]  cData = new byte[ElkrommFacade.NUM_COMMANDS * SerializersConstants.COMMAND_LENGTH];
 
@@ -81,11 +83,5 @@ public class TimeProgrammer implements ElkrommSerializer<org.paternostro.elkromm
         }
 
         return new org.paternostro.elkromm.dto.TimeProgrammer(workingDayCommands, preHolidayDayCommands, holidayDayCommands, dayClasses);
-    }
-
-    @Override
-    public int length()
-    {
-        return 3 * ElkrommFacade.NUM_COMMANDS * SerializersConstants.COMMAND_LENGTH + 7 + 4;
     }
 }

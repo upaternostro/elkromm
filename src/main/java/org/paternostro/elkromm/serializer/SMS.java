@@ -21,12 +21,14 @@ import org.paternostro.elkromm.ElkrommUtils;
  */
 public class SMS implements ElkrommSerializer<org.paternostro.elkromm.dto.SMS>
 {
+    public static final int PAYLOAD_SIZE = 40;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.SMS obj)
     {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
 
-        byte[]  data = new byte[length()];
+        byte[]  data = new byte[PAYLOAD_SIZE];
 
         Arrays.fill(data, 0, data.length, (byte)0xff); // Pad with 0xff bytes
         ElkrommUtils.setText(data, 0, obj.getText(), obj.getText().length());
@@ -39,7 +41,7 @@ public class SMS implements ElkrommSerializer<org.paternostro.elkromm.dto.SMS>
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
 
         StringBuffer    sb = new StringBuffer();
         byte[]          tempArray = new byte[1];
@@ -52,11 +54,5 @@ public class SMS implements ElkrommSerializer<org.paternostro.elkromm.dto.SMS>
         }
 
         return new org.paternostro.elkromm.dto.SMS(sb.toString());
-    }
-
-    @Override
-    public int length()
-    {
-        return SerializersConstants.SMS_SIZE;
     }
 }

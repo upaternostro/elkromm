@@ -23,7 +23,7 @@ public class KeyboardTest {
 
         byte[]  data = ElkrommFactory.getFactory().getKeyboardSerializer().serialize(keyboard);
 
-        assert data.length == SerializersConstants.KEYBOARD_SIZE : "Wrong length";
+        assert data.length == 111 : "Wrong length";
 
         Keyboard  keyboard2 = ElkrommFactory.getFactory().getKeyboardSerializer().deserialize(data);
 

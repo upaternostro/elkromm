@@ -20,16 +20,18 @@ import org.paternostro.elkromm.dto.SMSs.SMSIndex;
  */
 public class SingleSMS implements ElkrommSerializer<org.paternostro.elkromm.dto.SingleSMS>
 {
+    public static final int PAYLOAD_SIZE = SMS.PAYLOAD_SIZE + 1;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.SingleSMS obj)
     {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
 
-        byte[]                                              data = new byte[length()];
+        byte[]                                              data = new byte[PAYLOAD_SIZE];
         ElkrommSerializer<org.paternostro.elkromm.dto.SMS>  smsSerializer = ElkrommFactory.getFactory().getSMSSerializer();
 
         data[0] = (byte)(obj.getIndex().ordinal() + 1);
-        System.arraycopy(smsSerializer.serialize(obj.getSMS()), 0, data, 1, SerializersConstants.SMS_SIZE);
+        System.arraycopy(smsSerializer.serialize(obj.getSMS()), 0, data, 1, SMS.PAYLOAD_SIZE);
 
         return data;
     }
@@ -39,20 +41,14 @@ public class SingleSMS implements ElkrommSerializer<org.paternostro.elkromm.dto.
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
 
         ElkrommSerializer<org.paternostro.elkromm.dto.SMS>  smsSerializer = ElkrommFactory.getFactory().getSMSSerializer();
-        byte[]                                              smsData = new byte[SerializersConstants.SMS_SIZE];
+        byte[]                                              smsData = new byte[SMS.PAYLOAD_SIZE];
 
-        System.arraycopy(data, 1, smsData, 0, SerializersConstants.SMS_SIZE);
+        System.arraycopy(data, 1, smsData, 0, SMS.PAYLOAD_SIZE);
         org.paternostro.elkromm.dto.SMS sMSs = smsSerializer.deserialize(smsData);
 
         return new org.paternostro.elkromm.dto.SingleSMS(SMSIndex.valueOf(data[0] - 1), sMSs);
-    }
-
-    @Override
-    public int length()
-    {
-        return SerializersConstants.SMS_SIZE + 1;
     }
 }

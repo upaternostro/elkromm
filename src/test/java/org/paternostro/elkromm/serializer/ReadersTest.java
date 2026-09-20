@@ -26,7 +26,7 @@ public class ReadersTest {
 
         byte[]  data = ElkrommFactory.getFactory().getReadersSerializer().serialize(readers);
 
-        assert data.length == readers.length * SerializersConstants.READER_SIZE + 4 : "Wrong length";
+        assert data.length == readers.length * 113 + 4 : "Wrong length";
 
         Reader[]    readers2 = ElkrommFactory.getFactory().getReadersSerializer().deserialize(data);
 

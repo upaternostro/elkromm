@@ -33,12 +33,14 @@ import org.paternostro.elkromm.dto.PhoneParameters.VoiceMessagesSendingMode;
  */
 public class PhoneParameters implements ElkrommSerializer<org.paternostro.elkromm.dto.PhoneParameters>
 {
+    public static final int PAYLOAD_SIZE = 20;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.PhoneParameters obj)
     {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
 
-        byte[]  data = new byte[length()];
+        byte[]  data = new byte[PAYLOAD_SIZE];
 
         data[ 0] = data[ 1] = data[ 2] = data[ 3] = 0x66;
         data[ 4] = 0x01;
@@ -54,7 +56,7 @@ public class PhoneParameters implements ElkrommSerializer<org.paternostro.elkrom
         data[14] = obj.getCyclicTestCallMinute();
         data[15] = obj.getCyclicTestCallInterval().getValue();
 
-        ElkrommUtils.setLong(data, data.length - 4, ElkrommUtils.computeBlockChecksum(data));
+        ElkrommUtils.setBlockChecksum(data);
 
         return data;
     }
@@ -63,15 +65,9 @@ public class PhoneParameters implements ElkrommSerializer<org.paternostro.elkrom
     public org.paternostro.elkromm.dto.PhoneParameters deserialize(byte[] data)
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
-        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getLong(data, data.length - 4)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getLong(data, data.length - 4));
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
+        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getBlockChecksum(data)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getBlockChecksum(data));
 
         return new org.paternostro.elkromm.dto.PhoneParameters(Enabling.valueOf(data[5]), ReturnCall.valueOf(data[7]), Enabling.valueOf(data[8]), VoiceMessagesSendingMode.valueOf(data[9]), CyclicTestCallFrequency.valueOf(data[11]), data[12], data[13], data[14], CyclicTestCallInterval.valueOf(data[15]));
-    }
-
-    @Override
-    public int length()
-    {
-        return SerializersConstants.PHONE_PARAMETERS_SIZE;
     }
 }

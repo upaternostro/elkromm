@@ -17,6 +17,8 @@ import org.paternostro.elkromm.ElkrommUtils;
  */
 public class UserEnablings implements ElkrommSerializer<org.paternostro.elkromm.dto.UserEnablings>
 {
+    public static final int PAYLOAD_SIZE = 4;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.UserEnablings obj) {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
@@ -30,7 +32,7 @@ public class UserEnablings implements ElkrommSerializer<org.paternostro.elkromm.
             }
         }
 
-        byte[]  data = new byte[length()];
+        byte[]  data = new byte[PAYLOAD_SIZE];
 
         ElkrommUtils.setLong(data, 0, enablings);
 
@@ -40,7 +42,7 @@ public class UserEnablings implements ElkrommSerializer<org.paternostro.elkromm.
     @Override
     public org.paternostro.elkromm.dto.UserEnablings deserialize(byte[] data) {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
 
         int         enablings = ElkrommUtils.getLong(data, 0);
         boolean[]   userEnablings = new boolean[ElkrommFacade.MAX_CREDENTIALS];
@@ -50,10 +52,5 @@ public class UserEnablings implements ElkrommSerializer<org.paternostro.elkromm.
         }
 
         return new org.paternostro.elkromm.dto.UserEnablings(userEnablings);
-    }
-
-    @Override
-    public int length() {
-        return 4;
     }
 }

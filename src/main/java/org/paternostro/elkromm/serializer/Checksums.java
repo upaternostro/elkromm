@@ -42,9 +42,11 @@ import org.paternostro.elkromm.ElkrommUtils;
  */
 public class Checksums implements ElkrommSerializer<org.paternostro.elkromm.dto.Checksums>
 {
+    public static final int PAYLOAD_SIZE = 13*ElkrommUtils.CHECKSUM_SIZE;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.Checksums obj) {
-        byte[]  data = new byte[length()];
+        byte[]  data = new byte[PAYLOAD_SIZE];
 
         ElkrommUtils.setLong(data,  0, obj.getNodes());
         ElkrommUtils.setLong(data,  4, obj.getKeypads());
@@ -67,7 +69,10 @@ public class Checksums implements ElkrommSerializer<org.paternostro.elkromm.dto.
 
     @Override
     public org.paternostro.elkromm.dto.Checksums deserialize(byte[] data) {
+        if (data == null) throw new IllegalArgumentException("Missing mandatory data");
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data length");
         // no checksum here
+
         return new org.paternostro.elkromm.dto.Checksums(
             ElkrommUtils.getLong(data,  0),
             ElkrommUtils.getLong(data,  4),
@@ -83,10 +88,5 @@ public class Checksums implements ElkrommSerializer<org.paternostro.elkromm.dto.
             ElkrommUtils.getLong(data, 44),
             ElkrommUtils.getLong(data, 48)
         );
-    }
-
-    @Override
-    public int length() {
-        return 13*4;
     }
 }

@@ -16,11 +16,13 @@ import org.paternostro.elkromm.ElkrommUtils;
  */
 public class SystemStatus implements ElkrommSerializer<org.paternostro.elkromm.dto.SystemStatus>
 {
+    public static final int PAYLOAD_SIZE = 1;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.SystemStatus obj) {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory parameter");
 
-        byte[]  data = new byte[length()];
+        byte[]  data = new byte[PAYLOAD_SIZE];
 
         data[0] = ElkrommUtils.packPartitions(obj.getActivePartitions());
 
@@ -30,16 +32,10 @@ public class SystemStatus implements ElkrommSerializer<org.paternostro.elkromm.d
     @Override
     public org.paternostro.elkromm.dto.SystemStatus deserialize(byte[] data) {
         if (data == null) throw new IllegalArgumentException("Missing mandatory parameter");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data length");
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data length");
 
         org.paternostro.elkromm.dto.SystemStatus    retval = new org.paternostro.elkromm.dto.SystemStatus(ElkrommUtils.unpackPartitions(data[0]));
 
         return retval;
-    }
-
-    @Override
-    public int length()
-    {
-        return 1;
     }
 }

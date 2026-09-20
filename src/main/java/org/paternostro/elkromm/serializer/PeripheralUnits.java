@@ -75,10 +75,4 @@ public class PeripheralUnits implements ElkrommSerializer<org.paternostro.elkrom
 
         return retval;
     }
-
-    @Override
-    public int length() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'length'");
-    }
 }

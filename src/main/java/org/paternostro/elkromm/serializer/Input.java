@@ -48,12 +48,14 @@ import org.paternostro.elkromm.dto.Input.Video;
  */
 public class Input implements ElkrommSerializer<org.paternostro.elkromm.dto.Input>
 {
+    public static final int PAYLOAD_SIZE = 38;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.Input obj)
     {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
 
-        byte[]  data = new byte[length()];
+        byte[]  data = new byte[PAYLOAD_SIZE];
 
         data[0] = (byte)(obj.getLogicNumber() & 0xFF);
         data[1] = obj.getConfiguration().getValue();
@@ -73,14 +75,8 @@ public class Input implements ElkrommSerializer<org.paternostro.elkromm.dto.Inpu
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
 
         return new org.paternostro.elkromm.dto.Input(data[0], Configuration.valueOf(data[1]), Specialization.valueOf(data[2]), Sensitivity.valueOf((byte)(data[3] & ~Flags.IF_ALL.getValue())), (byte)(data[3] & org.paternostro.elkromm.dto.Input.Flags.IF_ALL.getValue()), org.paternostro.elkromm.dto.Input.Video.valueOf(data[4]), ElkrommUtils.unpackPartitions(data[5]), ElkrommUtils.getText(data, 6, ElkrommFacade.NAME_LENGTH), Delay.valueOf(data[34]));
-    }
-
-    @Override
-    public int length()
-    {
-        return SerializersConstants.INPUT_SIZE;
     }
 }

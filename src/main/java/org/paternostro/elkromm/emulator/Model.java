@@ -342,61 +342,61 @@ public class Model {
 
         if (this.expansions != null && this.expansions.length > 0) {
             data = factory.getExpansionsSerializer().serialize(this.expansions);
-            expansionsChecksum = ElkrommUtils.getLong(data, data.length - 4);
+            expansionsChecksum = ElkrommUtils.getBlockChecksum(data);
         }
 
         int             keyboardsChecksum = 0;
 
         if (this.keyboards != null && this.keyboards.length > 0) {
             data = factory.getKeyboardsSerializer().serialize(this.keyboards);
-            keyboardsChecksum = ElkrommUtils.getLong(data, data.length - 4);
+            keyboardsChecksum = ElkrommUtils.getBlockChecksum(data);
         }
 
         data = factory.getAreasAndPartitionsSerializer().serialize(this.areasAndPartitions);
         
-        int             areasAndPartitionsChecksum = ElkrommUtils.getLong(data, data.length - 4);
+        int             areasAndPartitionsChecksum = ElkrommUtils.getBlockChecksum(data);
 
         data = factory.getUsersSerializer().serialize(this.users);
         
-        int             usersChecksum = ElkrommUtils.getLong(data, data.length - 4);
+        int             usersChecksum = ElkrommUtils.getBlockChecksum(data);
 
         data = factory.getKeysSerializer().serialize(this.keys);
         
-        int             keysChecksum = ElkrommUtils.getLong(data, data.length - 4);
+        int             keysChecksum = ElkrommUtils.getBlockChecksum(data);
         int             readersChecksum = 0;
 
         if (this.readers != null && this.readers.length > 0) {
             data = factory.getReadersSerializer().serialize(this.readers);
-            readersChecksum = ElkrommUtils.getLong(data, data.length - 4);
+            readersChecksum = ElkrommUtils.getBlockChecksum(data);
         }
 
         data = factory.getParametersEnablingsSerializer().serialize(this.parametersEnablings);
         
-        int             systemChecksum = ElkrommUtils.getLong(data, data.length - 4);
+        int             systemChecksum = ElkrommUtils.getBlockChecksum(data);
 
         data = factory.getTimeProgrammerSerializer().serialize(this.timeProgrammer);
         
-        int             timeProgrammerChecksum = ElkrommUtils.getLong(data, data.length - 4);
+        int             timeProgrammerChecksum = ElkrommUtils.getBlockChecksum(data);
 
         data = factory.getPhoneParametersSerializer().serialize(this.phoneParameters);
         
-        int             phoneParametersChecksum = ElkrommUtils.getLong(data, data.length - 4);
+        int             phoneParametersChecksum = ElkrommUtils.getBlockChecksum(data);
 
         data = factory.getPSTNGSMSerializer().serialize(this.pSTNgSM);
         
-        int             pSTNgSMChecksum = ElkrommUtils.getLong(data, data.length - 4);
+        int             pSTNgSMChecksum = ElkrommUtils.getBlockChecksum(data);
 
         data = factory.getPhoneNumbersSendingCodesSerializer().serialize(this.phoneNumbers);
         
-        int             phoneNumbersChecksum = ElkrommUtils.getLong(data, data.length - 4);
+        int             phoneNumbersChecksum = ElkrommUtils.getBlockChecksum(data);
 
         data = factory.getSMSsSerializer().serialize(this.sMSs);
         
-        int             sMSChecksum = ElkrommUtils.getLong(data, data.length - 4);
+        int             sMSChecksum = ElkrommUtils.getBlockChecksum(data);
 
         data = factory.getC200bParametersSerializer().serialize(this.c200bParameters);
         
-        int             c200bChecksum = ElkrommUtils.getLong(data, data.length - 4);
+        int             c200bChecksum = ElkrommUtils.getBlockChecksum(data);
 
         this.checksums = new Checksums(expansionsChecksum, keyboardsChecksum, readersChecksum, systemChecksum, timeProgrammerChecksum, areasAndPartitionsChecksum, phoneParametersChecksum, phoneNumbersChecksum, c200bChecksum, sMSChecksum, pSTNgSMChecksum, usersChecksum, keysChecksum);
     }

@@ -56,16 +56,18 @@ import org.paternostro.elkromm.dto.PhoneNumber.Event;
  */
 public class PhoneNumbersSendingCodes implements ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumbersSendingCodes>
 {
+    public static final int PAYLOAD_SIZE = 408;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.PhoneNumbersSendingCodes obj)
     {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
 
-        byte[]                                                      data = new byte[length()];
+        byte[]                                                      data = new byte[PAYLOAD_SIZE];
         ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumber>  pnSerializer = ElkrommFactory.getFactory().getPhoneNumberSerializer();
 
         for (int i = 0; i < ElkrommFacade.MAX_PHONE_NUMBERS; i++) {
-            System.arraycopy(pnSerializer.serialize(obj.getPhoneNumbers()[i]), 0, data, i * SerializersConstants.PHONE_NUMBER_SIZE, SerializersConstants.PHONE_NUMBER_SIZE);
+            System.arraycopy(pnSerializer.serialize(obj.getPhoneNumbers()[i]), 0, data, i * PhoneNumber.PAYLOAD_SIZE, PhoneNumber.PAYLOAD_SIZE);
         }
 
         int value;
@@ -98,7 +100,7 @@ public class PhoneNumbersSendingCodes implements ElkrommSerializer<org.paternost
             }
         }
 
-        ElkrommUtils.setLong(data, data.length - 4, ElkrommUtils.computeBlockChecksum(data));
+        ElkrommUtils.setBlockChecksum(data);
 
         return data;
     }
@@ -107,18 +109,18 @@ public class PhoneNumbersSendingCodes implements ElkrommSerializer<org.paternost
     public org.paternostro.elkromm.dto.PhoneNumbersSendingCodes deserialize(byte[] data)
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
-        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getLong(data, data.length - 4)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getLong(data, data.length - 4));
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
+        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getBlockChecksum(data)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getBlockChecksum(data));
 
         org.paternostro.elkromm.dto.PhoneNumber[]                   phoneNumbers = new org.paternostro.elkromm.dto.PhoneNumber[ElkrommFacade.MAX_PHONE_NUMBERS];
         int                                                         offset;
         ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumber>  pnSerializer = ElkrommFactory.getFactory().getPhoneNumberSerializer();
-        byte[]                                                      pnData = new byte[SerializersConstants.PHONE_NUMBER_SIZE];
+        byte[]                                                      pnData = new byte[PhoneNumber.PAYLOAD_SIZE];
 
         for (int i = 0; i < ElkrommFacade.MAX_PHONE_NUMBERS; i++) {
-            offset = i * SerializersConstants.PHONE_NUMBER_SIZE;
+            offset = i * PhoneNumber.PAYLOAD_SIZE;
 
-            System.arraycopy(data, offset, pnData, 0, SerializersConstants.PHONE_NUMBER_SIZE);
+            System.arraycopy(data, offset, pnData, 0, PhoneNumber.PAYLOAD_SIZE);
             phoneNumbers[i] = pnSerializer.deserialize(pnData);
         }
         
@@ -138,11 +140,5 @@ public class PhoneNumbersSendingCodes implements ElkrommSerializer<org.paternost
         }
 
         return new org.paternostro.elkromm.dto.PhoneNumbersSendingCodes(phoneNumbers);
-    }
-
-    @Override
-    public int length()
-    {
-        return 408;
     }
 }

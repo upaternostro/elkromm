@@ -15,12 +15,14 @@ import org.paternostro.elkromm.ElkrommUtils;
  */
 public abstract class Credential implements ElkrommSerializer<org.paternostro.elkromm.dto.Credential>
 {
+    public static final int PAYLOAD_SIZE = 26;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.Credential obj)
     {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
 
-        byte[]  data = new byte[length()];
+        byte[]  data = new byte[PAYLOAD_SIZE];
 
         data[0] = obj.getEnablingValue();
         data[1] = ElkrommUtils.packPartitions(obj.getAssociatedPartitions());
@@ -34,7 +36,7 @@ public abstract class Credential implements ElkrommSerializer<org.paternostro.el
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
 
         return allocateCredential(ElkrommUtils.getText(data, 2, ElkrommFacade.NAME_LENGTH), data[0], ElkrommUtils.unpackPartitions(data[1]));
     }
@@ -42,11 +44,5 @@ public abstract class Credential implements ElkrommSerializer<org.paternostro.el
     protected org.paternostro.elkromm.dto.Credential allocateCredential(String name, byte enabling, boolean[] associatedPartitions)
     {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int length()
-    {
-        return SerializersConstants.CREDENTIAL_SIZE;
     }
 }

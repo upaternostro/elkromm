@@ -1,7 +1,7 @@
 package org.paternostro.elkromm.packet;
 
 import org.paternostro.elkromm.ElkronCommand;
-import org.paternostro.elkromm.serializer.SerializersConstants;
+import org.paternostro.elkromm.serializer.PSTNGSM;
 
 /**
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
@@ -12,6 +12,6 @@ public class SetPSTNGSM extends ElkrommPacket {
 
         assert totalPackets == 0 : "SetPSTNGSM: totalPackets: expected 0, found " + totalPackets;
         assert index == 0 : "SetPSTNGSM: index: expected 0, found " + index;
-        assert dataLength == SerializersConstants.PSTN_GSM_SIZE && data != null && data.length == dataLength : "SetPSTNGSM: data: mismatch in data length";
+        assert dataLength == PSTNGSM.PAYLOAD_SIZE && data != null && data.length == dataLength : "SetPSTNGSM: data: mismatch in data length";
     }
 }

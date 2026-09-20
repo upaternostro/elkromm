@@ -27,13 +27,15 @@ import org.paternostro.elkromm.dto.Command.ObjectType;
  */
 public class Commands implements ElkrommSerializer<Command[]>
 {
+    public static final int PAYLOAD_SIZE = ElkrommFacade.NUM_COMMANDS * SerializersConstants.COMMAND_LENGTH;
+
     @Override
     public byte[] serialize(Command[] obj)
     {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
         if (obj.length != ElkrommFacade.NUM_COMMANDS) throw new IllegalArgumentException("Wrong obj length");
 
-        byte[]  data = new byte[length()];
+        byte[]  data = new byte[PAYLOAD_SIZE];
         int     offset;
 
         for (int i = 0; i < ElkrommFacade.NUM_COMMANDS; i++) {
@@ -55,7 +57,7 @@ public class Commands implements ElkrommSerializer<Command[]>
     public Command[] deserialize(byte[] data)
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
 
         Command[]   retval = new Command[ElkrommFacade.NUM_COMMANDS];
         int         offset;
@@ -66,11 +68,5 @@ public class Commands implements ElkrommSerializer<Command[]>
         }
 
         return retval;
-    }
-
-    @Override
-    public int length()
-    {
-        return ElkrommFacade.NUM_COMMANDS * SerializersConstants.COMMAND_LENGTH;
     }
 }

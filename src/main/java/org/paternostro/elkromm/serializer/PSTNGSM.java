@@ -35,12 +35,14 @@ import org.paternostro.elkromm.dto.PSTNGSM.PSTNLineTestFrequency;
  */
 public class PSTNGSM implements ElkrommSerializer<org.paternostro.elkromm.dto.PSTNGSM>
 {
+    public static final int PAYLOAD_SIZE = 21;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.PSTNGSM obj)
     {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
 
-        byte[]  data = new byte[length()];
+        byte[]  data = new byte[PAYLOAD_SIZE];
 
         data[ 0] = obj.getEnablePSTN().getValue();
         data[ 1] = obj.getCountry().getValue();
@@ -66,7 +68,7 @@ public class PSTNGSM implements ElkrommSerializer<org.paternostro.elkromm.dto.PS
         data[15] = obj.getExpirationMonth();
         data[16] = obj.getExpirationYear();
 
-        ElkrommUtils.setLong(data, data.length - 4, ElkrommUtils.computeBlockChecksum(data));
+        ElkrommUtils.setBlockChecksum(data);
 
         return data;
     }
@@ -75,15 +77,9 @@ public class PSTNGSM implements ElkrommSerializer<org.paternostro.elkromm.dto.PS
     public org.paternostro.elkromm.dto.PSTNGSM deserialize(byte[] data)
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
-        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getLong(data, data.length - 4)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getLong(data, data.length - 4));
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
+        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getBlockChecksum(data)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getBlockChecksum(data));
 
         return new org.paternostro.elkromm.dto.PSTNGSM(Enabling.valueOf(data[0]), Country.valueOf(data[1]), PABXLocalAccessDigit.valueOf(data[4]), Enabling.valueOf(data[5]), Enabling.valueOf(data[6]), PSTNLineTestFrequency.valueOf(data[7]), PSTNAnsweringMachineRings.valueOf(data[8]), Enabling.valueOf(data[9]), Enabling.valueOf(data[10]), Enabling.valueOf(data[11]), data[12] == (byte)0xff && data[13] == (byte)0xff && data[14] == (byte)0xff ? -1 : ElkrommUtils.dcb(data, 12, 3), data[15], data[16]);
-    }
-
-    @Override
-    public int length()
-    {
-        return SerializersConstants.PSTN_GSM_SIZE;
     }
 }

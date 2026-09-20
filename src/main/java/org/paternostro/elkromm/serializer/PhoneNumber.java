@@ -42,12 +42,14 @@ import org.paternostro.elkromm.dto.PhoneNumber.Type;
  */
 public class PhoneNumber implements ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumber>
 {
+    public static final int PAYLOAD_SIZE = 17;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.PhoneNumber obj)
     {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
 
-        byte[]  data = new byte[length()];
+        byte[]  data = new byte[PAYLOAD_SIZE];
         int     index = 0;
         int     value;
         byte    bcdByte = 0;
@@ -102,7 +104,7 @@ public class PhoneNumber implements ElkrommSerializer<org.paternostro.elkromm.dt
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
 
         int             index = 0;
         int             temp;
@@ -140,11 +142,5 @@ public class PhoneNumber implements ElkrommSerializer<org.paternostro.elkromm.dt
         }
 
         return new org.paternostro.elkromm.dto.PhoneNumber(sb.toString(), ElkrommUtils.unpackPartitions(data[14]), Type.valueOf(data[15]), SendingMode.valueOf(data[16]), new Event[0]);
-    }
-
-    @Override
-    public int length()
-    {
-        return SerializersConstants.PHONE_NUMBER_SIZE;
     }
 }

@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommUtils;
-import org.paternostro.elkromm.dto.Credential;
 
 /**
  * Abstract {@link Credential}s ({@link org.paternostro.elkromm.dto.User}s/{@link org.paternostro.elkromm.dto.Key}s) serializer, DTOs &harr; byte array.
@@ -15,56 +14,52 @@ import org.paternostro.elkromm.dto.Credential;
  * 
  * @see org.paternostro.elkromm.serializer.Credential
  */
-public abstract class Credentials implements ElkrommSerializer<Credential[]>
+public abstract class Credentials implements ElkrommSerializer<org.paternostro.elkromm.dto.Credential[]>
 {
+    public static final int PAYLOAD_SIZE = ElkrommFacade.MAX_CREDENTIALS*Credential.PAYLOAD_SIZE+ElkrommUtils.CHECKSUM_SIZE; // 32 utenti (ognuno con 2 byte di flag e 24 di nome) + 4 byte di checksum
+
     @Override
-    public byte[] serialize(Credential[] obj)
+    public byte[] serialize(org.paternostro.elkromm.dto.Credential[] obj)
     {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
         if (obj.length == 0) throw new IllegalArgumentException("Empty mandatory obj");
 
-        byte[]                          data = new byte[length()];
-        ElkrommSerializer<Credential>   cSerializer = allocateSerializer();
+        byte[]                                                      data = new byte[PAYLOAD_SIZE];
+        ElkrommSerializer<org.paternostro.elkromm.dto.Credential>   cSerializer = allocateSerializer();
 
         Arrays.fill(data, (byte)0x00);
 
         for (int i = 0; i < obj.length; i++) {
-            System.arraycopy(cSerializer.serialize(obj[i]), 0, data, i * SerializersConstants.CREDENTIAL_SIZE, SerializersConstants.CREDENTIAL_SIZE);
+            System.arraycopy(cSerializer.serialize(obj[i]), 0, data, i * Credential.PAYLOAD_SIZE, Credential.PAYLOAD_SIZE);
         }
         
-        ElkrommUtils.setLong(data, data.length - 4, ElkrommUtils.computeBlockChecksum(data));
+        ElkrommUtils.setBlockChecksum(data);
 
         return data;
     }
 
     @Override
-    public Credential[] deserialize(byte[] data)
+    public org.paternostro.elkromm.dto.Credential[] deserialize(byte[] data)
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
-        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getLong(data, data.length - 4)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getLong(data, data.length - 4));
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
+        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getBlockChecksum(data)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getBlockChecksum(data));
 
-        Credential[]                    retval = new Credential[ElkrommFacade.MAX_CREDENTIALS];
-        ElkrommSerializer<Credential>   cSerializer = allocateSerializer();
-        byte[]                          cData = new byte[SerializersConstants.CREDENTIAL_SIZE];
+        org.paternostro.elkromm.dto.Credential[]                    retval = new org.paternostro.elkromm.dto.Credential[ElkrommFacade.MAX_CREDENTIALS];
+        ElkrommSerializer<org.paternostro.elkromm.dto.Credential>   cSerializer = allocateSerializer();
+        byte[]                                                      cData = new byte[Credential.PAYLOAD_SIZE];
 
         for (byte i = 0; i < ElkrommFacade.MAX_CREDENTIALS; i++) {
-            System.arraycopy(data, i * SerializersConstants.CREDENTIAL_SIZE, cData, 0, SerializersConstants.CREDENTIAL_SIZE);
+            System.arraycopy(data, i * Credential.PAYLOAD_SIZE, cData, 0, Credential.PAYLOAD_SIZE);
             retval[i] = cSerializer.deserialize(cData);
         }
 
         return retval;
     }
 
-    protected ElkrommSerializer<Credential> allocateSerializer()
+    protected ElkrommSerializer<org.paternostro.elkromm.dto.Credential> allocateSerializer()
     {
         throw new UnsupportedOperationException("Unimplemented method 'allocateSerializer'");
-    }
-
-    @Override
-    public int length()
-    {
-        return ElkrommFacade.MAX_CREDENTIALS*(SerializersConstants.CREDENTIAL_SIZE)+4; // 32 utenti (ognuno con 2 byte di flag e 24 di nome) + 4 byte di checksum
     }
 }

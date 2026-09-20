@@ -237,79 +237,79 @@ public class ElkrommFacadeFunctionalTest {
 
         byte[]                      data = ElkrommFactory.getFactory().getAreasAndPartitionsSerializer().serialize(ap);
 
-        assertTrue(checksums.getAreasAndPartitions() == ElkrommUtils.getLong(data, data.length - 4));
+        assertTrue(checksums.getAreasAndPartitions() == ElkrommUtils.getBlockChecksum(data));
 
         C200bParameters             c200b = facade.getC200bParameters();
         
         assertNotNull(c200b);
         data = ElkrommFactory.getFactory().getC200bParametersSerializer().serialize(c200b);
-        assertTrue(checksums.getEvents() == ElkrommUtils.getLong(data, data.length - 4));
+        assertTrue(checksums.getEvents() == ElkrommUtils.getBlockChecksum(data));
 
         Keyboard[]                  keyboards = facade.getKeyboards();
         
         assertNotNull(keyboards);
         data = ElkrommFactory.getFactory().getKeyboardsSerializer().serialize(keyboards);
-        assertTrue(checksums.getKeypads() == ElkrommUtils.getLong(data, data.length - 4));
+        assertTrue(checksums.getKeypads() == ElkrommUtils.getBlockChecksum(data));
 
         Credential[]                keys = facade.getKeys();
         
         assertNotNull(keys);
         data = ElkrommFactory.getFactory().getKeysSerializer().serialize(keys);
-        assertTrue(checksums.getKeys() == ElkrommUtils.getLong(data, data.length - 4));
+        assertTrue(checksums.getKeys() == ElkrommUtils.getBlockChecksum(data));
 
         Expansion[]                 expansions = facade.getExpansions();
         
         assertNotNull(expansions);
         data = ElkrommFactory.getFactory().getExpansionsSerializer().serialize(expansions);
-        assertTrue(checksums.getNodes() == ElkrommUtils.getLong(data, data.length - 4));
+        assertTrue(checksums.getNodes() == ElkrommUtils.getBlockChecksum(data));
 
         PSTNGSM                     pSTNGSM = facade.getPSTNGSM();
         
         assertNotNull(pSTNGSM);
         data = ElkrommFactory.getFactory().getPSTNGSMSerializer().serialize(pSTNGSM);
-        assertTrue(checksums.getPstnGsm() == ElkrommUtils.getLong(data, data.length - 4));
+        assertTrue(checksums.getPstnGsm() == ElkrommUtils.getBlockChecksum(data));
 
         Reader[]                    readers = facade.getReaders();
         
         assertNotNull(readers);
         data = ElkrommFactory.getFactory().getReadersSerializer().serialize(readers);
-        assertTrue(checksums.getReaders() == ElkrommUtils.getLong(data, data.length - 4));
+        assertTrue(checksums.getReaders() == ElkrommUtils.getBlockChecksum(data));
 
         SMSs                        sMSs = facade.getSMSs();
         
         assertNotNull(sMSs);
         data = ElkrommFactory.getFactory().getSMSsSerializer().serialize(sMSs);
-        assertTrue(checksums.getSms() == ElkrommUtils.getLong(data, data.length - 4));
+        assertTrue(checksums.getSms() == ElkrommUtils.getBlockChecksum(data));
 
         ParametersEnablings         pe = facade.getParametersEnablings();
         
         assertNotNull(pe);
         data = ElkrommFactory.getFactory().getParametersEnablingsSerializer().serialize(pe);
-        assertTrue(checksums.getSystem() == ElkrommUtils.getLong(data, data.length - 4));
+        assertTrue(checksums.getSystem() == ElkrommUtils.getBlockChecksum(data));
 
         PhoneNumbersSendingCodes    pnsc = facade.getPhoneNumbersSendingCodes();
         
         assertNotNull(pnsc);
         data = ElkrommFactory.getFactory().getPhoneNumbersSendingCodesSerializer().serialize(pnsc);
-        assertTrue(checksums.getTelephoneNumbers() == ElkrommUtils.getLong(data, data.length - 4));
+        assertTrue(checksums.getTelephoneNumbers() == ElkrommUtils.getBlockChecksum(data));
 
         PhoneParameters             pp = facade.getPhoneParameters();
         
         assertNotNull(pp);
         data = ElkrommFactory.getFactory().getPhoneParametersSerializer().serialize(pp);
-        assertTrue(checksums.getTelephoneParameters() == ElkrommUtils.getLong(data, data.length - 4));
+        assertTrue(checksums.getTelephoneParameters() == ElkrommUtils.getBlockChecksum(data));
 
         TimeProgrammer              tp = facade.getTimeProgrammer();
         
         assertNotNull(tp);
         data = ElkrommFactory.getFactory().getTimeProgrammerSerializer().serialize(tp);
-        assertTrue(checksums.getTimeProgrammer() == ElkrommUtils.getLong(data, data.length - 4));
+        assertTrue(checksums.getTimeProgrammer() == ElkrommUtils.getBlockChecksum(data));
 
         Credential[]                users = facade.getUsers();
         
         assertNotNull(users);
         data = ElkrommFactory.getFactory().getUsersSerializer().serialize(users);
-        assertTrue(checksums.getUsers() == ElkrommUtils.getLong(data, data.length - 4));
+        assertTrue(checksums.getUsers() == ElkrommUtils.getBlockChecksum(data));
     }
 
     @Test

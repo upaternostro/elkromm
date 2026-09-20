@@ -11,7 +11,7 @@ public class UserEnablings extends ElkrommPacket {
 
         assert totalPackets == 0 : "UserEnablings: totalPackets: expected 0, found " + totalPackets;
         assert index == 0 : "UserEnablings: index: expected 0, found " + index;
-        assert dataLength == 0 || dataLength == 4: "UserEnablings: dataLength: expected 0 or 4, found " + dataLength;
-        assert (dataLength == 0 && (data == null || data.length == 0)) || (dataLength == 4 && data != null && data.length == dataLength) : "UserEnablings: data: mismatch in data length";
+        assert dataLength == 0 || dataLength == org.paternostro.elkromm.serializer.UserEnablings.PAYLOAD_SIZE: "UserEnablings: dataLength: expected 0 or 4, found " + dataLength;
+        assert (dataLength == 0 && (data == null || data.length == 0)) || (dataLength == org.paternostro.elkromm.serializer.UserEnablings.PAYLOAD_SIZE && data != null && data.length == dataLength) : "UserEnablings: data: mismatch in data length";
     }
 }

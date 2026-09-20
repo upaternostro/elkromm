@@ -32,23 +32,25 @@ import org.paternostro.elkromm.dto.Input;
  */
 public class Reader implements ElkrommSerializer<org.paternostro.elkromm.dto.Reader>
 {
+    public static final int PAYLOAD_SIZE = 113;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.Reader obj)
     {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
 
-        byte[]                      data = new byte[length()];
+        byte[]                      data = new byte[PAYLOAD_SIZE];
         ElkrommSerializer<Input>    iSerializer = ElkrommFactory.getFactory().getInputSerializer();
 
         data[0] = (byte)(obj.getAddress() & 0xFF);
-        System.arraycopy(iSerializer.serialize(obj.getFirstInput()), 0, data, 6, SerializersConstants.INPUT_SIZE);
-        System.arraycopy(iSerializer.serialize(obj.getSecondInput()), 0, data, 6 + SerializersConstants.INPUT_SIZE, SerializersConstants.INPUT_SIZE);
-        data[6 + 2*SerializersConstants.INPUT_SIZE] = obj.getLed1() == null ? 0 : obj.getLed1().getValue();
-        data[7 + 2*SerializersConstants.INPUT_SIZE] = obj.getLed2() == null ? 0 : obj.getLed2().getValue();
-        data[8 + 2*SerializersConstants.INPUT_SIZE] = obj.getLed3() == null ? 0 : obj.getLed3().getValue();
-        data[9 + 2*SerializersConstants.INPUT_SIZE] = obj.getLed4() == null ? 0 : obj.getLed4().getValue();
-        data[10 + 2*SerializersConstants.INPUT_SIZE] = obj.getEnablings();
-        ElkrommUtils.setText(data, 11 + 2*SerializersConstants.INPUT_SIZE, obj.getName(), ElkrommFacade.NAME_LENGTH);
+        System.arraycopy(iSerializer.serialize(obj.getFirstInput()), 0, data, 6, org.paternostro.elkromm.serializer.Input.PAYLOAD_SIZE);
+        System.arraycopy(iSerializer.serialize(obj.getSecondInput()), 0, data, 6 + org.paternostro.elkromm.serializer.Input.PAYLOAD_SIZE, org.paternostro.elkromm.serializer.Input.PAYLOAD_SIZE);
+        data[6 + 2*org.paternostro.elkromm.serializer.Input.PAYLOAD_SIZE] = obj.getLed1() == null ? 0 : obj.getLed1().getValue();
+        data[7 + 2*org.paternostro.elkromm.serializer.Input.PAYLOAD_SIZE] = obj.getLed2() == null ? 0 : obj.getLed2().getValue();
+        data[8 + 2*org.paternostro.elkromm.serializer.Input.PAYLOAD_SIZE] = obj.getLed3() == null ? 0 : obj.getLed3().getValue();
+        data[9 + 2*org.paternostro.elkromm.serializer.Input.PAYLOAD_SIZE] = obj.getLed4() == null ? 0 : obj.getLed4().getValue();
+        data[10 + 2*org.paternostro.elkromm.serializer.Input.PAYLOAD_SIZE] = obj.getEnablings();
+        ElkrommUtils.setText(data, 11 + 2*org.paternostro.elkromm.serializer.Input.PAYLOAD_SIZE, obj.getName(), ElkrommFacade.NAME_LENGTH);
 
         return data;
     }
@@ -58,25 +60,19 @@ public class Reader implements ElkrommSerializer<org.paternostro.elkromm.dto.Rea
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
 
         ElkrommSerializer<Input>    iSerializer = ElkrommFactory.getFactory().getInputSerializer();
-        byte[]                      iData = new byte[SerializersConstants.INPUT_SIZE];
+        byte[]                      iData = new byte[org.paternostro.elkromm.serializer.Input.PAYLOAD_SIZE];
         Input                       input1;
         Input                       input2;
 
-        System.arraycopy(data, 6, iData, 0, SerializersConstants.INPUT_SIZE);
+        System.arraycopy(data, 6, iData, 0, org.paternostro.elkromm.serializer.Input.PAYLOAD_SIZE);
         input1 = iSerializer.deserialize(iData);
 
-        System.arraycopy(data, 6 + SerializersConstants.INPUT_SIZE, iData, 0, SerializersConstants.INPUT_SIZE);
+        System.arraycopy(data, 6 + org.paternostro.elkromm.serializer.Input.PAYLOAD_SIZE, iData, 0, org.paternostro.elkromm.serializer.Input.PAYLOAD_SIZE);
         input2 = iSerializer.deserialize(iData);
 
-        return new org.paternostro.elkromm.dto.Reader(data[0], input1, input2, ElkrommFacade.Partition.valueOf(data[6 + 2*SerializersConstants.INPUT_SIZE]), ElkrommFacade.Partition.valueOf(data[7 + 2*SerializersConstants.INPUT_SIZE]), ElkrommFacade.Partition.valueOf(data[8 + 2*SerializersConstants.INPUT_SIZE]), ElkrommFacade.Partition.valueOf(data[9 + 2*SerializersConstants.INPUT_SIZE]), data[10 + 2*SerializersConstants.INPUT_SIZE], ElkrommUtils.getText(data, 11 + 2*SerializersConstants.INPUT_SIZE, ElkrommFacade.NAME_LENGTH));
-    }
-
-    @Override
-    public int length()
-    {
-        return SerializersConstants.READER_SIZE;
+        return new org.paternostro.elkromm.dto.Reader(data[0], input1, input2, ElkrommFacade.Partition.valueOf(data[6 + 2*org.paternostro.elkromm.serializer.Input.PAYLOAD_SIZE]), ElkrommFacade.Partition.valueOf(data[7 + 2*org.paternostro.elkromm.serializer.Input.PAYLOAD_SIZE]), ElkrommFacade.Partition.valueOf(data[8 + 2*org.paternostro.elkromm.serializer.Input.PAYLOAD_SIZE]), ElkrommFacade.Partition.valueOf(data[9 + 2*org.paternostro.elkromm.serializer.Input.PAYLOAD_SIZE]), data[10 + 2*org.paternostro.elkromm.serializer.Input.PAYLOAD_SIZE], ElkrommUtils.getText(data, 11 + 2*org.paternostro.elkromm.serializer.Input.PAYLOAD_SIZE, ElkrommFacade.NAME_LENGTH));
     }
 }

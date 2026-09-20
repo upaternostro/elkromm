@@ -19,16 +19,18 @@ import org.paternostro.elkromm.ElkrommFactory;
  */
 public class SingleKeyboard implements ElkrommSerializer<org.paternostro.elkromm.dto.SingleKeyboard>
 {
+    public static final int PAYLOAD_SIZE = Keyboard.PAYLOAD_SIZE + 1;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.SingleKeyboard obj)
     {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
 
-        byte[]                                                  data = new byte[length()];
+        byte[]                                                  data = new byte[PAYLOAD_SIZE];
         ElkrommSerializer<org.paternostro.elkromm.dto.Keyboard> kSerializer = ElkrommFactory.getFactory().getKeyboardSerializer();
 
         data[0] = (byte)(obj.getIndex());
-        System.arraycopy(kSerializer.serialize(obj.getKeyboard()), 0, data, 1, SerializersConstants.KEYBOARD_SIZE);
+        System.arraycopy(kSerializer.serialize(obj.getKeyboard()), 0, data, 1, Keyboard.PAYLOAD_SIZE);
 
         return data;
     }
@@ -38,20 +40,14 @@ public class SingleKeyboard implements ElkrommSerializer<org.paternostro.elkromm
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
 
         ElkrommSerializer<org.paternostro.elkromm.dto.Keyboard> kSerializer = ElkrommFactory.getFactory().getKeyboardSerializer();
-        byte[]                                                  kData = new byte[SerializersConstants.KEYBOARD_SIZE];
+        byte[]                                                  kData = new byte[Keyboard.PAYLOAD_SIZE];
 
-        System.arraycopy(data, 1, kData, 0, SerializersConstants.KEYBOARD_SIZE);
+        System.arraycopy(data, 1, kData, 0, Keyboard.PAYLOAD_SIZE);
         org.paternostro.elkromm.dto.Keyboard keyboard = kSerializer.deserialize(kData);
 
         return new org.paternostro.elkromm.dto.SingleKeyboard(data[0], keyboard);
-    }
-
-    @Override
-    public int length()
-    {
-        return SerializersConstants.KEYBOARD_SIZE + 1;
     }
 }

@@ -17,16 +17,18 @@ package org.paternostro.elkromm.serializer;
  */
 public abstract class SingleCredential implements ElkrommSerializer<org.paternostro.elkromm.dto.SingleCredential>
 {
+    public static final int PAYLOAD_SIZE = Credential.PAYLOAD_SIZE + 1;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.SingleCredential obj)
     {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
 
-        byte[]                                                      data = new byte[length()];
+        byte[]                                                      data = new byte[PAYLOAD_SIZE];
         ElkrommSerializer<org.paternostro.elkromm.dto.Credential>   credentialSerializer = getSerializer();
 
         data[0] = (byte)(obj.getIndex());
-        System.arraycopy(credentialSerializer.serialize(obj.getCredential()), 0, data, 1, SerializersConstants.CREDENTIAL_SIZE);
+        System.arraycopy(credentialSerializer.serialize(obj.getCredential()), 0, data, 1, Credential.PAYLOAD_SIZE);
 
         return data;
     }
@@ -36,20 +38,14 @@ public abstract class SingleCredential implements ElkrommSerializer<org.paternos
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
 
         ElkrommSerializer<org.paternostro.elkromm.dto.Credential>   credentialSerializer = getSerializer();
-        byte[]                                                      credentialData = new byte[SerializersConstants.CREDENTIAL_SIZE];
+        byte[]                                                      credentialData = new byte[Credential.PAYLOAD_SIZE];
 
-        System.arraycopy(data, 1, credentialData, 0, SerializersConstants.CREDENTIAL_SIZE);
+        System.arraycopy(data, 1, credentialData, 0, Credential.PAYLOAD_SIZE);
 
         return new org.paternostro.elkromm.dto.SingleCredential(data[0], credentialSerializer.deserialize(credentialData));
-    }
-
-    @Override
-    public int length()
-    {
-        return SerializersConstants.CREDENTIAL_SIZE + 1;
     }
 
     protected ElkrommSerializer<org.paternostro.elkromm.dto.Credential> getSerializer()

@@ -19,6 +19,10 @@ import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.ElkronCommand;
 import org.paternostro.elkromm.dto.Checksums;
 import org.paternostro.elkromm.serializer.ElkrommSerializer;
+import org.paternostro.elkromm.serializer.Expansions;
+import org.paternostro.elkromm.serializer.Input;
+import org.paternostro.elkromm.serializer.Keyboard;
+import org.paternostro.elkromm.serializer.Reader;
 import org.paternostro.elkromm.serializer.SerializersConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,7 +101,7 @@ public class RoundTripIT {
         assertNotNull(roundTripVerify);
         assertEquals(data.length, roundTripVerify.length);
 
-        for (int i = 0; i < data.length - 4; i++) {
+        for (int i = 0; i < data.length - ElkrommUtils.CHECKSUM_SIZE; i++) {
             if (validator != null && !validator.validate(i)) continue;
 
             if (patcher != null) patcher.patchData(i, data, roundTripVerify);
@@ -135,12 +139,6 @@ public class RoundTripIT {
             }
         }
 
-        // for (int i = 0; i < data.length - 4; i++) {
-        //     if (data[i] != roundTripVerify[i]) {
-        //         logger.error(String.format("Byte diverso! 0x%08x: 0x%02x <-> 0x%02x", i, data[i], roundTripVerify[i]));
-        //     }
-        // }
-
         assertTrue(!differences);
     }
 
@@ -168,9 +166,9 @@ public class RoundTripIT {
 
     private void patchGhostBit(int index, byte[] data, int size)
     {
-        int inputNum = ((index % size) - 6) / SerializersConstants.INPUT_SIZE;
+        int inputNum = ((index % size) - 6) / Input.PAYLOAD_SIZE;
 
-        if (inputNum < 2 && ((index % size) - 6) % SerializersConstants.INPUT_SIZE == 3) {
+        if (inputNum < 2 && ((index % size) - 6) % Input.PAYLOAD_SIZE == 3) {
             data[index] &= ~0x10;
         }
     }
@@ -251,7 +249,7 @@ public class RoundTripIT {
     public void readersRoundTripIT() throws ElkrommException
     {
         if (config.areITEnabled() && checksums.getReaders() != 0) {
-            roundTripIT(ElkronCommand.READERS, factory.getReadersSerializer(), index -> index % SerializersConstants.READER_SIZE != 111 && index % SerializersConstants.READER_SIZE != 112, (index, d, rtv) -> patchGhostBit(index, d, SerializersConstants.READER_SIZE));
+            roundTripIT(ElkronCommand.READERS, factory.getReadersSerializer(), index -> index % Reader.PAYLOAD_SIZE != 111 && index % Reader.PAYLOAD_SIZE != 112, (index, d, rtv) -> patchGhostBit(index, d, Reader.PAYLOAD_SIZE));
         }
     }
 
@@ -283,7 +281,7 @@ public class RoundTripIT {
     public void expansionsRoundTripIT() throws ElkrommException
     {
         if (config.areITEnabled() && checksums.getNodes() != 0) {
-            roundTripIT(ElkronCommand.EXPANSIONS, factory.getExpansionsSerializer(), index -> index % SerializersConstants.EXPANSION_SIZE != 557 && index % SerializersConstants.EXPANSION_SIZE != 558, (index, d, rtv) -> patchGhostBit(index, d, SerializersConstants.EXPANSION_SIZE));
+            roundTripIT(ElkronCommand.EXPANSIONS, factory.getExpansionsSerializer(), index -> index % Expansions.EXPANSION_PAYLOAD_SIZE != 557 && index % Expansions.EXPANSION_PAYLOAD_SIZE != 558, (index, d, rtv) -> patchGhostBit(index, d, Expansions.EXPANSION_PAYLOAD_SIZE));
         }
     }
 
@@ -299,7 +297,7 @@ public class RoundTripIT {
     public void keypadsRoundTripIT() throws ElkrommException
     {
         if (config.areITEnabled() && checksums.getKeypads() != 0) {
-            roundTripIT(ElkronCommand.KEYPADS, factory.getKeyboardsSerializer(), index -> index % SerializersConstants.KEYBOARD_SIZE != 109 && index % SerializersConstants.KEYBOARD_SIZE != 110, (index, d, rtv) -> patchGhostBit(index, d, SerializersConstants.KEYBOARD_SIZE));
+            roundTripIT(ElkronCommand.KEYPADS, factory.getKeyboardsSerializer(), index -> index % Keyboard.PAYLOAD_SIZE != 109 && index % Keyboard.PAYLOAD_SIZE != 110, (index, d, rtv) -> patchGhostBit(index, d, Keyboard.PAYLOAD_SIZE));
         }
     }
 

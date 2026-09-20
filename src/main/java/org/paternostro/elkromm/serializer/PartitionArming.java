@@ -15,11 +15,13 @@ package org.paternostro.elkromm.serializer;
  */
 public class PartitionArming implements ElkrommSerializer<org.paternostro.elkromm.dto.PartitionArming>
 {
+    public static final int PAYLOAD_SIZE = 2;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.PartitionArming obj) {
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
 
-        byte[]  data = new byte[length()];
+        byte[]  data = new byte[PAYLOAD_SIZE];
 
         data[0] = obj.getPartitions();
         data[1] = obj.getArmStatus();
@@ -30,13 +32,8 @@ public class PartitionArming implements ElkrommSerializer<org.paternostro.elkrom
     @Override
     public org.paternostro.elkromm.dto.PartitionArming deserialize(byte[] data) {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data length");
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data length");
         
         return new org.paternostro.elkromm.dto.PartitionArming(data[0], data[1]);
-    }
-
-    @Override
-    public int length() {
-        return 2;
     }
 }

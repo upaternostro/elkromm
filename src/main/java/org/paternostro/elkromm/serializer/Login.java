@@ -19,6 +19,8 @@ import org.paternostro.elkromm.ElkrommUtils;
  */
 public class Login implements ElkrommSerializer<org.paternostro.elkromm.dto.Login>
 {
+    public static final int PAYLOAD_SIZE = 7;
+
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.Login obj)
     {
@@ -37,17 +39,11 @@ public class Login implements ElkrommSerializer<org.paternostro.elkromm.dto.Logi
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
-        if (data.length != length()) throw new IllegalArgumentException("Wrong data size");
+        if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
 
         return new org.paternostro.elkromm.dto.Login(
             ElkrommUtils.dcbByte(data[0]) * 1000000 + ElkrommUtils.dcbByte(data[1]) * 10000 + ElkrommUtils.dcbByte(data[2]) * 100 + ElkrommUtils.dcbByte(data[3]),
             ElkrommUtils.dcbByte(data[4]) * 10000 + ElkrommUtils.dcbByte(data[5]) * 100 + ElkrommUtils.dcbByte(data[6])
         );
-    }
-
-    @Override
-    public int length()
-    {
-        return SerializersConstants.LOGIN_SIZE;
     }
 }

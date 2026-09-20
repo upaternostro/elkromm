@@ -31,16 +31,16 @@ public class Keyboards implements ElkrommSerializer<Keyboard[]>
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
         if (obj.length == 0) throw new IllegalArgumentException("Empty mandatory obj");
 
-        byte[]                      data = new byte[obj.length * SerializersConstants.KEYBOARD_SIZE + 4];
+        byte[]                      data = new byte[obj.length * org.paternostro.elkromm.serializer.Keyboard.PAYLOAD_SIZE + ElkrommUtils.CHECKSUM_SIZE];
         ElkrommSerializer<Keyboard> kSerializer = ElkrommFactory.getFactory().getKeyboardSerializer();
 
         Arrays.fill(data, (byte)0x00);
 
         for (int i = 0; i < obj.length; i++) {
-            System.arraycopy(kSerializer.serialize(obj[i]), 0, data, i * SerializersConstants.KEYBOARD_SIZE, SerializersConstants.KEYBOARD_SIZE);
+            System.arraycopy(kSerializer.serialize(obj[i]), 0, data, i * org.paternostro.elkromm.serializer.Keyboard.PAYLOAD_SIZE, org.paternostro.elkromm.serializer.Keyboard.PAYLOAD_SIZE);
         }
 
-        ElkrommUtils.setLong(data, data.length - 4, ElkrommUtils.computeBlockChecksum(data));
+        ElkrommUtils.setBlockChecksum(data);
 
         return data;
     }
@@ -50,37 +50,30 @@ public class Keyboards implements ElkrommSerializer<Keyboard[]>
     {
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
-        if (data.length % SerializersConstants.KEYBOARD_SIZE != 4) throw new IllegalArgumentException("Wrong data size");
+        if (data.length % org.paternostro.elkromm.serializer.Keyboard.PAYLOAD_SIZE != ElkrommUtils.CHECKSUM_SIZE) throw new IllegalArgumentException("Wrong data size");
 
         int patchOffset = 0;
-        while ((patchOffset += SerializersConstants.KEYBOARD_SIZE - 2) < data.length) data[patchOffset++] = data[patchOffset++] = 0x00;
+        while ((patchOffset += org.paternostro.elkromm.serializer.Keyboard.PAYLOAD_SIZE - 2) < data.length) data[patchOffset++] = data[patchOffset++] = 0x00;
         // clear not-checksummed excluded bit from inputs
         patchOffset = 0;
-        while (patchOffset < data.length - 4) {
+        while (patchOffset < data.length - ElkrommUtils.CHECKSUM_SIZE) {
             for (int j = 0; j < 2; j++) {
-                data[patchOffset + 6 + j * SerializersConstants.INPUT_SIZE + 3] &= ~0x10;
+                data[patchOffset + 6 + j * Input.PAYLOAD_SIZE + 3] &= ~0x10;
             }
-            patchOffset += SerializersConstants.KEYBOARD_SIZE;
+            patchOffset += org.paternostro.elkromm.serializer.Keyboard.PAYLOAD_SIZE;
         }
 
-        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getLong(data, data.length - 4)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getLong(data, data.length - 4));
+        if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getBlockChecksum(data)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getBlockChecksum(data));
 
-        Keyboard[]                  retval = new Keyboard[(data.length - 4) / SerializersConstants.KEYBOARD_SIZE];
+        Keyboard[]                  retval = new Keyboard[(data.length - ElkrommUtils.CHECKSUM_SIZE) / org.paternostro.elkromm.serializer.Keyboard.PAYLOAD_SIZE];
         ElkrommSerializer<Keyboard> kSerializer = ElkrommFactory.getFactory().getKeyboardSerializer();
-        byte[]                      kData = new byte[SerializersConstants.KEYBOARD_SIZE];
+        byte[]                      kData = new byte[org.paternostro.elkromm.serializer.Keyboard.PAYLOAD_SIZE];
 
-        for (int i = 0; i < data.length / SerializersConstants.KEYBOARD_SIZE; i++) {
-            System.arraycopy(data, i * SerializersConstants.KEYBOARD_SIZE, kData, 0, SerializersConstants.KEYBOARD_SIZE);
+        for (int i = 0; i < data.length / org.paternostro.elkromm.serializer.Keyboard.PAYLOAD_SIZE; i++) {
+            System.arraycopy(data, i * org.paternostro.elkromm.serializer.Keyboard.PAYLOAD_SIZE, kData, 0, org.paternostro.elkromm.serializer.Keyboard.PAYLOAD_SIZE);
             retval[i] = kSerializer.deserialize(kData);
         }
 
         return retval;
-    }
-
-    @Override
-    public int length()
-    {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'length'");
     }
 }
