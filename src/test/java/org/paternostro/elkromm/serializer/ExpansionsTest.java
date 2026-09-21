@@ -26,7 +26,7 @@ public class ExpansionsTest {
                 associatedPartitions[j] = false;
             }
 
-            for (int j = 0; j < ElkrommFacade.MAX_EXP_OUTPUTS; j++) {
+            for (int j = 0; j < (i == 0 ? ElkrommFacade.MAX_PANEL_OUTPUTS : ElkrommFacade.MAX_EXP_OUTPUTS); j++) {
                 associatedPartitions[j] = true;
                 expansions[i].addOutput(new Output(i*8+j+1, Output.Type.OT_NORMALLY_HIGH, associatedPartitions, Output.Specialization.OS_OR_TC, "Output " + j));
                 associatedPartitions[j] = false;
@@ -61,7 +61,7 @@ public class ExpansionsTest {
                 assert expansions[i].getInput(j).getName().equals(expansions2[i].getInput(j).getName());
             }
 
-            for (int j = 0; j < ElkrommFacade.MAX_EXP_OUTPUTS; j++) {
+            for (int j = 0; j < (i == 0 ? ElkrommFacade.MAX_PANEL_OUTPUTS : ElkrommFacade.MAX_EXP_OUTPUTS); j++) {
                 assert expansions[i].getOutput(j).getLogicNumber() == expansions2[i].getOutput(j).getLogicNumber();
                 assert expansions[i].getOutput(j).getType() == expansions2[i].getOutput(j).getType();
                 assert expansions[i].getOutput(j).getSpecialization() == expansions2[i].getOutput(j).getSpecialization();

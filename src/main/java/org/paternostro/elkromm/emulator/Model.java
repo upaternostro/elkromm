@@ -134,14 +134,14 @@ public class Model {
         int outputNum = 1;
 
         for (int i = 0; i < expansions.length; i++) {
-            this.expansions[i] = new Expansion(i, String.format("%01d.%02d", 1, i), String.format("Espansione %02d", i));
+            this.expansions[i] = new Expansion(i, String.format("%01d.%02d", 1, i), String.format(i == 0 ? "UC" : "EP %02d", i));
 
             for (int j = 1; j <= ElkrommFacade.MAX_EXP_INPUTS; j++) {
                 this.expansions[i].addInput(new Input(inputNum, config.getInputConfiguration(inputNum), config.getInputSpecialization(inputNum), config.getInputSensitivity(inputNum), config.getInputFlags(inputNum), config.getInputVideo(inputNum), ElkrommUtils.unpackPartitions(config.getInputPartitions(inputNum)), config.getInputName(inputNum), config.getInputDelay(inputNum)));
                 inputNum++;
             }
 
-            for (int j = 1; j <= ElkrommFacade.MAX_EXP_OUTPUTS; j++) {
+            for (int j = 1; j <= (i == 0 ? ElkrommFacade.MAX_PANEL_OUTPUTS : ElkrommFacade.MAX_EXP_OUTPUTS); j++) {
                 this.expansions[i].addOutput(new Output(outputNum, config.getOutputType(outputNum), ElkrommUtils.unpackPartitions(config.getOutputPartitions(outputNum)), config.getOutputSpecialization(outputNum), config.getOutputName(outputNum)));
                 outputNum++;
             }

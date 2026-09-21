@@ -60,11 +60,11 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
     /** Offset of the inputs, {@link ElkrommFacade#MAX_EXP_INPUTS} slots of {@link org.paternostro.elkromm.serializer.Input#PAYLOAD_SIZE} bytes each */
     public static final int EXPANSION_INPUTS_OFFSET          = 0x07;
 
-    /** Offset of the outputs, {@link ElkrommFacade#MAX_EXP_OUTPUTS} slots of {@link org.paternostro.elkromm.serializer.Output#PAYLOAD_SIZE} bytes each */
+    /** Offset of the outputs, {@link ElkrommFacade#MAX_PANEL_OUTPUTS} slots of {@link org.paternostro.elkromm.serializer.Output#PAYLOAD_SIZE} bytes each */
     public static final int EXPANSION_OUTPUTS_OFFSET         = EXPANSION_INPUTS_OFFSET + ElkrommFacade.MAX_EXP_INPUTS * org.paternostro.elkromm.serializer.Input.PAYLOAD_SIZE;
 
     /** Offset of the expansion name, {@link ElkrommFacade#NAME_LENGTH} bytes */
-    public static final int EXPANSION_NAME_OFFSET            = EXPANSION_OUTPUTS_OFFSET + ElkrommFacade.MAX_EXP_OUTPUTS * org.paternostro.elkromm.serializer.Output.PAYLOAD_SIZE;
+    public static final int EXPANSION_NAME_OFFSET            = EXPANSION_OUTPUTS_OFFSET + ElkrommFacade.MAX_PANEL_OUTPUTS * org.paternostro.elkromm.serializer.Output.PAYLOAD_SIZE;
 
     /** Offset of the pseudo checksum, excluded from the block checksum calculation (see the note in {@link #deserialize}) */
     public static final int EXPANSION_PSEUDO_CHECKSUM_OFFSET = EXPANSION_NAME_OFFSET + ElkrommFacade.NAME_LENGTH;
@@ -165,7 +165,7 @@ public class Expansions implements ElkrommSerializer<Expansion[]>
                 retval[i].addInput(iSerializer.deserialize(iData));
             }
 
-            for (int j = 0; j < ElkrommFacade.MAX_EXP_OUTPUTS; j++) {
+            for (int j = 0; j < ElkrommFacade.MAX_PANEL_OUTPUTS; j++) {
                 offset = i * EXPANSION_PAYLOAD_SIZE + EXPANSION_OUTPUTS_OFFSET + j * org.paternostro.elkromm.serializer.Output.PAYLOAD_SIZE;
 
                 if (data[offset] == 0x00) {
