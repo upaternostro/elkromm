@@ -10,7 +10,7 @@ import org.paternostro.elkromm.dto.PhoneNumber.Event;
  * <p>
  * Payload structure:
  * <p>
- * <b>Note:</b> event's primary offsets are defined by mean of {@link Event#getOffset()}; <b>Constant</b> column only shows dupes
+ * <b>Note:</b> event's primary offsets are defined by means of {@link Event#getOffset()}; <b>Constant</b> column only shows duplicates.
  * <p>
  * <table>
  *  <tr><th>Offset</th><th>Meaning</th><th>Note</th><th>Constant</th></tr>

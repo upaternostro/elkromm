@@ -14,6 +14,7 @@ following the [Keep a Changelog](https://keepachangelog.com/) convention (Added 
 > this way, and so did `ClientConnection`, later repurposed as the library's bundled emulator once
 > `mock-ipc` (built to unit-test the new library without manually spawning separate processes) made
 > talking to it efficient.
+> Even before (summer 2016) the project spawn as a Go PoC.
 
 ## [Unreleased] — v0.5
 
@@ -76,6 +77,12 @@ following the [Keep a Changelog](https://keepachangelog.com/) convention (Added 
   partitions; it is now 0
 
 ### Changed
+- **Breaking:** `ElkrommFacade.MAX_EXP_OUTPUTS` is now 3, the number of outputs of a single
+  expansion board. The new `ElkrommFacade.MAX_PANEL_OUTPUTS` (6) is the number of outputs of the
+  main unit, which is also expansion 0. The payload record of an expansion is unchanged: it
+  always has 6 output slots (`Expansions.EXPANSION_OUTPUTS_OFFSET`)
+- Emulator: expansions mimic the real hardware, with 6 outputs on expansion 0 (embedded in the
+  panel) and 3 on each expansion board; their default names are now `UC` and `EP <nn>`
 - Removed `ordinal` from `Credential`: redundant with the position in its containing array,
   and with the index carried explicitly by `SingleCredential` for single-instance writes (fixes #7)
 - `Input` deserialization no longer skips "not used" slots: the panel does not reliably
@@ -108,6 +115,17 @@ following the [Keep a Changelog](https://keepachangelog.com/) convention (Added 
 - `ElkrommUtils.dumpPayload()` prints only ASCII characters in its text column
 - Factored the emulator's configuration handling (`emulator.Config`), removing a large amount
   of duplicated code
+- **Breaking:** `ElkrommSerializer.length()` removed: it was only used internally to allocate
+  the payload, and serializers with a variable payload (`Expansions`, `Keyboards`,
+  `PeripheralUnits`, `Readers`) could not implement it, throwing `UnsupportedOperationException`.
+  Custom serializers plugged in through `ElkrommFactory` must drop their `length()`
+  implementation (and the `@Override` on it)
+- **Breaking:** `SerializersConstants.C200B_INPUT_CODES_OFFSET` moved to
+  `C200bParameters.INPUT_CODES_OFFSET`
+- Serializers use named constants (offsets, `ElkrommFacade.NAME_LENGTH`, `ElkrommFacade.VERSION_LENGTH`,
+  `ElkrommUtils.CHECKSUM_SIZE`, `MAX_*`) instead of numeric literals; no change in behavior
+- Offsets in `PROTOCOL.md`, `PROTOCOL-ITA.md` and in the Javadoc payload tables are now
+  hexadecimal (convention stated in the introduction of the protocol documents)
 
 ## [0.4] — 2026-07-20
 
@@ -188,14 +206,3 @@ following the [Keep a Changelog](https://keepachangelog.com/) convention (Added 
 - Constants moved from `ElkrommFacadeImpl` to `ElkrommFacade`
 - Initialization separated from the constructor in `ElkrommFacadeImpl`, with the
   corresponding getter renamed for clarity
-- **Breaking:** `ElkrommSerializer.length()` removed: it was only used internally to allocate
-  the payload, and serializers with a variable payload (`Expansions`, `Keyboards`,
-  `PeripheralUnits`, `Readers`) could not implement it, throwing `UnsupportedOperationException`.
-  Custom serializers plugged in through `ElkrommFactory` must drop their `length()`
-  implementation (and the `@Override` on it)
-- **Breaking:** `SerializersConstants.C200B_INPUT_CODES_OFFSET` moved to
-  `C200bParameters.INPUT_CODES_OFFSET`
-- Serializers use named constants (offsets, `ElkrommFacade.NAME_LENGTH`, `ElkrommFacade.VERSION_LENGTH`,
-  `ElkrommUtils.CHECKSUM_SIZE`, `MAX_*`) instead of numeric literals; no change in behavior
-- Offsets in `PROTOCOL.md`, `PROTOCOL-ITA.md` and in the Javadoc payload tables are now
-  hexadecimal (convention stated in the introduction of the protocol documents)
