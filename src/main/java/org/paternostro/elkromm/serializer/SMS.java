@@ -10,8 +10,8 @@ import org.paternostro.elkromm.ElkrommUtils;
  * Payload structure:
  * <p>
  * <table>
- *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
- *  <tr><td>0-39</td><td>Message</td><td>40 ASCII bytes, padding {@code 0xff}</td></tr>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th><th>Constant</th></tr>
+ *  <tr><td>0x00-0x27</td><td>Message</td><td>40 ASCII bytes, padding {@code 0xff}</td><td>{@link #MESSAGE_OFFSET}</td></tr>
  * </table>
  * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
@@ -21,7 +21,11 @@ import org.paternostro.elkromm.ElkrommUtils;
  */
 public class SMS implements ElkrommSerializer<org.paternostro.elkromm.dto.SMS>
 {
+    /** Payload size */
     public static final int PAYLOAD_SIZE = 40;
+
+    /** Offset of the message */
+    public static final int MESSAGE_OFFSET = 0x00;
 
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.SMS obj)
@@ -31,7 +35,7 @@ public class SMS implements ElkrommSerializer<org.paternostro.elkromm.dto.SMS>
         byte[]  data = new byte[PAYLOAD_SIZE];
 
         Arrays.fill(data, 0, data.length, (byte)0xff); // Pad with 0xff bytes
-        ElkrommUtils.setText(data, 0, obj.getText(), obj.getText().length());
+        ElkrommUtils.setText(data, MESSAGE_OFFSET, obj.getText(), obj.getText().length());
 
         return data;
     }

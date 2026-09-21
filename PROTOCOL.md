@@ -32,6 +32,8 @@ This study is based on the following requirements:
 * installer code 000000 (default);
 * direct IP connection.
 
+**Conventions**: every offset is 0-based and expressed in hexadecimal (`0x` prefix, lowercase); sizes and counts are decimal. The only exception are the offsets of the captured streams (*TX Offset* / *RX Offset* columns), which are stream positions printed as 8 hexadecimal digits, as in a dump.
+
 ## Framing and commands
 
 Communication happens over TCP port 8030.  
@@ -66,19 +68,19 @@ Data-carrying packets are structured as follows:
 
 Offset	| Value	| Meaning
 --------|---------------|------------
-0	| 0x01		| SOH
-1	| 0x55		| First two BCD digits of the plant code
-2	| 0x55		| Third and fourth BCD digit of the plant code
-3	| (variable)	| number of packets making up the sequence (0-based)
-4	| (variable)	| this packet's index within the sequence (0-based)
-5	| (variable)	| length of the data being sent (max 140 (0x8c) data bytes, net of escaping)
-6	| 0x00		| ??? constant?
-7	| (variable)	| command
-8 → n	| (variable)	| transmitted data (can be absent if the byte at position 5 is zero)
-n+1 → n+2	| (variable)	| big-endian packet checksum, computed so that the sum of every byte from offset 1 to n (i.e. excluding the initial SOH), added to this checksum, yields 0x10000. In other words, the checksum is `0x10000 – SUM(offset1... offsetn)`
+0x00	| 0x01		| SOH
+0x01	| 0x55		| First two BCD digits of the plant code
+0x02	| 0x55		| Third and fourth BCD digit of the plant code
+0x03	| (variable)	| number of packets making up the sequence (0-based)
+0x04	| (variable)	| this packet's index within the sequence (0-based)
+0x05	| (variable)	| length of the data being sent (max 140 (0x8c) data bytes, net of escaping)
+0x06	| 0x00		| ??? constant?
+0x07	| (variable)	| command
+0x08 → n	| (variable)	| transmitted data (can be absent if the byte at position 0x05 is zero)
+n+1 → n+2	| (variable)	| big-endian packet checksum, computed so that the sum of every byte from offset 0x01 to n (i.e. excluding the initial SOH), added to this checksum, yields 0x10000. In other words, the checksum is `0x10000 – SUM(offset1... offsetn)`
 n+3	| 0x03		| ETX
 
-Note: bytes 3 and 4 are both 0x00 if the reply fits in a single packet (max 140 (0x8c) data bytes, net of escaping). If instead the data to transmit exceeds that maximum, the reply is split across multiple packets: byte 3 is set to the highest packet index, and byte 4 to the current packet's index (0-based). In other words, if the reply is split into 3 packets, byte 3 is 0x02, and byte 4 is respectively 0x00, 0x01 and 0x02 for the first, second and third packet. The receiver acknowledges each fragment with a 0x65 (SEND) packet.
+Note: bytes 0x03 and 0x04 are both 0x00 if the reply fits in a single packet (max 140 (0x8c) data bytes, net of escaping). If instead the data to transmit exceeds that maximum, the reply is split across multiple packets: byte 0x03 is set to the highest packet index, and byte 0x04 to the current packet's index (0-based). In other words, if the reply is split into 3 packets, byte 0x03 is 0x02, and byte 0x04 is respectively 0x00, 0x01 and 0x02 for the first, second and third packet. The receiver acknowledges each fragment with a 0x65 (SEND) packet.
 
 ## Command types
 
@@ -218,27 +220,27 @@ Payload definition "Areas and partitions":
 
 Offset	| Meaning	| Note
 --------|---------------|-----
-0	| Number of areas	| Can be zero if unused
-1-4	| Bitmask of partitions assigned to the area	| LSB = partition 1, one byte per area
-5-28	| First area name	|
-29-52	| Second area name	|
-53-76	| Third area name	|
-77-100	| Fourth area name	|
-101	| Number of partitions	|
-102	| Self-exclusion bitmask	| LSB = partition 1. A partition cannot be both self-exclusion and arming block. Standard partitions have both flags to zero.
-103	| Arming block bitmask	| LSB = partition 1
-104-119 | Entry delay	| 2 bytes per partition (starting at 104-105 for partition 1 and so on), big endian
-120-135 | Exit delay	| 2 bytes per partition (starting at 120-121 for partition 1 and so on), big endian
-136-159	| First partition name	|
-160-183	| Second partition name	|
-184-207	| Third partition name	|
-208-231	| Fourth partition name	|
-232-255	| Fifth partition name	|
-256-279	| Sixth partition name	|
-280-303	| Seventh partition name	|
-304-327	| Eighth partition name	|
-328	| ?	| The serializer explicitly zeroes it on write (`data[328] = 0; // ???`); same signature as the other "status" bytes already documented (see [Input](#input)) — suspected dynamic content not handled by the client, not yet identified but computed in checksum
-329-332	| Block checksum	|
+0x00	| Number of areas	| Can be zero if unused
+0x01-0x04	| Bitmask of partitions assigned to the area	| LSB = partition 1, one byte per area
+0x05-0x1c	| First area name	|
+0x1d-0x34	| Second area name	|
+0x35-0x4c	| Third area name	|
+0x4d-0x64	| Fourth area name	|
+0x65	| Number of partitions	|
+0x66	| Self-exclusion bitmask	| LSB = partition 1. A partition cannot be both self-exclusion and arming block. Standard partitions have both flags to zero.
+0x67	| Arming block bitmask	| LSB = partition 1
+0x68-0x77 | Entry delay	| 2 bytes per partition (starting at 0x68-0x69 for partition 1 and so on), big endian
+0x78-0x87 | Exit delay	| 2 bytes per partition (starting at 0x78-0x79 for partition 1 and so on), big endian
+0x88-0x9f	| First partition name	|
+0xa0-0xb7	| Second partition name	|
+0xb8-0xcf	| Third partition name	|
+0xd0-0xe7	| Fourth partition name	|
+0xe8-0xff	| Fifth partition name	|
+0x100-0x117	| Sixth partition name	|
+0x118-0x12f	| Seventh partition name	|
+0x130-0x147	| Eighth partition name	|
+0x148	| ?	| The serializer explicitly zeroes it on write (`data[328] = 0; // ???`); same signature as the other "status" bytes already documented (see [Input](#input)) — suspected dynamic content not handled by the client, not yet identified but computed in checksum
+0x149-0x14c	| Block checksum	|
 
 ` `  
 ` `  
@@ -325,9 +327,9 @@ Payload definition "Users" — 26 bytes per user (`Credential.CREDENTIAL_SIZE`),
 
 Offset (relative to the user)	| Meaning	| Note
 --------|---------------|-----
-0	| Enabling	| `Credential.Enabling`: 0=disabled, 1=enabled, 2=always enabled
-1	| Associated partitions	| Bitmask, LSB = partition 1
-2-25	| Name	| 24 bytes
+0x00	| Enabling	| `Credential.Enabling`: 0=disabled, 1=enabled, 2=always enabled
+0x01	| Associated partitions	| Bitmask, LSB = partition 1
+0x02-0x19	| Name	| 24 bytes
 
 WARNING: a user's enabling state here does **NOT** imply the user can't log into a keypad to arm/disarm the system, since keypad login relies on the status reported by command 0x87 (and possibly changed via 0x88). The enabling byte here is always 0x00 for non-system users.
 
@@ -432,13 +434,13 @@ TX Offset	| Transmission	| RX Offset	| Reception	| Meaning
 
 ### Payload structure
 
-Payload definition "Keys" — same structure as [Users](#users) (26 bytes per key, 32 keys + 4 bytes of checksum), with byte 0 packing two fields instead of one. For each key:
+Payload definition "Keys" — same structure as [Users](#users) (26 bytes per key, 32 keys + 4 bytes of checksum), with byte 0x00 packing two fields instead of one. For each key:
 
 Offset (relative to the key)	| Meaning	| Note
 --------|---------------|-----
-0	| Enabling (bit 0) + Specialization (bits 2-3)	| Enabling: `Credential.Enabling` on the least significant bit. Specialization: `Key.Specialization` via `(byte & 0x0C) >> 2` — 0=none, 1=change partition status, 2=access control, 3=access control limited to associated partitions
-1	| Associated partitions	| Bitmask, LSB = partition 1
-2-25	| Name	| 24 bytes
+0x00	| Enabling (bit 0) + Specialization (bits 2-3)	| Enabling: `Credential.Enabling` on the least significant bit. Specialization: `Key.Specialization` via `(byte & 0x0C) >> 2` — 0=none, 1=change partition status, 2=access control, 3=access control limited to associated partitions
+0x01	| Associated partitions	| Bitmask, LSB = partition 1
+0x02-0x19	| Name	| 24 bytes
 
 ### Payload example
 
@@ -530,24 +532,24 @@ Payload definition "Parameters" (30 bytes, offset 0-based), verified directly ag
 
 Offset	| Meaning	| Note
 --------|---------------|-----
-0-4	| ?	| Not mapped by any DTO field
-5, 7, 9	| Burglar time	| `Time`: 0=30s, 1=60s, 2=90s, 3=180s, 4=9min. **All three offsets always hold the same value** (`data[5]=data[7]=data[9]`)
-6	| Pre-alarm time	| `Time`, same values
-8	| Emergency time	| `Time`, same values
-10	| ?	| Not mapped by any DTO field
-11	| Power lack	| `PowerLack`: 0=1h, 1=2h, 2=4h
-12	| ?	| Not mapped by any DTO field
-13	| Alarm count	| `AlarmCount`: 0=none, 1=two, 2=four, 3=six, 4=eight
-14	| Notice	| `Notice`: 0=none, 5=5min, 10=10min, 15=15min, 20=20min
-15	| Time programmer	| `Enabling`: 0=disabled, 1=enabled
-16	| DST	| Bitmask: bit0=enabled, bit1=last Sunday (instead of first)
-17-20	| ?	| Not mapped by any DTO field
-21	| DST OFF month	| `Month`: 1-12
-22	| DST ON month	| `Month`: 1-12
-23	| LAN	| `Enabling`: 0=disabled, 1=enabled
-24	| Play	| Bitmask: bit0=fault, bit1=partitions, bit2=system, bit3=service
-25	| Help	| Bit 7 (`0x80`)=enabled, bits 0-2=keypad address - 1
-26-29	| Block checksum	|
+0x00-0x04	| ?	| Not mapped by any DTO field
+0x05, 0x07, 0x09	| Burglar time	| `Time`: 0=30s, 1=60s, 2=90s, 3=180s, 4=9min. **All three offsets always hold the same value** (`data[5]=data[7]=data[9]`)
+0x06	| Pre-alarm time	| `Time`, same values
+0x08	| Emergency time	| `Time`, same values
+0x0a	| ?	| Not mapped by any DTO field
+0x0b	| Power lack	| `PowerLack`: 0=1h, 1=2h, 2=4h
+0x0c	| ?	| Not mapped by any DTO field
+0x0d	| Alarm count	| `AlarmCount`: 0=none, 1=two, 2=four, 3=six, 4=eight
+0x0e	| Notice	| `Notice`: 0=none, 5=5min, 10=10min, 15=15min, 20=20min
+0x0f	| Time programmer	| `Enabling`: 0=disabled, 1=enabled
+0x10	| DST	| Bitmask: bit0=enabled, bit1=last Sunday (instead of first)
+0x11-0x14	| ?	| Not mapped by any DTO field
+0x15	| DST OFF month	| `Month`: 1-12
+0x16	| DST ON month	| `Month`: 1-12
+0x17	| LAN	| `Enabling`: 0=disabled, 1=enabled
+0x18	| Play	| Bitmask: bit0=fault, bit1=partitions, bit2=system, bit3=service
+0x19	| Help	| Bit 7 (`0x80`)=enabled, bits 0-2=keypad address - 1
+0x1a-0x1d	| Block checksum	|
 
 ### Payload example
 
@@ -606,10 +608,10 @@ Payload definition "Phone numbers": 12 phone numbers are listed, each with the f
 
 Offset (relative to the phone number)	| Meaning	| Note
 ----------------------------------------|---------------|-----
-0-13	| Phone number	| Phone number encoded in BCD (14 bytes - 28 digits)
-14	| Bitmask of associated partitions	| LSB = partition 1
-15	| Phone network	| 00 = PSTN, 01 = GSM, 02 = LAN
-16	| Sending mode	| 00 = Voice, 01 = IDP, 02 = ADF, 04 = Modem, 06 = SMS, 07 = C200b
+0x00-0x0d	| Phone number	| Phone number encoded in BCD (14 bytes - 28 digits)
+0x0e	| Bitmask of associated partitions	| LSB = partition 1
+0x0f	| Phone network	| 00 = PSTN, 01 = GSM, 02 = LAN
+0x10	| Sending mode	| 00 = Voice, 01 = IDP, 02 = ADF, 04 = Modem, 06 = SMS, 07 = C200b
 
 **LAN/IP numbers**: when the "Phone network" field is `0x02` (LAN), the phone number is replaced by an address in the fixed format `DDD.DDD.DDD.DDD:DDDDD` (each octet zero-padded to 3 digits, trailing part to 5 digits). Encoding **directly confirmed by the code** — `serializer.PhoneNumber.serialize()` implements exactly this logic: each decimal digit in BCD, the dot `.` as nibble `0x0B`, the colon `:` as nibble `0x0C`, with the author's own original comment (`"In generale gli IP sono 001B002B003B004C00005"`, i.e. "IPs are generally 001B002B003B004C00005") present both there and in `ClientConnection`. The padding of the last, unpaired nibble (for an odd number of digits/separators, as in the example below) is `0x0F` — also in the code (`bcdByte | 0x0F`).
 
@@ -781,19 +783,19 @@ Payload definition "Phone parameters" (20 bytes, offset 0-based), verified again
 
 Offset	| Meaning	| Note
 --------|---------------|-----
-0-4	| ?	| Not mapped by any DTO field
-5	| Call delay	| `Enabling`: 0=disabled, 1=enabled
-6	| ?	| Not mapped by any DTO field
-7	| Return call	| `ReturnCall`: 0=disabled, 1=type A, 2=type B
-8	| Remote surveillance	| `Enabling`
-9	| Voice message sending mode	| `VoiceMessagesSendingMode`: 0=none, 1-4=mode 1-4
-10	| ?	| Not mapped by any DTO field
-11	| Cyclic test call frequency	| `CyclicTestCallFrequency`: 0=disabled, 1=24h, 2=when system armed
-12	| Phone number index for the test call	| 0-12 (0 if disabled)
-13	| Test call hour	| 0-23
-14	| Test call minute	| 0-59
-15	| Test call interval	| `CyclicTestCallInterval`: 0=1h, 1=4h, 2=8h, 3=12h, 4=24h, 5=48h, 6=72h, 7=96h, 8=120h, 9=144h, 10=168h
-16-19	| Block checksum	|
+0x00-0x04	| ?	| Not mapped by any DTO field
+0x05	| Call delay	| `Enabling`: 0=disabled, 1=enabled
+0x06	| ?	| Not mapped by any DTO field
+0x07	| Return call	| `ReturnCall`: 0=disabled, 1=type A, 2=type B
+0x08	| Remote surveillance	| `Enabling`
+0x09	| Voice message sending mode	| `VoiceMessagesSendingMode`: 0=none, 1-4=mode 1-4
+0x0a	| ?	| Not mapped by any DTO field
+0x0b	| Cyclic test call frequency	| `CyclicTestCallFrequency`: 0=disabled, 1=24h, 2=when system armed
+0x0c	| Phone number index for the test call	| 0-12 (0 if disabled)
+0x0d	| Test call hour	| 0-23
+0x0e	| Test call minute	| 0-59
+0x0f	| Test call interval	| `CyclicTestCallInterval`: 0=1h, 1=4h, 2=8h, 3=12h, 4=24h, 5=48h, 6=72h, 7=96h, 8=120h, 9=144h, 10=168h
+0x10-0x13	| Block checksum	|
 
 **Note**: offset→field mapping verified directly against the serializer; command `0xe6` has never been linked in the table to a corresponding `0x56 PHONE PARAMETERS` read — worth checking whether they share the same data format, as happens for `0x26`/`0x96`.
 
@@ -807,21 +809,21 @@ Payload definition "PSTN GSM" (21 bytes, offset 0-based), verified against `seri
 
 Offset	| Meaning	| Note
 --------|---------------|-----
-0	| Enable PSTN network	| `Enabling`
-1	| Country	| `Country`: 0=Italy, 1=France, 2=Germany, 3=Czech Rep., 4=Poland, 5=Spain, 6=Portugal, 7=Greece, 8=England
-2-3	| ?	| Not mapped by any DTO field
-4	| PABX local access digit	| `PABXLocalAccessDigit`: 0-9, `0xff`=disabled
-5	| Tone control	| `Enabling`
-6	| Answer control	| `Enabling`
-7	| PSTN line test	| `PSTNLineTestFrequency`: 0=disabled, 1=24h, 2=when system armed
-8	| PSTN answering machine rings	| `PSTNAnsweringMachineRings`: 0=disabled, 2/4/8=number of rings
-9	| Enable GSM network	| `Enabling`
-10	| GSM answering machine (no ring)	| `Enabling`
-11	| Incoming SMS	| `Enabling`
-12-14	| GSM PIN	| BCD, 3 bytes; `0xff 0xff 0xff` = no PIN set
-15	| Expiration month	|
-16	| Expiration year	|
-17-20	| Block checksum	|
+0x00	| Enable PSTN network	| `Enabling`
+0x01	| Country	| `Country`: 0=Italy, 1=France, 2=Germany, 3=Czech Rep., 4=Poland, 5=Spain, 6=Portugal, 7=Greece, 8=England
+0x02-0x03	| ?	| Not mapped by any DTO field
+0x04	| PABX local access digit	| `PABXLocalAccessDigit`: 0-9, `0xff`=disabled
+0x05	| Tone control	| `Enabling`
+0x06	| Answer control	| `Enabling`
+0x07	| PSTN line test	| `PSTNLineTestFrequency`: 0=disabled, 1=24h, 2=when system armed
+0x08	| PSTN answering machine rings	| `PSTNAnsweringMachineRings`: 0=disabled, 2/4/8=number of rings
+0x09	| Enable GSM network	| `Enabling`
+0x0a	| GSM answering machine (no ring)	| `Enabling`
+0x0b	| Incoming SMS	| `Enabling`
+0x0c-0x0e	| GSM PIN	| BCD, 3 bytes; `0xff 0xff 0xff` = no PIN set
+0x0f	| Expiration month	|
+0x10	| Expiration year	|
+0x11-0x14	| Block checksum	|
 
 ## SMS
 
@@ -833,23 +835,23 @@ Command `0x59 SMS` (bulk read of all messages, see [Command types](#command-type
 
 Offset	| Meaning	| Note
 --------|---------------|-----
-0-39	| Message 1	| `SMS_BURLGAR` (burglary), ASCII, padding `0xff`
-40-79	| Message 2	| `SMS_TECHNICAL_ALARM_1`
-80-119	| Message 3	| `SMS_TECHNICAL_ALARM_2`
-120-159	| Message 4	| `SMS_TECHNICAL_ALARM_3`
-160-199	| Message 5	| `SMS_FIRE`
-200-239	| Message 6	| `SMS_PARTITION_ON`
-240-279	| Message 7	| `SMS_PARTITION_OFF`
-280-319	| Message 8	| `SMS_TAMPERING`
-320-359	| Message 9	| `SMS_NOTICE`
-360-363	| Block checksum	|
+0x00-0x27	| Message 1	| `SMS_BURLGAR` (burglary), ASCII, padding `0xff`
+0x28-0x4f	| Message 2	| `SMS_TECHNICAL_ALARM_1`
+0x50-0x77	| Message 3	| `SMS_TECHNICAL_ALARM_2`
+0x78-0x9f	| Message 4	| `SMS_TECHNICAL_ALARM_3`
+0xa0-0xc7	| Message 5	| `SMS_FIRE`
+0xc8-0xef	| Message 6	| `SMS_PARTITION_ON`
+0xf0-0x117	| Message 7	| `SMS_PARTITION_OFF`
+0x118-0x13f	| Message 8	| `SMS_TAMPERING`
+0x140-0x167	| Message 9	| `SMS_NOTICE`
+0x168-0x16b	| Block checksum	|
 
 Command `0xa0 SMS PROGRAMMING` (single-instance write, confirmed reachable via `ElkrommFacadeImpl.setSMS()`, see [Command types](#command-types)): 41-byte payload, verified against `serializer.SingleSMS`.
 
 Offset	| Meaning	| Note
 --------|---------------|-----
-0	| Index	| **1-based** (`SMSIndex.ordinal() + 1`): 1=burglar, 2-4=tech.alarm 1-3, 5=fire, 6=partition on, 7=partition off, 8=tampering, 9=notice
-1-40	| Message	| 40 ASCII bytes, padding `0xff`
+0x00	| Index	| **1-based** (`SMSIndex.ordinal() + 1`): 1=burglar, 2-4=tech.alarm 1-3, 5=fire, 6=partition on, 7=partition off, 8=tampering, 9=notice
+0x01-0x28	| Message	| 40 ASCII bytes, padding `0xff`
 
 ### Payload example
 
@@ -921,71 +923,71 @@ Payload definition "SET TIME PROGRAMMER" (131 bytes), verified against `serializ
 
 Offset	| Meaning	| Note
 --------|---------------|-----
-0-39	| Working day commands	| 8 commands × 5 bytes, see "Command" table below
-40-79	| Pre-holiday commands	| 8 commands × 5 bytes
-80-119	| Holiday commands	| 8 commands × 5 bytes
-120	| Day class — Monday	| `DayClass`: 0=working day, 1=pre-holiday, 2=holiday
-121	| Day class — Tuesday	|
-122	| Day class — Wednesday	|
-123	| Day class — Thursday	|
-124	| Day class — Friday	|
-125	| Day class — Saturday	|
-126	| Day class — Sunday	|
-127-130	| Block checksum	|
+0x00-0x27	| Working day commands	| 8 commands × 5 bytes, see "Command" table below
+0x28-0x4f	| Pre-holiday commands	| 8 commands × 5 bytes
+0x50-0x77	| Holiday commands	| 8 commands × 5 bytes
+0x78	| Day class — Monday	| `DayClass`: 0=working day, 1=pre-holiday, 2=holiday
+0x79	| Day class — Tuesday	|
+0x7a	| Day class — Wednesday	|
+0x7b	| Day class — Thursday	|
+0x7c	| Day class — Friday	|
+0x7d	| Day class — Saturday	|
+0x7e	| Day class — Sunday	|
+0x7f-0x82	| Block checksum	|
 
 Payload definition "DAY CLASS CMDS" (41 bytes, single-instance write — no block checksum, consistent with other single-instance writes), verified against `serializer.DayClassCommands`:
 
 Offset	| Meaning	| Note
 --------|---------------|-----
-0	| Day class	| `DayClass`, identifies which of the three command sets is being written
-1-40	| 8 commands	| 5 bytes each, see "Command" table below
+0x00	| Day class	| `DayClass`, identifies which of the three command sets is being written
+0x01-0x28	| 8 commands	| 5 bytes each, see "Command" table below
 
-**Command** (`Command` DTO, 5 bytes, used both inside `SET_TIME_PROGRAMMER` and in `DAY_CLASS_CMDS`; if `Action` is `CA_NONE` bytes 1-4 aren't written by the serializer):
+**Command** (`Command` DTO, 5 bytes, used both inside `SET_TIME_PROGRAMMER` and in `DAY_CLASS_CMDS`; if `Action` is `CA_NONE` bytes 0x01-0x04 aren't written by the serializer):
 
 Offset (relative to the command)	| Meaning	| Note
 --------|---------------|-----
-0	| Action	| `Command.Action`: 0=none, 1=enable, 2=disable
-1	| Object	| Object index (partition or user, depending on the next byte)
-2	| Object type	| `Command.ObjectType`: `0x10`=partitions, `0x40`=user — a code comment notes "more to come: keys, outputs", so the list may not be complete
-3	| Hour	|
-4	| Minute	|
+0x00	| Action	| `Command.Action`: 0=none, 1=enable, 2=disable
+0x01	| Object	| Object index (partition or user, depending on the next byte)
+0x02	| Object type	| `Command.ObjectType`: `0x10`=partitions, `0x40`=user — a code comment notes "more to come: keys, outputs", so the list may not be complete
+0x03	| Hour	|
+0x04	| Minute	|
 
 Example from the `WORKING_DAY_CMD` dump: command 1 → hour 1, minute 2, enable, user 13 (inferred from the author's original comment, not re-verified byte-by-byte against the hex).
 
 ## Input
 
-Shared structure (38 bytes), used within each expansion (up to 8 per expansion, [Block B](#block-b)) and for the two onboard inputs of each [Keypad](#keypads)/[Reader](#readers). A slot with `logicNumber` (offset 0) set to `0x00` is considered unused — **the panel does not reliably zero the other fields in this case**: `Specialization` in particular can retain the value left over from the input's last real configuration (verified: an input reconfigured from `DELAYED` to `NOT_USED` kept reporting `DELAYED`, then later changed to `IMMEDIATE` after that input was used again for other tests). For this reason `serializer.Input` **always deserializes** an object (even for unused slots), instead of returning `null` as in an earlier version of the code — it's the only way to preserve round-trip fidelity, since the content can't be standardized to a fixed default. This behavior doesn't occur on [Output](#output), which the panel reliably zeroes when unused.
+Shared structure (38 bytes), used within each expansion (up to 8 per expansion, [Block B](#block-b)) and for the two onboard inputs of each [Keypad](#keypads)/[Reader](#readers). A slot with `logicNumber` (offset 0x00) set to `0x00` is considered unused — **the panel does not reliably zero the other fields in this case**: `Specialization` in particular can retain the value left over from the input's last real configuration (verified: an input reconfigured from `DELAYED` to `NOT_USED` kept reporting `DELAYED`, then later changed to `IMMEDIATE` after that input was used again for other tests). For this reason `serializer.Input` **always deserializes** an object (even for unused slots), instead of returning `null` as in an earlier version of the code — it's the only way to preserve round-trip fidelity, since the content can't be standardized to a fixed default. This behavior doesn't occur on [Output](#output), which the panel reliably zeroes when unused.
 
 ### Payload structure
 
 Offset	| Meaning	| Note
 --------|---------------|-----
-0	| Input's logical number	| `0x00` = unused slot (see the note above on leftover content)
-1	| Configuration	| `Configuration`: 0=unused, 1=NC, 2=NO, 3=single-balanced NC, 4=double-balanced NC, 7=shock, 8=roller
-2	| Specialization	| `Specialization`: see enum, 20 values (immediate, delayed, first entry, fire, tamper, ...)
-3	| Sensitivity (high bits) + Flags (low bits) + live exclusion bit	| Sensitivity: `0x80`=low, `0x40`=medium, `0x00`=high (shock/roller only). Flags (bitmask): `0x01`=exclusion enabled, `0x02`=double release, `0x08`=OR partitions. **Bit `0x10` isn't handled by any static field**: the panel raises it when the input is **currently excluded** (live status, not configuration — matches exactly `ElkrommFacade.InputStatus.IS_EXCLUDED`) and lowers it again when the input is re-included. Confirmed on real hardware in three independent contexts: expansions, keypads (on their own onboard inputs too), and by analogy (unverified) on readers. The bit must always be excluded from the block checksum calculation (see [Block B](#block-b)); Hi-Connect always writes it as zero
-4	| Associated camera	| `Video`: 0=none, then bitmask 0x10/0x20/0x40/0x80 for cameras 1-4
-5	| Associated partitions	| Bitmask, LSB = partition 1
-6-29	| Name	| 24 bytes
-30-33	| ?	| Not mapped by any DTO field
-34	| Delay	| `Delay`: 0=5s, 1=10s, 2=30s, 3=60s, 4=90s, 5=5min, 6=20s
-35-37	| ?	| Not mapped by any DTO field
+0x00	| Input's logical number	| `0x00` = unused slot (see the note above on leftover content)
+0x01	| Configuration	| `Configuration`: 0=unused, 1=NC, 2=NO, 3=single-balanced NC, 4=double-balanced NC, 7=shock, 8=roller
+0x02	| Specialization	| `Specialization`: see enum, 20 values (immediate, delayed, first entry, fire, tamper, ...)
+0x03	| Sensitivity (high bits) + Flags (low bits) + live exclusion bit	| Sensitivity: `0x80`=low, `0x40`=medium, `0x00`=high (shock/roller only). Flags (bitmask): `0x01`=exclusion enabled, `0x02`=double release, `0x08`=OR partitions. **Bit `0x10` isn't handled by any static field**: the panel raises it when the input is **currently excluded** (live status, not configuration — matches exactly `ElkrommFacade.InputStatus.IS_EXCLUDED`) and lowers it again when the input is re-included. Confirmed on real hardware in three independent contexts: expansions, keypads (on their own onboard inputs too), and by analogy (unverified) on readers. The bit must always be excluded from the block checksum calculation (see [Block B](#block-b)); Hi-Connect always writes it as zero
+0x04	| Associated camera	| `Video`: 0=none, then bitmask 0x10/0x20/0x40/0x80 for cameras 1-4
+0x05	| Associated partitions	| Bitmask, LSB = partition 1
+0x06-0x1d	| Name	| 24 bytes
+0x1e-0x21	| ?	| Not mapped by any DTO field
+0x22	| Delay	| `Delay`: 0=5s, 1=10s, 2=30s, 3=60s, 4=90s, 5=5min, 6=20s
+0x23-0x25	| ?	| Not mapped by any DTO field
 
 ## Output
 
-Shared structure (37 bytes), used within each expansion (up to 6 per expansion, [Block B](#block-b)). As with [Input](#input), a slot with `logicNumber` (offset 0) set to `0x00` is considered unused.
+Shared structure (37 bytes), used within each expansion (up to 6 per expansion, [Block B](#block-b)). As with [Input](#input), a slot with `logicNumber` (offset 0x00) set to `0x00` is considered unused.
 
 ### Payload structure
 
 Offset	| Meaning	| Note
 --------|---------------|-----
-0	| Output's logical number	| `0x00` = unused slot
-1	| Type	| `Type`: 0=unused, 1=normally low, 2=normally high
-2	| Associated partitions	| Bitmask, LSB = partition 1
-3	| Specialization	| `Specialization`: 31 values (burglar, pre-alarm, tamper, gong, buzzer, partition status, ...)
-4-7	| ?	| Not mapped by any DTO field
-8-31	| Name	| 24 bytes
-32-36	| ?	| Not mapped by any DTO field
+0x00	| Output's logical number	| `0x00` = unused slot
+0x01	| Type	| `Type`: 0=unused, 1=normally low, 2=normally high
+0x02	| Associated partitions	| Bitmask, LSB = partition 1
+0x03	| Specialization	| `Specialization`: 31 values (burglar, pre-alarm, tamper, gong, buzzer, partition status, ...)
+0x04-0x07	| ?	| Not mapped by any DTO field
+0x08-0x1f	| Name	| 24 bytes
+0x20-0x24	| ?	| Not mapped by any DTO field
 
 ## Block B
 
@@ -1043,23 +1045,23 @@ Each expansion occupies a fixed 559-byte block (`EXPANSION_SIZE`), repeated for 
 
 Offset (relative to the expansion)	| Meaning	| Note
 --------|---------------|-----
-0	| ?	| Not mapped by any DTO field
-1	| Bus address	| `0x00` = central unit, `0x01` = first expansion and so on
-2	| ?	| Not mapped by any DTO field
-3-6	| Firmware version	| ASCII string, e.g. `"0301"`
-7-310	| 8 inputs	| 38 bytes each, see [Input](#input)
-311-532	| 6 outputs	| 37 bytes each, see [Output](#output). **WARNING:** actual expansions just have 3 outputs, only the one embedded in the central unit (address = 0x00) has 6 outputs
-533-556	| Name	| 24 bytes
-557-558	| ?	| **Never sent by the client on write** (Hi-Connect always sends `0x00 0x00` on `EXPANSION PROGRAMMING`/0x91), populated by the panel on read with content not yet identified — must be excluded from the block checksum calculation (see note below)
-559	| Second expansion	| The preceding fields repeat
+0x00	| ?	| Not mapped by any DTO field
+0x01	| Bus address	| `0x00` = central unit, `0x01` = first expansion and so on
+0x02	| ?	| Not mapped by any DTO field
+0x03-0x06	| Firmware version	| ASCII string, e.g. `"0301"`
+0x07-0x136	| 8 inputs	| 38 bytes each, see [Input](#input)
+0x137-0x214	| 6 outputs	| 37 bytes each, see [Output](#output). **WARNING:** actual expansions just have 3 outputs, only the one embedded in the central unit (address = 0x00) has 6 outputs
+0x215-0x22c	| Name	| 24 bytes
+0x22d-0x22e	| ?	| **Never sent by the client on write** (Hi-Connect always sends `0x00 0x00` on `EXPANSION PROGRAMMING`/0x91), populated by the panel on read with content not yet identified — must be excluded from the block checksum calculation (see note below)
+0x22f	| Second expansion	| The preceding fields repeat
 ...	|
 x-3,x	| Checksum	| Last four bytes are block checksum
 
-**Note on the checksum**: on a real MP-508 v03.01 panel, the block checksum computed with the standard algorithm (see [Command types](#command-types)) doesn't match the one embedded by the panel, unless, for each expansion, the following are zeroed out beforehand: the 2 bytes at relative offset 557-558 described above, **and** bit `0x10` of *every* input (relative offset `7 + i*38 + 3` for the i-th input) — see [Input](#input). The current code (`serializer.Expansions`) applies this double correction before verifying the checksum, and throws an exception if it still doesn't match.
+**Note on the checksum**: on a real MP-508 v03.01 panel, the block checksum computed with the standard algorithm (see [Command types](#command-types)) doesn't match the one embedded by the panel, unless, for each expansion, the following are zeroed out beforehand: the 2 bytes at relative offset 0x22d-0x22e described above, **and** bit `0x10` of *every* input (relative offset `7 + i*38 + 3` for the i-th input) — see [Input](#input). The current code (`serializer.Expansions`) applies this double correction before verifying the checksum, and throws an exception if it still doesn't match.
 
-**The exact same phenomenon has been confirmed on real hardware on [Keypads](#keypads) too** (the only difference being that a single byte is enough there instead of two — see the dedicated section), reinforcing the idea that it's an architectural pattern of the panel (dynamic status "tucked into" otherwise-static configuration bytes), not a peculiarity of expansions alone. The same fix (2 trailing bytes + bit `0x10` on the two onboard inputs) has been applied **by analogy, "on faith"**, to [Readers](#readers) too — unverifiable on the author's hardware, who owns no physical readers. For this reason, on Readers only, the checksum check remains a `logger.warn()` instead of an exception: if the hypothesis turned out to be wrong on some real installation, the symptom would be a log warning, not a hard failure. The "mysterious" byte in [Partitions](#partitions) (offset 328) might belong to the same family, but there's no per-input granularity there, so the connection remains a weak, unverified hypothesis.
+**The exact same phenomenon has been confirmed on real hardware on [Keypads](#keypads) too** (the only difference being that a single byte is enough there instead of two — see the dedicated section), reinforcing the idea that it's an architectural pattern of the panel (dynamic status "tucked into" otherwise-static configuration bytes), not a peculiarity of expansions alone. The same fix (2 trailing bytes + bit `0x10` on the two onboard inputs) has been applied **by analogy, "on faith"**, to [Readers](#readers) too — unverifiable on the author's hardware, who owns no physical readers. For this reason, on Readers only, the checksum check remains a `logger.warn()` instead of an exception: if the hypothesis turned out to be wrong on some real installation, the symptom would be a log warning, not a hard failure. The "mysterious" byte in [Partitions](#partitions) (offset 0x148) might belong to the same family, but there's no per-input granularity there, so the connection remains a weak, unverified hypothesis.
 
-What those 2 bytes at offset 557-558 of every expansion actually **are**, though, remains entirely unresolved (code comment: `// FIXME: single expansion checksum???`) — we only know they must be excluded from the calculation, not what they contain. It's unclear whether the general behavior is specific to v03.01 firmware or holds across other versions/models.
+What those 2 bytes at offset 0x22d-0x22e of every expansion actually **are**, though, remains entirely unresolved (code comment: `// FIXME: single expansion checksum???`) — we only know they must be excluded from the calculation, not what they contain. It's unclear whether the general behavior is specific to v03.01 firmware or holds across other versions/models.
 
 ### Payload example
 
@@ -1185,18 +1187,18 @@ Payload definition "Keypads":
 
 Offset	| Meaning	| Note
 --------|---------------|-----
-0	| Address	| Keypad address (base 1)
-1	| ?	|
-2-5	| Version	| ASCII
-6-43	| First onboard input	| 38 bytes, see [Input](#input)
-44-81	| Second onboard input	| 38 bytes, see [Input](#input)
-82	| Enablings bitmask	| GONG, ENTRY, EXIT, MASKING, FIRE, PANIC, HELP
-83	| Bitmask of associated partitions	| LSB = partition 1
-84	| Audio feature bitmask	| CAPABLE, ENABLED
-85-108	| Keypad name	|
-109	| ?	| Must be excluded from the block checksum calculation (see [Input](#input) and the note in [Block B](#block-b)) — confirmed on real hardware
-110	| ?	| Always observed as `0x00` in the available captures; the code zeroes it anyway for symmetry with the Expansions code, but it doesn't appear necessary
-111	| Second keypad	| The preceding fields repeat
+0x00	| Address	| Keypad address (base 1)
+0x01	| ?	|
+0x02-0x05	| Version	| ASCII
+0x06-0x2b	| First onboard input	| 38 bytes, see [Input](#input)
+0x2c-0x51	| Second onboard input	| 38 bytes, see [Input](#input)
+0x52	| Enablings bitmask	| GONG, ENTRY, EXIT, MASKING, FIRE, PANIC, HELP
+0x53	| Bitmask of associated partitions	| LSB = partition 1
+0x54	| Audio feature bitmask	| CAPABLE, ENABLED
+0x55-0x6c	| Keypad name	|
+0x6d	| ?	| Must be excluded from the block checksum calculation (see [Input](#input) and the note in [Block B](#block-b)) — confirmed on real hardware
+0x6e	| ?	| Always observed as `0x00` in the available captures; the code zeroes it anyway for symmetry with the Expansions code, but it doesn't appear necessary
+0x6f	| Second keypad	| The preceding fields repeat
 ...	|	|
 
 ` `  
@@ -1246,17 +1248,17 @@ Structure of a reader (113 bytes), read in bulk with `READERS` (0x53) and writab
 
 Offset	| Meaning	| Note
 --------|---------------|-----
-0	| Bus address	| Also identifies the reader in single-instance writes (there's no separate `SingleReader` wrapper)
-1-5	| ?	| Not mapped by any DTO field
-6-43	| First onboard input	| 38 bytes, see [Input](#input)
-44-81	| Second onboard input	| 38 bytes, see [Input](#input)
-82	| LED 1	| Associated partition (`ElkrommFacade.Partition`), `0x00` = unused
-83	| LED 2	| Associated partition
-84	| LED 3	| Associated partition
-85	| LED 4	| Associated partition
-86	| Enablings bitmask	| `Reader.Enablings`: only `MASKING` (0x01) known
-87-110	| Name	| 24 bytes
-111-112	| ?	| Not mapped by any DTO field. Zeroed on write by analogy with [Expansions](#block-b)/[Keypads](#keypads), **unverified on real hardware** (the author owns no physical readers) — for this reason the block checksum remains a warning, not an exception, on this structure
+0x00	| Bus address	| Also identifies the reader in single-instance writes (there's no separate `SingleReader` wrapper)
+0x01-0x05	| ?	| Not mapped by any DTO field
+0x06-0x2b	| First onboard input	| 38 bytes, see [Input](#input)
+0x2c-0x51	| Second onboard input	| 38 bytes, see [Input](#input)
+0x52	| LED 1	| Associated partition (`ElkrommFacade.Partition`), `0x00` = unused
+0x53	| LED 2	| Associated partition
+0x54	| LED 3	| Associated partition
+0x55	| LED 4	| Associated partition
+0x56	| Enablings bitmask	| `Reader.Enablings`: only `MASKING` (0x01) known
+0x57-0x6e	| Name	| 24 bytes
+0x6f-0x70	| ?	| Not mapped by any DTO field. Zeroed on write by analogy with [Expansions](#block-b)/[Keypads](#keypads), **unverified on real hardware** (the author owns no physical readers) — for this reason the block checksum remains a warning, not an exception, on this structure
 
 ## Keypad programming
 
@@ -1264,7 +1266,7 @@ Single keypad parameter write.
 
 ### Payload structure
 
-See [Keypads](#keypads), offsets 0-110. The single keypad's address is carried at relative offset 0.
+See [Keypads](#keypads), offsets 0x00-0x6e. The single keypad's address is carried at relative offset 0x00.
 
 Keypad data:
 

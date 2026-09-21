@@ -7,8 +7,8 @@ package org.paternostro.elkromm.serializer;
  * <p>
  * <table>
  *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
- *  <tr><td>0</td><td>Keyboards number</td><td>Number of keyboards connected to the system, {@code 0} if none</td></tr>
- *  <tr><td>1 - k</td><td>Keyboard address</td><td>Address of the &lt;K&gt;th keyboard</td></tr>
+ *  <tr><td>0x00</td><td>Keyboards number</td><td>Number of keyboards connected to the system, {@code 0} if none</td></tr>
+ *  <tr><td>0x01 - k</td><td>Keyboard address</td><td>Address of the &lt;K&gt;th keyboard</td></tr>
  *  <tr><td>k+1</td><td>Readers number</td><td>Number of readers connected to the system, {@code 0} if none</td></tr>
  *  <tr><td>k+2 - k+r+1</td><td>Reader address</td><td>Address of the &lt;R&gt;th keyboard</td></tr>
  *  <tr><td>k+r+2</td><td>Expansions number</td><td>Number of expansions connected to the system, {@code 0} if none</td></tr>

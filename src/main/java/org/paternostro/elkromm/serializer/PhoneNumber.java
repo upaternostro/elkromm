@@ -12,11 +12,11 @@ import org.paternostro.elkromm.dto.PhoneNumber.Type;
  * Payload structure:
  * <p>
  * <table>
- *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
- *  <tr><td>0-13</td><td>Phone number</td><td>Phone number encoded in BCD (14 bytes &rarr; 28 digits)</td></tr>
- *  <tr><td>14</td><td>Bitmask of associated partitions</td><td>LSB = partition 1</td></tr>
- *  <tr><td>15</td><td>Phone network</td><td>{@link Type}: 00 = PSTN, 01 = GSM, 02 = LAN</td></tr>
- *  <tr><td>16</td><td>Sending mode</td><td>{@link SendingMode}: 00 = Voice, 01 = IDP, 02 = ADF, 04 = Modem, 06 = SMS, 07 = C200b</td></tr>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th><th>Constant</th></tr>
+ *  <tr><td>0x00-0x0d</td><td>Phone number</td><td>Phone number encoded in BCD (14 bytes &rarr; 28 digits)</td><td></td></tr>
+ *  <tr><td>0x0e</td><td>Bitmask of associated partitions</td><td>LSB = partition 1</td><td>{@link #ASSOCIATED_PARTITIONS_OFFSET}</td></tr>
+ *  <tr><td>0x0f</td><td>Phone network</td><td>{@link Type}: 00 = PSTN, 01 = GSM, 02 = LAN</td><td>{@link #TYPE_OFFSET}</td></tr>
+ *  <tr><td>0x10</td><td>Sending mode</td><td>{@link SendingMode}: 00 = Voice, 01 = IDP, 02 = ADF, 04 = Modem, 06 = SMS, 07 = C200b</td><td>{@link #SENDING_MODE_OFFSET}</td></tr>
  * </table>
  * <p>
  * <b>LAN/IP numbers</b>: when the "Phone network" field is {@code 0x02} (LAN), the phone number is replaced by an address in the fixed format {@code DDD.DDD.DDD.DDD:DDDDD} (each octet 
@@ -42,7 +42,17 @@ import org.paternostro.elkromm.dto.PhoneNumber.Type;
  */
 public class PhoneNumber implements ElkrommSerializer<org.paternostro.elkromm.dto.PhoneNumber>
 {
+    /** Payload size */
     public static final int PAYLOAD_SIZE = 17;
+
+    /** Offset of the bitmask of associated partitions */
+    public static final int ASSOCIATED_PARTITIONS_OFFSET = 0x0e;
+
+    /** Offset of the phone network */
+    public static final int TYPE_OFFSET                  = 0x0f;
+
+    /** Offset of the sending mode */
+    public static final int SENDING_MODE_OFFSET          = 0x10;
 
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.PhoneNumber obj)
@@ -91,9 +101,9 @@ public class PhoneNumber implements ElkrommSerializer<org.paternostro.elkromm.dt
             index += 2;
         }
 
-        data[14] = ElkrommUtils.packPartitions(obj.getAssociatedPartitions());
-        data[15] = obj.getType().getValue();
-        data[16] = obj.getSendingMode().getValue();
+        data[ASSOCIATED_PARTITIONS_OFFSET] = ElkrommUtils.packPartitions(obj.getAssociatedPartitions());
+        data[TYPE_OFFSET] = obj.getType().getValue();
+        data[SENDING_MODE_OFFSET] = obj.getSendingMode().getValue();
         // no events handling here!
         
         return data;
@@ -141,6 +151,6 @@ public class PhoneNumber implements ElkrommSerializer<org.paternostro.elkromm.dt
             index++;
         }
 
-        return new org.paternostro.elkromm.dto.PhoneNumber(sb.toString(), ElkrommUtils.unpackPartitions(data[14]), Type.valueOf(data[15]), SendingMode.valueOf(data[16]), new Event[0]);
+        return new org.paternostro.elkromm.dto.PhoneNumber(sb.toString(), ElkrommUtils.unpackPartitions(data[ASSOCIATED_PARTITIONS_OFFSET]), Type.valueOf(data[TYPE_OFFSET]), SendingMode.valueOf(data[SENDING_MODE_OFFSET]), new Event[0]);
     }
 }

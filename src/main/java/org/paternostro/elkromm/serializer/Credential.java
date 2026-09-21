@@ -15,7 +15,17 @@ import org.paternostro.elkromm.ElkrommUtils;
  */
 public abstract class Credential implements ElkrommSerializer<org.paternostro.elkromm.dto.Credential>
 {
+    /** Payload size */
     public static final int PAYLOAD_SIZE = 26;
+
+    /** Offset of the enabling value */
+    public static final int ENABLING_OFFSET              = 0x00;
+
+    /** Offset of the bitmask of associated partitions */
+    public static final int ASSOCIATED_PARTITIONS_OFFSET = 0x01;
+
+    /** Offset of the name, {@link ElkrommFacade#NAME_LENGTH} bytes */
+    public static final int NAME_OFFSET                  = 0x02;
 
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.Credential obj)
@@ -24,9 +34,9 @@ public abstract class Credential implements ElkrommSerializer<org.paternostro.el
 
         byte[]  data = new byte[PAYLOAD_SIZE];
 
-        data[0] = obj.getEnablingValue();
-        data[1] = ElkrommUtils.packPartitions(obj.getAssociatedPartitions());
-        ElkrommUtils.setText(data, 2, obj.getName(), ElkrommFacade.NAME_LENGTH);
+        data[ENABLING_OFFSET] = obj.getEnablingValue();
+        data[ASSOCIATED_PARTITIONS_OFFSET] = ElkrommUtils.packPartitions(obj.getAssociatedPartitions());
+        ElkrommUtils.setText(data, NAME_OFFSET, obj.getName(), ElkrommFacade.NAME_LENGTH);
 
         return data;
     }
@@ -38,7 +48,7 @@ public abstract class Credential implements ElkrommSerializer<org.paternostro.el
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
         if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
 
-        return allocateCredential(ElkrommUtils.getText(data, 2, ElkrommFacade.NAME_LENGTH), data[0], ElkrommUtils.unpackPartitions(data[1]));
+        return allocateCredential(ElkrommUtils.getText(data, NAME_OFFSET, ElkrommFacade.NAME_LENGTH), data[ENABLING_OFFSET], ElkrommUtils.unpackPartitions(data[ASSOCIATED_PARTITIONS_OFFSET]));
     }
 
     protected org.paternostro.elkromm.dto.Credential allocateCredential(String name, byte enabling, boolean[] associatedPartitions)

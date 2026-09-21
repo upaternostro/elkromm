@@ -9,14 +9,14 @@ import org.paternostro.elkromm.ElkrommUtils;
  * Payload structure:
  * <p>
  * <table>
- *  <tr><td>Offset</td><td>Meaning</td><td>Note</td></tr>
- *  <tr><td>0</td><td>Output's logical number</td><td>{@code 0x00} = unused slot</td></tr>
- *  <tr><td>1</td><td>Type</td><td>{@link org.paternostro.elkromm.dto.Output.Type}: 0=unused, 1=normally low, 2=normally high</td></tr>
- *  <tr><td>2</td><td>Associated partitions</td><td>Bitmask, LSB = partition 1</td></tr>
- *  <tr><td>3</td><td>Specialization</td><td>{@link org.paternostro.elkromm.dto.Output.Specialization}: 31 values (burglar, pre-alarm, tamper, gong, buzzer, partition status, ...)</td></tr>
- *  <tr><td>4-7</td><td>?</td><td>Not mapped by any DTO field</td></tr>
- *  <tr><td>8-31</td><td>Name</td><td>24 bytes</td></tr>
- *  <tr><td>32-36</td><td>?</td><td>Not mapped by any DTO field</td></tr>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th><th>Constant</th></tr>
+ *  <tr><td>0x00</td><td>Output's logical number</td><td>{@code 0x00} = unused slot</td><td>{@link #LOGICAL_NUMBER_OFFSET}</td></tr>
+ *  <tr><td>0x01</td><td>Type</td><td>{@link org.paternostro.elkromm.dto.Output.Type}: 0=unused, 1=normally low, 2=normally high</td><td>{@link #TYPE_OFFSET}</td></tr>
+ *  <tr><td>0x02</td><td>Associated partitions</td><td>Bitmask, LSB = partition 1</td><td>{@link #ASSOCIATED_PARTITIONS_OFFSET}</td></tr>
+ *  <tr><td>0x03</td><td>Specialization</td><td>{@link org.paternostro.elkromm.dto.Output.Specialization}: 31 values (burglar, pre-alarm, tamper, gong, buzzer, partition status, ...)</td><td>{@link #SPECIALIZATION_OFFSET}</td></tr>
+ *  <tr><td>0x04-0x07</td><td>?</td><td>Not mapped by any DTO field</td><td></td></tr>
+ *  <tr><td>0x08-0x1f</td><td>Name</td><td>24 bytes</td><td>{@link #NAME_OFFSET}</td></tr>
+ *  <tr><td>0x20-0x24</td><td>?</td><td>Not mapped by any DTO field</td><td></td></tr>
  * </table>
  * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
@@ -25,7 +25,23 @@ import org.paternostro.elkromm.ElkrommUtils;
  */
 public class Output implements ElkrommSerializer<org.paternostro.elkromm.dto.Output>
 {
+    /** Payload size */
     public static final int PAYLOAD_SIZE = 37;
+
+    /** Offset of the output's logical number */
+    public static final int LOGICAL_NUMBER_OFFSET        = 0x00;
+
+    /** Offset of the type */
+    public static final int TYPE_OFFSET                  = 0x01;
+
+    /** Offset of the associated partitions */
+    public static final int ASSOCIATED_PARTITIONS_OFFSET = 0x02;
+
+    /** Offset of the specialization */
+    public static final int SPECIALIZATION_OFFSET        = 0x03;
+
+    /** Offset of the name */
+    public static final int NAME_OFFSET                  = 0x08;
 
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.Output obj)
@@ -35,11 +51,11 @@ public class Output implements ElkrommSerializer<org.paternostro.elkromm.dto.Out
         byte[]  data = new byte[PAYLOAD_SIZE];
 
         if (obj.getLogicNumber() != 0) {
-            data[0] = (byte)(obj.getLogicNumber() & 0xFF);
-            data[1] = obj.getType().getValue();
-            data[2] = ElkrommUtils.packPartitions(obj.getAssociatedPartitions());
-            data[3] = obj.getSpecialization().getValue();
-            ElkrommUtils.setText(data, 8, obj.getName(), ElkrommFacade.NAME_LENGTH);
+            data[LOGICAL_NUMBER_OFFSET] = (byte)(obj.getLogicNumber() & 0xFF);
+            data[TYPE_OFFSET] = obj.getType().getValue();
+            data[ASSOCIATED_PARTITIONS_OFFSET] = ElkrommUtils.packPartitions(obj.getAssociatedPartitions());
+            data[SPECIALIZATION_OFFSET] = obj.getSpecialization().getValue();
+            ElkrommUtils.setText(data, NAME_OFFSET, obj.getName(), ElkrommFacade.NAME_LENGTH);
         }
         // else: unused output, skip
 
@@ -53,6 +69,6 @@ public class Output implements ElkrommSerializer<org.paternostro.elkromm.dto.Out
         if (data.length == 0) throw new IllegalArgumentException("Empty mandatory data");
         if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
 
-        return data[0] == 0 ? null : new org.paternostro.elkromm.dto.Output(data[0], org.paternostro.elkromm.dto.Output.Type.valueOf(data[1]), ElkrommUtils.unpackPartitions(data[2]), org.paternostro.elkromm.dto.Output.Specialization.valueOf(data[3]), ElkrommUtils.getText(data, 8, ElkrommFacade.NAME_LENGTH));
+        return data[LOGICAL_NUMBER_OFFSET] == 0 ? null : new org.paternostro.elkromm.dto.Output(data[LOGICAL_NUMBER_OFFSET], org.paternostro.elkromm.dto.Output.Type.valueOf(data[TYPE_OFFSET]), ElkrommUtils.unpackPartitions(data[ASSOCIATED_PARTITIONS_OFFSET]), org.paternostro.elkromm.dto.Output.Specialization.valueOf(data[SPECIALIZATION_OFFSET]), ElkrommUtils.getText(data, NAME_OFFSET, ElkrommFacade.NAME_LENGTH));
     }
 }

@@ -2,7 +2,7 @@
  * Conversion between {@link org.paternostro.elkromm.dto} objects and the raw byte
  * payloads framed by {@link org.paternostro.elkromm.packet}. Each
  * {@link org.paternostro.elkromm.serializer.ElkrommSerializer} implementation mirrors one
- * DTO, encoding/decoding its fields at the byte offsets documented in
+ * DTO, encoding/decoding its fields at the byte offsets (0-based, hexadecimal) documented in
  * {@code PROTOCOL.md}.
  * <p>
  * Serializers are looked up through {@link org.paternostro.elkromm.ElkrommFactory}, which

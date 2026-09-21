@@ -43,6 +43,15 @@ following the [Keep a Changelog](https://keepachangelog.com/) convention (Added 
 - Emulator: inputs and outputs are now configurable through properties
   (`org.paternostro.elkron.input.<N>.*` and `org.paternostro.elkron.output.<N>.*`), see the
   README
+- `ElkrommUtils.CHECKSUM_SIZE`, `getBlockChecksum()` and `setBlockChecksum()`, replacing the
+  literal `4` and the open-coded checksum access scattered across serializers, packets and
+  emulator
+- `PAYLOAD_SIZE` constant in each fixed-size serializer (`Expansions` defines
+  `EXPANSION_PAYLOAD_SIZE` for a single expansion), the size in bytes of the serialized payload
+- Public offset constants (`*_OFFSET`) in the serializers, one for each field of the payload,
+  linked from a new "Constant" column in the Javadoc payload tables; each constant is derived
+  from the previous fields and from the sizes involved wherever the layout allows it.
+  Also `ElkrommFacade.VERSION_LENGTH`, the length of the firmware version of expansions and keypads
 
 ### Fixed
 - Accept a zero phone number as a valid test-call number when cyclic test calls are disabled
@@ -82,7 +91,8 @@ following the [Keep a Changelog](https://keepachangelog.com/) convention (Added 
   to actually do (single-expansion and all-keypads programming, respectively)
 - Moved `DEFAULT_DELAY` from `ElkrommFacadeImpl` to `ElkrommFacade`, next to `setDelay()`
 - Consolidated per-record payload size constants, previously duplicated across several
-  `packet`/`serializer` classes, into a single `serializer.SerializersConstants`
+  `packet`/`serializer` classes, into a `PAYLOAD_SIZE` constant defined by the serializer each
+  payload belongs to (`serializer.SerializersConstants` only keeps `COMMAND_LENGTH`)
 - Factored the ghost-bit patching logic, previously duplicated across the round-trip test
   cases, into a shared helper
 - **Breaking:** "sector" renamed to "partition" throughout the library, to match the English
@@ -178,3 +188,14 @@ following the [Keep a Changelog](https://keepachangelog.com/) convention (Added 
 - Constants moved from `ElkrommFacadeImpl` to `ElkrommFacade`
 - Initialization separated from the constructor in `ElkrommFacadeImpl`, with the
   corresponding getter renamed for clarity
+- **Breaking:** `ElkrommSerializer.length()` removed: it was only used internally to allocate
+  the payload, and serializers with a variable payload (`Expansions`, `Keyboards`,
+  `PeripheralUnits`, `Readers`) could not implement it, throwing `UnsupportedOperationException`.
+  Custom serializers plugged in through `ElkrommFactory` must drop their `length()`
+  implementation (and the `@Override` on it)
+- **Breaking:** `SerializersConstants.C200B_INPUT_CODES_OFFSET` moved to
+  `C200bParameters.INPUT_CODES_OFFSET`
+- Serializers use named constants (offsets, `ElkrommFacade.NAME_LENGTH`, `ElkrommFacade.VERSION_LENGTH`,
+  `ElkrommUtils.CHECKSUM_SIZE`, `MAX_*`) instead of numeric literals; no change in behavior
+- Offsets in `PROTOCOL.md`, `PROTOCOL-ITA.md` and in the Javadoc payload tables are now
+  hexadecimal (convention stated in the introduction of the protocol documents)

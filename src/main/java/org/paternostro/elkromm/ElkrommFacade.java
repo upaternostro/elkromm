@@ -92,6 +92,8 @@ public interface ElkrommFacade
     public static final int MAX_DATA_LENGTH = 140;
     /** Maximum length of a user/key/etc. display name. */
     public static final int NAME_LENGTH = 24;
+    /** Length of the firmware version string of expansions and keypads. */
+    public static final int VERSION_LENGTH = 4;
     /** Default user/key/etc. display name. */
     public static final String DEFAULT_NAME = "...                     ";
     /** Maximum length of a single SMS message. */

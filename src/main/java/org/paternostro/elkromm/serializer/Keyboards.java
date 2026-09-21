@@ -13,8 +13,8 @@ import org.paternostro.elkromm.dto.Keyboard;
  * <p>
  * <table>
  *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
- *  <tr><td>0-110</td><td>First keyboard</td><td>See {@link Keyboard}</td></tr>
- *  <tr><td>111-221</td><td>Second keyboard</td><td>The preceding fields repeat</td></tr>
+ *  <tr><td>0x00-0x6e</td><td>First keyboard</td><td>See {@link Keyboard}</td></tr>
+ *  <tr><td>0x6f-0xdd</td><td>Second keyboard</td><td>The preceding fields repeat</td></tr>
  *  <tr><td>...</td></tr>
  *  <tr><td>x-3,x</td><td>Checksum</td><td>Last four bytes are block checksum</td></tr>
  * </table>
@@ -53,12 +53,12 @@ public class Keyboards implements ElkrommSerializer<Keyboard[]>
         if (data.length % org.paternostro.elkromm.serializer.Keyboard.PAYLOAD_SIZE != ElkrommUtils.CHECKSUM_SIZE) throw new IllegalArgumentException("Wrong data size");
 
         int patchOffset = 0;
-        while ((patchOffset += org.paternostro.elkromm.serializer.Keyboard.PAYLOAD_SIZE - 2) < data.length) data[patchOffset++] = data[patchOffset++] = 0x00;
+        while ((patchOffset += org.paternostro.elkromm.serializer.Keyboard.PSEUDO_CHECKSUM_OFFSET) < data.length) data[patchOffset++] = data[patchOffset++] = 0x00;
         // clear not-checksummed excluded bit from inputs
         patchOffset = 0;
         while (patchOffset < data.length - ElkrommUtils.CHECKSUM_SIZE) {
-            for (int j = 0; j < 2; j++) {
-                data[patchOffset + 6 + j * Input.PAYLOAD_SIZE + 3] &= ~0x10;
+            for (int j = 0; j < org.paternostro.elkromm.serializer.Keyboard.ONBOARD_INPUTS; j++) {
+                data[patchOffset + org.paternostro.elkromm.serializer.Keyboard.FIRST_INPUT_OFFSET + j * Input.PAYLOAD_SIZE + Input.SENSITIVITY_FLAGS_OFFSET] &= ~0x10;
             }
             patchOffset += org.paternostro.elkromm.serializer.Keyboard.PAYLOAD_SIZE;
         }

@@ -14,16 +14,16 @@ import org.paternostro.elkromm.ElkrommUtils;
  * <p>
  * <table>
  *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
- *  <tr><td>0-39</td><td>Message 1</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_BURLGAR} (burglary), see {@link SMS}</td></tr>
- *  <tr><td>40-79</td><td>Message 2</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_TECHNICAL_ALARM_1}</td></tr>
- *  <tr><td>80-119</td><td>Message 3</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_TECHNICAL_ALARM_2}</td></tr>
- *  <tr><td>120-159</td><td>Message 4</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_TECHNICAL_ALARM_3}</td></tr>
- *  <tr><td>160-199</td><td>Message 5</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_FIRE}</td></tr>
- *  <tr><td>200-239</td><td>Message 6</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_PARTITION_ON}</td></tr>
- *  <tr><td>240-279</td><td>Message 7</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_PARTITION_OFF}</td></tr>
- *  <tr><td>280-319</td><td>Message 8</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_TAMPERING}</td></tr>
- *  <tr><td>320-359</td><td>Message 9</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_NOTICE}</td></tr>
- *  <tr><td>360-363</td><td>Block checksum</td></tr>
+ *  <tr><td>0x00-0x27</td><td>Message 1</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_BURLGAR} (burglary), see {@link SMS}</td></tr>
+ *  <tr><td>0x28-0x4f</td><td>Message 2</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_TECHNICAL_ALARM_1}</td></tr>
+ *  <tr><td>0x50-0x77</td><td>Message 3</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_TECHNICAL_ALARM_2}</td></tr>
+ *  <tr><td>0x78-0x9f</td><td>Message 4</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_TECHNICAL_ALARM_3}</td></tr>
+ *  <tr><td>0xa0-0xc7</td><td>Message 5</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_FIRE}</td></tr>
+ *  <tr><td>0xc8-0xef</td><td>Message 6</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_PARTITION_ON}</td></tr>
+ *  <tr><td>0xf0-0x117</td><td>Message 7</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_PARTITION_OFF}</td></tr>
+ *  <tr><td>0x118-0x13f</td><td>Message 8</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_TAMPERING}</td></tr>
+ *  <tr><td>0x140-0x167</td><td>Message 9</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_NOTICE}</td></tr>
+ *  <tr><td>0x168-0x16b</td><td>Block checksum</td></tr>
  * </table>
  * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
@@ -32,6 +32,7 @@ import org.paternostro.elkromm.ElkrommUtils;
  */
 public class SMSs implements ElkrommSerializer<org.paternostro.elkromm.dto.SMSs>
 {
+    /** Payload size */
     public static final int PAYLOAD_SIZE = ElkrommFacade.MAX_SMS*SMS.PAYLOAD_SIZE + ElkrommUtils.CHECKSUM_SIZE;
 
     @Override

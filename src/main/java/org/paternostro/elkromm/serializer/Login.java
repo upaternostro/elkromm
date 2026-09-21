@@ -10,16 +10,23 @@ import org.paternostro.elkromm.ElkrommUtils;
  * Payload structure:
  * <p>
  * <table>
- *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
- *  <tr><td>0-3</td><td>Plant code</td><td>BCD coded</td></tr>
- *  <tr><td>4-6</td><td>Technical PIN code</td><td>BCD coded</td></tr>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th><th>Constant</th></tr>
+ *  <tr><td>0x00-0x03</td><td>Plant code</td><td>BCD coded</td><td>{@link #PLANT_CODE_OFFSET}</td></tr>
+ *  <tr><td>0x04-0x06</td><td>Technical PIN code</td><td>BCD coded</td><td>{@link #TECHNICAL_PIN_CODE_OFFSET}</td></tr>
  * </table>
  * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
  */
 public class Login implements ElkrommSerializer<org.paternostro.elkromm.dto.Login>
 {
+    /** Payload size */
     public static final int PAYLOAD_SIZE = 7;
+
+    /** Offset of the plant code, BCD coded */
+    public static final int PLANT_CODE_OFFSET         = 0x00;
+
+    /** Offset of the technical PIN code, BCD coded */
+    public static final int TECHNICAL_PIN_CODE_OFFSET = 0x04;
 
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.Login obj)
@@ -42,8 +49,8 @@ public class Login implements ElkrommSerializer<org.paternostro.elkromm.dto.Logi
         if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data size");
 
         return new org.paternostro.elkromm.dto.Login(
-            ElkrommUtils.dcbByte(data[0]) * 1000000 + ElkrommUtils.dcbByte(data[1]) * 10000 + ElkrommUtils.dcbByte(data[2]) * 100 + ElkrommUtils.dcbByte(data[3]),
-            ElkrommUtils.dcbByte(data[4]) * 10000 + ElkrommUtils.dcbByte(data[5]) * 100 + ElkrommUtils.dcbByte(data[6])
+            ElkrommUtils.dcbByte(data[PLANT_CODE_OFFSET]) * 1000000 + ElkrommUtils.dcbByte(data[PLANT_CODE_OFFSET + 1]) * 10000 + ElkrommUtils.dcbByte(data[PLANT_CODE_OFFSET + 2]) * 100 + ElkrommUtils.dcbByte(data[PLANT_CODE_OFFSET + 3]),
+            ElkrommUtils.dcbByte(data[TECHNICAL_PIN_CODE_OFFSET]) * 10000 + ElkrommUtils.dcbByte(data[TECHNICAL_PIN_CODE_OFFSET + 1]) * 100 + ElkrommUtils.dcbByte(data[TECHNICAL_PIN_CODE_OFFSET + 2])
         );
     }
 }

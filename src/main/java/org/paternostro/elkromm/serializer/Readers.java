@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * <table>
  *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
- *  <tr><td>0-112</td><td>First reader</td><td>See {@link Reader}</td></tr>
- *  <tr><td>113-225</td><td>Second reader</td></tr>
+ *  <tr><td>0x00-0x70</td><td>First reader</td><td>See {@link Reader}</td></tr>
+ *  <tr><td>0x71-0xe1</td><td>Second reader</td></tr>
  *  <tr><td>...</td></tr>
  *  <tr><td>x-3,x</td><td>Checksum</td><td>Last four bytes are block checksum</td></tr>
  * </table>
@@ -55,12 +55,12 @@ public class Readers implements ElkrommSerializer<Reader[]>
         if (data.length % org.paternostro.elkromm.serializer.Reader.PAYLOAD_SIZE != ElkrommUtils.CHECKSUM_SIZE) throw new IllegalArgumentException("Wrong data size");
 
         int patchOffset = 0;
-        while ((patchOffset += org.paternostro.elkromm.serializer.Reader.PAYLOAD_SIZE - 2) < data.length) data[patchOffset++] = data[patchOffset++] = 0x00;
+        while ((patchOffset += org.paternostro.elkromm.serializer.Reader.PSEUDO_CHECKSUM_OFFSET) < data.length) data[patchOffset++] = data[patchOffset++] = 0x00;
         // clear not-checksummed excluded bit from inputs
         patchOffset = 0;
         while (patchOffset < data.length - ElkrommUtils.CHECKSUM_SIZE) {
-            for (int j = 0; j < 2; j++) {
-                data[patchOffset + 6 + j * Input.PAYLOAD_SIZE + 3] &= ~0x10;
+            for (int j = 0; j < org.paternostro.elkromm.serializer.Reader.ONBOARD_INPUTS; j++) {
+                data[patchOffset + org.paternostro.elkromm.serializer.Reader.FIRST_INPUT_OFFSET + j * Input.PAYLOAD_SIZE + Input.SENSITIVITY_FLAGS_OFFSET] &= ~0x10;
             }
             patchOffset += org.paternostro.elkromm.serializer.Reader.PAYLOAD_SIZE;
         }

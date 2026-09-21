@@ -6,16 +6,23 @@ package org.paternostro.elkromm.serializer;
  * Payload structure:
  * <p>
  * <table>
- *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
- *  <tr><td>0</td><td>Partitions</td><td>Bitmask of {@link org.paternostro.elkromm.ElkrommFacade.Partition}</td></tr>
- *  <tr><td>1</td><td>Arm status</td><td>Bitmask of armed partitions</td></tr>
+ *  <tr><th>Offset</th><th>Meaning</th><th>Note</th><th>Constant</th></tr>
+ *  <tr><td>0x00</td><td>Partitions</td><td>Bitmask of {@link org.paternostro.elkromm.ElkrommFacade.Partition}</td><td>{@link #PARTITIONS_OFFSET}</td></tr>
+ *  <tr><td>0x01</td><td>Arm status</td><td>Bitmask of armed partitions</td><td>{@link #ARM_STATUS_OFFSET}</td></tr>
  * </table>
  * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
  */
 public class PartitionArming implements ElkrommSerializer<org.paternostro.elkromm.dto.PartitionArming>
 {
+    /** Payload size */
     public static final int PAYLOAD_SIZE = 2;
+
+    /** Offset of the bitmask of partitions */
+    public static final int PARTITIONS_OFFSET = 0x00;
+
+    /** Offset of the bitmask of armed partitions */
+    public static final int ARM_STATUS_OFFSET = 0x01;
 
     @Override
     public byte[] serialize(org.paternostro.elkromm.dto.PartitionArming obj) {
@@ -23,8 +30,8 @@ public class PartitionArming implements ElkrommSerializer<org.paternostro.elkrom
 
         byte[]  data = new byte[PAYLOAD_SIZE];
 
-        data[0] = obj.getPartitions();
-        data[1] = obj.getArmStatus();
+        data[PARTITIONS_OFFSET] = obj.getPartitions();
+        data[ARM_STATUS_OFFSET] = obj.getArmStatus();
 
         return data;
     }
@@ -34,6 +41,6 @@ public class PartitionArming implements ElkrommSerializer<org.paternostro.elkrom
         if (data == null) throw new IllegalArgumentException("Missing mandatory data");
         if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data length");
         
-        return new org.paternostro.elkromm.dto.PartitionArming(data[0], data[1]);
+        return new org.paternostro.elkromm.dto.PartitionArming(data[PARTITIONS_OFFSET], data[ARM_STATUS_OFFSET]);
     }
 }
