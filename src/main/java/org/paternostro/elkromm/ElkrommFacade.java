@@ -73,14 +73,14 @@ public interface ElkrommFacade
 
     /** Number of logical inputs (sensors) supported by the panel. */
     public static final int MAX_LOGICAL_INPUTS = 64;
-    /** Number of logical output (actuators) supported by the panel. */
-    public static final int MAX_LOGICAL_OUTPUTS = 48;
     /** Number of physical inputs on a single expansion unit. */
     public static final int MAX_EXP_INPUTS = 8;
     /** Number of physical outputs on main panel. */
     public static final int MAX_PANEL_OUTPUTS = 6;
     /** Number of physical outputs on a single expansion unit. */
     public static final int MAX_EXP_OUTPUTS = 3;
+    /** Number of logical output (actuators) supported by the panel. */
+    public static final int MAX_LOGICAL_OUTPUTS = MAX_PANEL_OUTPUTS + MAX_EXPANSIONS * MAX_EXP_OUTPUTS;
 
     /** Number of phone numbers storable by the panel. */
     public static final int MAX_PHONE_NUMBERS = 12;

@@ -13,7 +13,7 @@ public class OutputTest {
     public void test()
     {
         boolean[]   associatedPartitions = { false, false, false, false, true, false, false, false };
-        Output      output = new Output(69, Output.Type.OT_NORMALLY_HIGH, associatedPartitions, Output.Specialization.OS_TAMPERING, "Input 42");
+        Output      output = new Output(21, Output.Type.OT_NORMALLY_HIGH, associatedPartitions, Output.Specialization.OS_TAMPERING, "Input 42");
         byte[]      data = ElkrommFactory.getFactory().getOutputSerializer().serialize(output);
 
         assert data.length == 37 : "Wrong length";

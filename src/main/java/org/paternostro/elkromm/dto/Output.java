@@ -203,7 +203,7 @@ public class Output implements Serializable, Comparable<Output>
      */
     public void setLogicNumber(int logicNumber)
     {
-        if (logicNumber < 1) throw new IllegalArgumentException("Wrong logic number " + logicNumber + ", expected greater than 0");
+        if (logicNumber < 1 || logicNumber > ElkrommFacade.MAX_LOGICAL_OUTPUTS) throw new IllegalArgumentException("Wrong logic number " + logicNumber + ", expected between 1 and " + ElkrommFacade.MAX_LOGICAL_OUTPUTS);
 
         this.logicNumber = logicNumber;
     }
