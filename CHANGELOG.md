@@ -83,6 +83,9 @@ following the [Keep a Changelog](https://keepachangelog.com/) convention (Added 
   always has 6 output slots (`Expansions.EXPANSION_OUTPUTS_OFFSET`)
 - Emulator: expansions mimic the real hardware, with 6 outputs on expansion 0 (embedded in the
   panel) and 3 on each expansion board; their default names are now `UC` and `EP <nn>`
+- `Output` validates `logicNumber` against `ElkrommFacade.MAX_LOGICAL_OUTPUTS` (previously
+  unbounded on the upper end), which is now computed from `MAX_PANEL_OUTPUTS`,
+  `MAX_EXPANSIONS` and `MAX_EXP_OUTPUTS` instead of being a separate literal (still 48, unchanged)
 - Removed `ordinal` from `Credential`: redundant with the position in its containing array,
   and with the index carried explicitly by `SingleCredential` for single-instance writes (fixes #7)
 - `Input` deserialization no longer skips "not used" slots: the panel does not reliably
