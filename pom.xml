@@ -10,12 +10,36 @@
   <packaging>jar</packaging>
 
   <name>elkromm</name>
-  <url>https://gitlab.paternostro.org/ugo/elkromm</url>
+  <description>A Java library that manages Elkron's alarm protocol.</description>
+  <url>https://github.com/upaternostro/${project.artifactId}</url>
+
+  <licenses>
+    <license>
+      <name>European Union Public License 1.2</name>
+      <url>https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>upaternostro</id>
+      <name>Ugo Paternostro</name>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:https://github.com/upaternostro/${project.artifactId}.git</connection>
+    <developerConnection>scm:git:https://github.com/upaternostro/${project.artifactId}.git</developerConnection>
+    <url>https://github.com/upaternostro/${project.artifactId}</url>
+    <tag>v${project.version}</tag>
+  </scm>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <gpg.keyname>elkromm-dev@paternostro.org</gpg.keyname>
   </properties>
 
   <dependencies>
@@ -108,6 +132,39 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+
+      <!-- Firma GPG: richiesta da Maven Central per ogni artifact -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>3.2.7</version>
+        <configuration>
+          <keyname>${gpg.keyname}</keyname>
+        </configuration>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Deploy verso il Central Portal (Sonatype) -->
+      <plugin>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.11.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <publishingServerId>central</publishingServerId>
+          <!-- autoPublish=false: dopo il deploy controlli la validazione sul portale
+                e premi "Publish" manualmente. Mettilo a true quando ti fiderai del processo. -->
+          <autoPublish>false</autoPublish>
+        </configuration>
       </plugin>
     </plugins>
   </build>
