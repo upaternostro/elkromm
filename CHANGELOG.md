@@ -16,7 +16,7 @@ following the [Keep a Changelog](https://keepachangelog.com/) convention (Added 
 > talking to it efficient.
 > Even before (summer 2016) the project spawn as a Go PoC.
 
-## [Unreleased] — v0.5
+## [0.5] — 2026-09-22
 
 ### Added
 - `toString()` methods on DTOs, for easier debugging/logging
