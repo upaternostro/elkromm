@@ -50,8 +50,7 @@ Use entirely at your own risk.
 - Java 8 or later
 - Maven
 - [mock-ipc](https://github.com/upaternostro/mock-ipc), a small socket-abstraction library
-  by the same author — not published to a public Maven repository, so it must be built and
-  `mvn install`ed locally before building elkromm
+  by the same author, published on Maven Central
 - An Elkron MP-508 v3 alarm system equipped with a LAN expansion board (only required to
   talk to a real panel; the bundled emulator has no hardware requirement)
 
@@ -223,8 +222,6 @@ be reachable and its access codes to be known; use only against a system you own
 authorized to access (see [Disclaimer](#disclaimer)).
 
 ## Compile
-
-Build `mock-ipc` and install it locally first (see Requirements), then:
 
 ```
 mvn install
