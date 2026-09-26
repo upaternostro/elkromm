@@ -12,6 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.paternostro.elkromm.ElkrommFacade.Status;
 import org.paternostro.elkromm.emulator.ClientConnection;
+import org.paternostro.elkromm.emulator.Config;
 import org.paternostro.elkromm.emulator.Model;
 import org.paternostro.mock.ipc.Channel;
 import org.paternostro.mock.ipc.EndpointFactory;
@@ -36,7 +37,7 @@ public class ElkrommFacadeTest {
 
         assertNotNull(factory);
 
-        facade = factory.getElkrommFacade(EndpointFactory.getFactory().getPipeEndpoint(c2s, s2c), 12345678);
+        facade = factory.getElkrommFacade(EndpointFactory.getFactory().getPipeEndpoint(c2s, s2c), Config.getInstance().getPlantCode());
 
         assertNotNull(facade);
         assertEquals(facade.getStatus(), Status.ST_DISCONNECTED);
@@ -50,7 +51,7 @@ public class ElkrommFacadeTest {
         }
         
         try {
-            facade.login(12345678, 987654);
+            facade.login(Config.getInstance().getPlantCode(), Config.getInstance().getTechnicalCode());
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -91,7 +92,7 @@ public class ElkrommFacadeTest {
         }
 
         try {
-            facade.login(12345678, 987654);
+            facade.login(Config.getInstance().getPlantCode(), Config.getInstance().getTechnicalCode());
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -148,7 +149,7 @@ public class ElkrommFacadeTest {
         }
 
         try {
-            facade.login(12345678, 987654);
+            facade.login(Config.getInstance().getPlantCode(), Config.getInstance().getTechnicalCode());
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -214,7 +215,7 @@ public class ElkrommFacadeTest {
         }
 
         try {
-            facade.login(12345678, 987654);
+            facade.login(Config.getInstance().getPlantCode(), Config.getInstance().getTechnicalCode());
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

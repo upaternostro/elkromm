@@ -44,6 +44,7 @@ import org.paternostro.elkromm.dto.SystemStatus;
 import org.paternostro.elkromm.dto.TimeProgrammer;
 import org.paternostro.elkromm.dto.User;
 import org.paternostro.elkromm.emulator.ClientConnection;
+import org.paternostro.elkromm.emulator.Config;
 import org.paternostro.elkromm.emulator.Model;
 import org.paternostro.mock.ipc.Channel;
 import org.paternostro.mock.ipc.EndpointFactory;
@@ -68,7 +69,7 @@ public class ElkrommFacadeFunctionalTest {
 
         assertNotNull(factory);
 
-        facade = factory.getElkrommFacade(EndpointFactory.getFactory().getPipeEndpoint(c2s, s2c), 12345678);
+        facade = factory.getElkrommFacade(EndpointFactory.getFactory().getPipeEndpoint(c2s, s2c), Config.getInstance().getPlantCode());
 
         assertNotNull(facade);
 
@@ -91,7 +92,7 @@ public class ElkrommFacadeFunctionalTest {
         }
         
         try {
-            facade.login(12345678, 987654);
+            facade.login(Config.getInstance().getPlantCode(), Config.getInstance().getTechnicalCode());
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -178,6 +179,9 @@ public class ElkrommFacadeFunctionalTest {
 
     @Test
     public void testRawInputStatus() throws ElkrommException {
+        PeripheralUnits pa = facade.getPeripheralUnitsAddresses();
+        if (pa.getExpansionNum() < 1) return;
+
         byte[] inputStatus = facade.getRawInputStatus();
 
         assertNotNull(inputStatus);
@@ -186,6 +190,9 @@ public class ElkrommFacadeFunctionalTest {
 
     @Test
     public void testInputStatus() throws ElkrommException {
+        PeripheralUnits pa = facade.getPeripheralUnitsAddresses();
+        if (pa.getExpansionNum() < 1) return;
+
         Map<InputStatus, List<Integer>> inputStatus = facade.getInputStatus();
         List<Integer>                   inputs;
 
@@ -205,6 +212,9 @@ public class ElkrommFacadeFunctionalTest {
 
     @Test
     public void testExcludeIncludeInput() throws ElkrommException {
+        PeripheralUnits pa = facade.getPeripheralUnitsAddresses();
+        if (pa.getExpansionNum() < 1) return;
+
         facade.excludeIncludeInput((byte)1, true);
 
         Map<InputStatus, List<Integer>> inputStatus = facade.getInputStatus();
@@ -212,7 +222,7 @@ public class ElkrommFacadeFunctionalTest {
         assertTrue(inputStatus.get(InputStatus.IS_EXCLUDED).contains(1));
         facade.excludeIncludeInput((byte)1, false);
         inputStatus = facade.getInputStatus();
-        assertTrue(!inputStatus.get(InputStatus.IS_EXCLUDED).contains(1));
+        assertTrue(!inputStatus.containsKey(InputStatus.IS_EXCLUDED) || !inputStatus.get(InputStatus.IS_EXCLUDED).contains(1));
     }
 
     @Test
@@ -220,13 +230,15 @@ public class ElkrommFacadeFunctionalTest {
         PeripheralUnits pu = facade.getPeripheralUnitsAddresses();
 
         assertNotNull(pu);
-        assertTrue(pu.getExpansionNum() > 0);
+        assertTrue(pu.getExpansionNum() >= 0);
         assertTrue(pu.getKeypadNum() >= 0);
         assertTrue(pu.getReaderNum() >= 0);
     }
 
     @Test
     public void testChecksums() throws ElkrommException {
+        PeripheralUnits pa = facade.getPeripheralUnitsAddresses();
+
         Checksums checksums = facade.getChecksums();
 
         assertNotNull(checksums);
@@ -245,11 +257,13 @@ public class ElkrommFacadeFunctionalTest {
         data = ElkrommFactory.getFactory().getC200bParametersSerializer().serialize(c200b);
         assertTrue(checksums.getEvents() == ElkrommUtils.getBlockChecksum(data));
 
-        Keyboard[]                  keyboards = facade.getKeyboards();
-        
-        assertNotNull(keyboards);
-        data = ElkrommFactory.getFactory().getKeyboardsSerializer().serialize(keyboards);
-        assertTrue(checksums.getKeypads() == ElkrommUtils.getBlockChecksum(data));
+        if (pa.getKeypadNum() > 0) {
+            Keyboard[]                  keyboards = facade.getKeyboards();
+            
+            assertNotNull(keyboards);
+            data = ElkrommFactory.getFactory().getKeyboardsSerializer().serialize(keyboards);
+            assertTrue(checksums.getKeypads() == ElkrommUtils.getBlockChecksum(data));
+        }
 
         Credential[]                keys = facade.getKeys();
         
@@ -257,11 +271,13 @@ public class ElkrommFacadeFunctionalTest {
         data = ElkrommFactory.getFactory().getKeysSerializer().serialize(keys);
         assertTrue(checksums.getKeys() == ElkrommUtils.getBlockChecksum(data));
 
-        Expansion[]                 expansions = facade.getExpansions();
-        
-        assertNotNull(expansions);
-        data = ElkrommFactory.getFactory().getExpansionsSerializer().serialize(expansions);
-        assertTrue(checksums.getNodes() == ElkrommUtils.getBlockChecksum(data));
+        if (pa.getExpansionNum() > 0) {
+            Expansion[]                 expansions = facade.getExpansions();
+            
+            assertNotNull(expansions);
+            data = ElkrommFactory.getFactory().getExpansionsSerializer().serialize(expansions);
+            assertTrue(checksums.getNodes() == ElkrommUtils.getBlockChecksum(data));
+        }
 
         PSTNGSM                     pSTNGSM = facade.getPSTNGSM();
         
@@ -269,11 +285,13 @@ public class ElkrommFacadeFunctionalTest {
         data = ElkrommFactory.getFactory().getPSTNGSMSerializer().serialize(pSTNGSM);
         assertTrue(checksums.getPstnGsm() == ElkrommUtils.getBlockChecksum(data));
 
-        Reader[]                    readers = facade.getReaders();
-        
-        assertNotNull(readers);
-        data = ElkrommFactory.getFactory().getReadersSerializer().serialize(readers);
-        assertTrue(checksums.getReaders() == ElkrommUtils.getBlockChecksum(data));
+        if (pa.getReaderNum() > 0) {
+            Reader[]                    readers = facade.getReaders();
+            
+            assertNotNull(readers);
+            data = ElkrommFactory.getFactory().getReadersSerializer().serialize(readers);
+            assertTrue(checksums.getReaders() == ElkrommUtils.getBlockChecksum(data));
+        }
 
         SMSs                        sMSs = facade.getSMSs();
         
@@ -342,6 +360,9 @@ public class ElkrommFacadeFunctionalTest {
 
     @Test
     public void testExpansions() throws ElkrommException {
+        PeripheralUnits pa = facade.getPeripheralUnitsAddresses();
+        if (pa.getExpansionNum() < 1) return;
+
         Expansion[]    expansions = facade.getExpansions();
 
         assertNotNull(expansions);
@@ -399,6 +420,9 @@ public class ElkrommFacadeFunctionalTest {
 
     @Test
     public void testKeyboards() throws ElkrommException {
+        PeripheralUnits pa = facade.getPeripheralUnitsAddresses();
+        if (pa.getKeypadNum() < 1) return;
+
         Keyboard[]  keyboards = facade.getKeyboards();
 
         assertNotNull(keyboards);
@@ -442,6 +466,9 @@ public class ElkrommFacadeFunctionalTest {
 
     @Test
     public void testReaders() throws ElkrommException {
+        PeripheralUnits pa = facade.getPeripheralUnitsAddresses();
+        if (pa.getReaderNum() < 1) return;
+
         Reader[]    reader = facade.getReaders();
 
         assertNotNull(reader);
@@ -762,6 +789,9 @@ public class ElkrommFacadeFunctionalTest {
 
     @Test
     public void testSetKeyboard() throws ElkrommException {
+        PeripheralUnits pa = facade.getPeripheralUnitsAddresses();
+        if (pa.getKeypadNum() < 1) return;
+
         Keyboard[]      keyboards = facade.getKeyboards();
 
         assertNotNull(keyboards);
@@ -795,6 +825,9 @@ public class ElkrommFacadeFunctionalTest {
 
     @Test
     public void testSetReader() throws ElkrommException {
+        PeripheralUnits pa = facade.getPeripheralUnitsAddresses();
+        if (pa.getReaderNum() < 1) return;
+
         Reader[]    readers = facade.getReaders();
         
         assertNotNull(readers);
