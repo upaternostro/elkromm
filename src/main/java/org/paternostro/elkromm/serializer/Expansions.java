@@ -10,7 +10,7 @@ import org.paternostro.elkromm.dto.Output;
 /**
  * {@link Expansion}s serializer, DTOs &harr; byte array.
  * <p>
- * Payload structure: one or more {@link Expansion}, max {@link ElkrommFacade#MAX_EXPANSIONS} expansions.
+ * Payload structure: one or more {@link Expansion}, max {@link ElkrommFacade#MAX_EXPANSIONS} + 1 expansions (first expansion--i.e. #0--is embedded in the panel hardware).
  * <p>
  * <table>
  *  <tr><th>Offset (relative to the expansion)</th><th>Meaning</th><th>Note</th><th>Constant</th></tr>

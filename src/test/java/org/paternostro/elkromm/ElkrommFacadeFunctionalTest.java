@@ -230,7 +230,7 @@ public class ElkrommFacadeFunctionalTest {
         PeripheralUnits pu = facade.getPeripheralUnitsAddresses();
 
         assertNotNull(pu);
-        assertTrue(pu.getExpansionNum() >= 0);
+        assertTrue(pu.getExpansionNum() > 0);
         assertTrue(pu.getKeypadNum() >= 0);
         assertTrue(pu.getReaderNum() >= 0);
     }
@@ -271,13 +271,11 @@ public class ElkrommFacadeFunctionalTest {
         data = ElkrommFactory.getFactory().getKeysSerializer().serialize(keys);
         assertTrue(checksums.getKeys() == ElkrommUtils.getBlockChecksum(data));
 
-        if (pa.getExpansionNum() > 0) {
-            Expansion[]                 expansions = facade.getExpansions();
-            
-            assertNotNull(expansions);
-            data = ElkrommFactory.getFactory().getExpansionsSerializer().serialize(expansions);
-            assertTrue(checksums.getNodes() == ElkrommUtils.getBlockChecksum(data));
-        }
+        Expansion[]                 expansions = facade.getExpansions();
+        
+        assertNotNull(expansions);
+        data = ElkrommFactory.getFactory().getExpansionsSerializer().serialize(expansions);
+        assertTrue(checksums.getNodes() == ElkrommUtils.getBlockChecksum(data));
 
         PSTNGSM                     pSTNGSM = facade.getPSTNGSM();
         
@@ -360,13 +358,10 @@ public class ElkrommFacadeFunctionalTest {
 
     @Test
     public void testExpansions() throws ElkrommException {
-        PeripheralUnits pa = facade.getPeripheralUnitsAddresses();
-        if (pa.getExpansionNum() < 1) return;
-
         Expansion[]    expansions = facade.getExpansions();
 
         assertNotNull(expansions);
-        assertTrue(expansions.length <= ElkrommFacade.MAX_EXPANSIONS);
+        assertTrue(expansions.length <= ElkrommFacade.MAX_EXPANSIONS + 1);
 
         for (int i = 0; i < expansions.length; i++) {
             assertNotNull(expansions[i]);

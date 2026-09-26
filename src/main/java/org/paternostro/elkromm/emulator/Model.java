@@ -86,7 +86,7 @@ public class Model {
         this.areasAndPartitions = new AreasAndPartitions();
         this.users              = new User[ElkrommFacade.MAX_CREDENTIALS];
         this.keys               = new Key[ElkrommFacade.MAX_CREDENTIALS];
-        this.expansions         = new Expansion[config.getExpansions()];
+        this.expansions         = new Expansion[config.getExpansions() + 1];
         this.keyboards          = new Keyboard[config.getKeyboards()];
         this.readers            = new Reader[config.getReaders()];
 
@@ -99,7 +99,7 @@ public class Model {
             this.peripheralUnits.addReader(i + 1);
         }
 
-        for (int i = 0; i < config.getExpansions(); i++) {
+        for (int i = 0; i <= config.getExpansions(); i++) {
             this.peripheralUnits.addExpansion(i + 1);
         }
 
