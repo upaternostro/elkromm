@@ -179,9 +179,6 @@ public class ElkrommFacadeFunctionalTest {
 
     @Test
     public void testRawInputStatus() throws ElkrommException {
-        PeripheralUnits pa = facade.getPeripheralUnitsAddresses();
-        if (pa.getExpansionNum() < 1) return;
-
         byte[] inputStatus = facade.getRawInputStatus();
 
         assertNotNull(inputStatus);
@@ -190,9 +187,6 @@ public class ElkrommFacadeFunctionalTest {
 
     @Test
     public void testInputStatus() throws ElkrommException {
-        PeripheralUnits pa = facade.getPeripheralUnitsAddresses();
-        if (pa.getExpansionNum() < 1) return;
-
         Map<InputStatus, List<Integer>> inputStatus = facade.getInputStatus();
         List<Integer>                   inputs;
 
@@ -212,9 +206,6 @@ public class ElkrommFacadeFunctionalTest {
 
     @Test
     public void testExcludeIncludeInput() throws ElkrommException {
-        PeripheralUnits pa = facade.getPeripheralUnitsAddresses();
-        if (pa.getExpansionNum() < 1) return;
-
         facade.excludeIncludeInput((byte)1, true);
 
         Map<InputStatus, List<Integer>> inputStatus = facade.getInputStatus();
@@ -361,7 +352,7 @@ public class ElkrommFacadeFunctionalTest {
         Expansion[]    expansions = facade.getExpansions();
 
         assertNotNull(expansions);
-        assertTrue(expansions.length <= ElkrommFacade.MAX_EXPANSIONS + 1);
+        assertTrue(expansions.length > 0 && expansions.length <= ElkrommFacade.MAX_EXPANSIONS + 1);
 
         for (int i = 0; i < expansions.length; i++) {
             assertNotNull(expansions[i]);
