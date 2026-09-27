@@ -91,6 +91,8 @@ public class ElkrommFacadeFunctionalTest {
             assertTrue(false);
         }
         
+        assertEquals(facade.getStatus(), Status.ST_CONNECTED);
+
         try {
             facade.login(Config.getInstance().getPlantCode(), Config.getInstance().getTechnicalCode());
         } catch (Exception e) {
@@ -98,6 +100,8 @@ public class ElkrommFacadeFunctionalTest {
             e.printStackTrace();
             assertTrue(false);
         }
+
+        assertEquals(facade.getStatus(), Status.ST_LOGGED_IN);
     }
     
     @Test
@@ -932,6 +936,8 @@ public class ElkrommFacadeFunctionalTest {
     @AfterClass
     public static void shutdownTests() throws UnknownHostException
     {
+        assertEquals(facade.getStatus(), Status.ST_LOGGED_IN);
+
         try {
             facade.logout();
         } catch (Exception e) {
@@ -940,6 +946,8 @@ public class ElkrommFacadeFunctionalTest {
             assertTrue(false);
         }
         
+        assertEquals(facade.getStatus(), Status.ST_CONNECTED);
+
         try {
             facade.disconnect();
         } catch (Exception e) {
@@ -947,5 +955,7 @@ public class ElkrommFacadeFunctionalTest {
             e.printStackTrace();
             assertTrue(false);
         }
+
+        assertEquals(facade.getStatus(), Status.ST_DISCONNECTED);
     }
 }
