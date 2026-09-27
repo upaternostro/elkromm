@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +57,7 @@ public class ElkrommFacadeFunctionalTest {
     private static PeripheralUnits  pu;
 
     @BeforeClass
-    public static void initTests() throws UnknownHostException, IOException
+    public static void initTests() throws IOException
     {
         Channel c2s = new Channel();
         Channel s2c = new Channel();
@@ -116,7 +115,7 @@ public class ElkrommFacadeFunctionalTest {
     }
     
     @Test
-    public void testPing() throws UnknownHostException {
+    public void testPing() {
         try {
             facade.ping();
         } catch (Exception e) {
@@ -127,7 +126,7 @@ public class ElkrommFacadeFunctionalTest {
     }
 
     @Test
-    public void testAreasAndPartitions() throws UnknownHostException {
+    public void testAreasAndPartitions() {
         try {
             AreasAndPartitions areasPartitions = facade.getAreasAndPartitions();
             
@@ -142,7 +141,7 @@ public class ElkrommFacadeFunctionalTest {
     }
 
     @Test
-    public void testSystemStatus() throws UnknownHostException {
+    public void testSystemStatus() {
         try {
             SystemStatus    systemStatus = facade.getSystemStatus();
 
@@ -161,7 +160,7 @@ public class ElkrommFacadeFunctionalTest {
     }
 
     @Test
-    public void testArmDisarmPartition() throws UnknownHostException {
+    public void testArmDisarmPartition() {
         try {
             facade.armDisarmPartition(ElkrommFacade.Partition.P_ONE, true);
 
@@ -936,7 +935,7 @@ public class ElkrommFacadeFunctionalTest {
     }
 
     @AfterClass
-    public static void shutdownTests() throws UnknownHostException
+    public static void shutdownTests()
     {
         assertEquals(facade.getStatus(), Status.ST_LOGGED_IN);
 
