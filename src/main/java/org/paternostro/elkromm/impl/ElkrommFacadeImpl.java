@@ -89,7 +89,7 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     @Override
     public void setDelay(int delay) throws ElkrommException
     {
-        if (delay < 0) throw new ElkrommException(String.format("Illegal argumento delay: %d Expected > 0", delay));
+        if (delay < 0) throw new ElkrommException(String.format("Illegal argument delay: %d Expected > 0", delay));
 
         this.delay = delay;
     }
