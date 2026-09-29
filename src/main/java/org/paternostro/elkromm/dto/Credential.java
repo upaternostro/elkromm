@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 import org.paternostro.elkromm.ElkrommFacade;
+import org.paternostro.elkromm.dto.Input.Flags;
 
 /**
  * Common base for the two kinds of access credential recognized by the
@@ -13,16 +14,22 @@ import org.paternostro.elkromm.ElkrommFacade;
  */
 public abstract class Credential implements Serializable
 {
-    /** How and when a credential is allowed to arm/disarm its associated partitions. */
+    /** Bitmask to identify when a credential is allowed to arm/disarm its associated partitions.
+     * 
+     * {@code NONE} and {@code ALL} are convenience aliases, not real
+     * single-bit values: {@code NONE} means no bit set, {@code ALL}
+     * means every bit set.
+     */
+    // bitmask!
     public enum Enabling {
+        NONE(0x00), // not a real bitmask
         /** The credential cannot arm/disarm anything. */
         DISABLED(0x00),
         /** The credential can arm/disarm normally. */
         ENABLED(0x01),
         /** The credential can arm/disarm even when it would otherwise be restricted (e.g. by a day class schedule). */
         ALWAYS_ENABLED(0x02),
-        /** Sentinel for a raw value with no known meaning; never a valid value to set. */
-        UNKNOWN(0xFF);         // should never happen...
+        ALL(0x03); // not a real bitmask
 
         private byte    value;
 
@@ -57,20 +64,41 @@ public abstract class Credential implements Serializable
 
             return retval;
         }
+
+        /**
+         * Checks whether a given enabling's bit is set in a bitmask.
+         *
+         * @param value the bitmask to test
+         * @param enabling the single enabling bit to look for
+         * @return {@code true} if {@code enabling}'s bit is set in {@code value}
+         */
+        public static boolean is(byte value, Enabling enabling) {
+            return (value & enabling.getValue()) != 0;
+        }
+
+        /**
+         * Checks whether a bitmask contains only valid enabling bits.
+         *
+         * @param bitmask the bitmask to validate
+         * @return {@code true} if no bit outside {@link #ALL} is set
+         */
+        public static boolean isValid(byte bitmask) {
+            return (bitmask & ((ALL.getValue() ^ 0xFF) & 0xFF)) == 0;
+        }
     }
 
     protected String    name;
-    protected Enabling  enabling;
+    protected byte      enabling;
     protected boolean[] associatedPartitions;
 
     /**
      * Creates a new credential.
      *
      * @param name display name
-     * @param enabling arming/disarming enabling mode
+     * @param enabling arming/disarming enabling bitmask
      * @param associatedPartitions per-partition association flags, length {@link org.paternostro.elkromm.ElkrommFacade#MAX_PARTITIONS}
      */
-    public Credential(String name, Enabling enabling, boolean[] associatedPartitions)
+    public Credential(String name, byte enabling, boolean[] associatedPartitions)
     {
         setName(name);
         setEnabling(enabling);
@@ -107,29 +135,28 @@ public abstract class Credential implements Serializable
      */
     public byte getEnablingValue()
     {
-        return enabling.getValue();
+        return enabling;
     }
 
     /**
      * Returns this credential's enabling mode.
      *
-     * @return the enabling mode
+     * @return the enabling mode bitmask
      */
-    public Enabling getEnabling()
+    public byte getEnabling()
     {
         return enabling;
     }
 
     /**
-     * Sets this credential's enabling mode.
+     * Sets this credential's enabling mode bitmask.
      *
      * @param enabling the mode to set, not {@code null} and not {@link Enabling#UNKNOWN}
      * @throws IllegalArgumentException if {@code enabling} is {@code null} or {@code UNKNOWN}
      */
-    public void setEnabling(Enabling enabling)
+    public void setEnabling(byte enabling)
     {
-        if (enabling == null) throw new IllegalArgumentException("Missing mandatory enabling");
-        if (enabling == Enabling.UNKNOWN) throw new IllegalArgumentException("Wrong enabling UNKNOWN");
+        if (!Enabling.isValid(enabling)) throw new IllegalArgumentException(String.format("Invalid enabling bitmap 0x%02x", enabling));
 
         this.enabling = enabling;
     }

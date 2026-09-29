@@ -21,6 +21,6 @@ public class Key extends Credential
     @Override
     protected org.paternostro.elkromm.dto.Credential allocateCredential(String name, byte enabling, boolean[] associatedPartitions)
     {
-        return new org.paternostro.elkromm.dto.Key(name, org.paternostro.elkromm.dto.Credential.Enabling.valueOf((byte)(enabling & 0x01)), org.paternostro.elkromm.dto.Key.Specialization.valueOf((byte)((enabling & 0x0C) >> 2)), associatedPartitions);
+        return new org.paternostro.elkromm.dto.Key(name, (byte)(enabling & org.paternostro.elkromm.dto.Credential.Enabling.ALL.getValue()), org.paternostro.elkromm.dto.Key.Specialization.valueOf((byte)((enabling & 0x0C) >> 2)), associatedPartitions);
     }
 }

@@ -12,7 +12,7 @@ public class SingleUserTest {
     @Test
     public void test()
     {
-        org.paternostro.elkromm.dto.SingleCredential    singleUser = new org.paternostro.elkromm.dto.SingleCredential((byte)12, new org.paternostro.elkromm.dto.User("User 17", Enabling.DISABLED, ElkrommUtils.unpackPartitions((byte)18)));
+        org.paternostro.elkromm.dto.SingleCredential    singleUser = new org.paternostro.elkromm.dto.SingleCredential((byte)12, new org.paternostro.elkromm.dto.User("User 17", Enabling.DISABLED.getValue(), ElkrommUtils.unpackPartitions((byte)18)));
         byte[]                                          data = ElkrommFactory.getFactory().getSingleUserSerializer().serialize(singleUser);
 
         assert data.length == 27 : "Wrong length";

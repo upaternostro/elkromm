@@ -117,16 +117,16 @@ public class Model {
         this.areasAndPartitions.setPartitionNum((byte)config.getPartitions());
 
         // Init Users
-        this.users[0] = new User("TECNICO                 ", User.Enabling.DISABLED, ElkrommUtils.unpackPartitions((byte)0xFF));
-        this.users[1] = new User("MASTER                  ", User.Enabling.ALWAYS_ENABLED, ElkrommUtils.unpackPartitions((byte)0xFF));
+        this.users[0] = new User("TECNICO                 ", User.Enabling.DISABLED.getValue(), ElkrommUtils.unpackPartitions((byte)0xFF));
+        this.users[1] = new User("MASTER                  ", (byte)(User.Enabling.ALWAYS_ENABLED.getValue() | User.Enabling.ENABLED.getValue()), ElkrommUtils.unpackPartitions((byte)0xFF));
 
         for (int i = 2; i < ElkrommFacade.MAX_CREDENTIALS; i++) {
-            this.users[i] = new User(ElkrommFacade.DEFAULT_NAME, User.Enabling.DISABLED, ElkrommUtils.unpackPartitions((byte)0x01));
+            this.users[i] = new User(ElkrommFacade.DEFAULT_NAME, User.Enabling.DISABLED.getValue(), ElkrommUtils.unpackPartitions((byte)0x01));
         }
 
         // Init Keys
         for (int i = 0; i < ElkrommFacade.MAX_CREDENTIALS; i++) {
-            this.keys[i] = new Key(ElkrommFacade.DEFAULT_NAME, Key.Enabling.DISABLED, Key.Specialization.KS_CHANGE_PARTITION_STATUS, ElkrommUtils.unpackPartitions((byte)0x01));
+            this.keys[i] = new Key(ElkrommFacade.DEFAULT_NAME, Key.Enabling.DISABLED.getValue(), Key.Specialization.KS_CHANGE_PARTITION_STATUS, ElkrommUtils.unpackPartitions((byte)0x01));
         }
 
         // Init Expansions
@@ -413,7 +413,7 @@ public class Model {
         boolean[]   userEnablings = new boolean[ElkrommFacade.MAX_CREDENTIALS];
 
         for (int i = 0; i < ElkrommFacade.MAX_CREDENTIALS; i++) {
-            userEnablings[i] = this.users[i].getEnabling() != Credential.Enabling.DISABLED;
+            userEnablings[i] = Credential.Enabling.is(users[i].getEnabling(), Credential.Enabling.ENABLED);
         }
         
         return userEnablings;

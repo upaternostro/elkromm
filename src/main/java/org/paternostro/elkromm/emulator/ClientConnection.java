@@ -234,8 +234,8 @@ public class ClientConnection extends Thread {
                     EnableDisableUser   edu = ElkrommFactory.getFactory().getEnableDisableUserSerializer().deserialize(totalPayload);
                     User                userEn = model.getUsers()[edu.getOrdinal() - 1];
 
-                    if (userEn.getEnabling() != Enabling.ALWAYS_ENABLED) {
-                        userEn.setEnabling(edu.isEnabled() ? Enabling.ENABLED : Enabling.DISABLED);
+                    if (!Enabling.is(userEn.getEnabling(), Enabling.ALWAYS_ENABLED)) {
+                        userEn.setEnabling(edu.isEnabled() ? Enabling.ENABLED.getValue() : Enabling.DISABLED.getValue());
                     }
 
                     this.model.computeChecksum();

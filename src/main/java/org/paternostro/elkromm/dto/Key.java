@@ -62,11 +62,11 @@ public class Key extends Credential
      * Creates a new key credential.
      *
      * @param name display name
-     * @param enabling area/partition enabling flags for this key
+     * @param enabling area/partition enabling bitmask flags for this key
      * @param specialization what this key is authorized to do
      * @param associatedPartitions per-partition association flags
      */
-    public Key(String name, Enabling enabling, Specialization specialization, boolean[] associatedPartitions)
+    public Key(String name, byte enabling, Specialization specialization, boolean[] associatedPartitions)
     {
         super(name, enabling, associatedPartitions);
 
@@ -102,9 +102,10 @@ public class Key extends Credential
      *
      * @return the packed enabling/specialization byte
      */
+    @Override
     public byte getEnablingValue()
     {
-        return (byte)(enabling.getValue() | ((specialization.getValue() << 2) & 0x0C));
+        return (byte)(enabling | ((specialization.getValue() << 2) & 0x0C));
     }
 
     @Override

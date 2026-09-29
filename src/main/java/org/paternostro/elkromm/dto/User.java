@@ -12,10 +12,10 @@ public class User extends Credential
      * Creates a new user credential.
      *
      * @param name display name, up to {@link org.paternostro.elkromm.ElkrommFacade#NAME_LENGTH} characters
-     * @param enabling area/partition enabling flags for this user
+     * @param enabling area/partition enabling bitmask flags for this user
      * @param associatedPartitions per-partition association flags
      */
-    public User(String name, Enabling enabling, boolean[] associatedPartitions)
+    public User(String name, byte enabling, boolean[] associatedPartitions)
     {
         super(name, enabling, associatedPartitions);
     }
