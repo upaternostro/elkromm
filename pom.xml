@@ -187,6 +187,29 @@
         </executions>
       </plugin>
 
+      <!-- Avoid -SNAPSHOT deps on releases (check at deploy, permit local installs) -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.6.3</version>
+        <executions>
+          <execution>
+            <id>enforce-release-dependencies</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireReleaseDeps>
+                  <onlyWhenRelease>true</onlyWhenRelease>
+                </requireReleaseDeps>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <!-- Firma GPG: richiesta da Maven Central per ogni artifact -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
