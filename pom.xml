@@ -40,30 +40,33 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <gpg.keyname>elkromm-dev@paternostro.org</gpg.keyname>
+    <slf4j.version>2.0.17</slf4j.version>
+    <mock-ipc.version>0.2</mock-ipc.version>
+    <junit.version>4.12</junit.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>2.0.17</version>
+      <version>${slf4j.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>2.0.17</version>
+      <version>${slf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>org.paternostro</groupId>
       <artifactId>mock-ipc</artifactId>
-      <version>0.2</version>
+      <version>${mock-ipc.version}</version>
     </dependency>
   </dependencies>
 
