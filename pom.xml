@@ -82,9 +82,30 @@
               <manifest>                
                 <mainClass>org.paternostro.elkromm.emulator.Emulator</mainClass>
                 <addClasspath>true</addClasspath>
-            </manifest>
+                <classpathPrefix>lib/</classpathPrefix>
+              </manifest>
            </archive>
         </configuration>
+      </plugin>
+
+      <!-- Copy dependencies to lib dir -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.11.0</version>
+        <executions>
+          <execution>
+            <id>copy-deps</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+              <includeScope>runtime</includeScope>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
       <!-- Build Javadocs -->
