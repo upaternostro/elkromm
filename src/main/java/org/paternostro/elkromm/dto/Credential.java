@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 import org.paternostro.elkromm.ElkrommFacade;
-import org.paternostro.elkromm.dto.Input.Flags;
 
 /**
  * Common base for the two kinds of access credential recognized by the
@@ -151,8 +150,8 @@ public abstract class Credential implements Serializable
     /**
      * Sets this credential's enabling mode bitmask.
      *
-     * @param enabling the mode to set, not {@code null} and not {@link Enabling#UNKNOWN}
-     * @throws IllegalArgumentException if {@code enabling} is {@code null} or {@code UNKNOWN}
+     * @param enabling the mode to set (bitmask), see {@link Enabling}
+     * @throws IllegalArgumentException if {@code enabling} is not a valid {@link Enabling} bitmask
      */
     public void setEnabling(byte enabling)
     {
