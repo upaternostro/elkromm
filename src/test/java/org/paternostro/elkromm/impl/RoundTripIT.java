@@ -23,7 +23,6 @@ import org.paternostro.elkromm.serializer.Expansions;
 import org.paternostro.elkromm.serializer.Input;
 import org.paternostro.elkromm.serializer.Keyboard;
 import org.paternostro.elkromm.serializer.Reader;
-import org.paternostro.elkromm.serializer.SerializersConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
