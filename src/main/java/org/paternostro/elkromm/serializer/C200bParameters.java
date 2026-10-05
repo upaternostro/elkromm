@@ -1,5 +1,6 @@
 package org.paternostro.elkromm.serializer;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -16,7 +17,7 @@ import org.paternostro.elkromm.dto.C200bParameters.Event;
  * <p>
  * <table>
  *  <tr><th>Offset</th><th>Meaning</th><th>Note</th><th>Constant</th></tr>
- *  <tr><td>0x00-0x31</td><td>?</td><td>Not mapped by any DTO field</td><td></td></tr>
+ *  <tr><td>0x00-0x31</td><td>Opaque block</td><td>Not interpreted, preserved verbatim, see {@link org.paternostro.elkromm.dto.C200bParameters#getReserved()}</td><td>{@link #RESERVED_OFFSET}, {@link #RESERVED_SIZE}</td></tr>
  *  <tr><td>0x32</td><td>Tampering</td><td>{@link Event#C2PE_TAMPERING}; the serializer also writes the same value at {@code 0x40} and {@code 0x5b} (mirrors, not distinct events), see {@link TAMPERING_MIRROR_1_OFFSET} and {@link TAMPERING_MIRROR_2_OFFSET}</td></tr>
  *  <tr><td>0x33</td><td>?</td><td></td><td></td></tr>
  *  <tr><td>0x34</td><td>Low battery</td><td>{@link Event#C2PE_LOW_BATTERY}</td></tr>
@@ -59,8 +60,17 @@ import org.paternostro.elkromm.dto.C200bParameters.Event;
  */
 public class C200bParameters implements ElkrommSerializer<org.paternostro.elkromm.dto.C200bParameters> 
 {
+    /** Offset of the opaque block, see {@link org.paternostro.elkromm.dto.C200bParameters#getReserved()} */
+    public static final int RESERVED_OFFSET                         = 0x00;
+
+    /** Size of the opaque block, see {@link org.paternostro.elkromm.dto.C200bParameters#getReserved()} */
+    public static final int RESERVED_SIZE                           = org.paternostro.elkromm.dto.C200bParameters.RESERVED_SIZE;
+
+    /** Number of event slots, one code each, from offset {@code 0x32} to {@code 0x63}; the same slots index the event table of the phone numbers block */
+    public static final int EVENT_SLOTS                             = 50;
+
     /** Payload size */
-    public static final int PAYLOAD_SIZE = 168;
+    public static final int PAYLOAD_SIZE = RESERVED_SIZE + EVENT_SLOTS + ElkrommFacade.MAX_LOGICAL_INPUTS + ElkrommUtils.CHECKSUM_SIZE;
 
     /** Offset of a copy of the burglary alarm code, not a distinct event */
     public static final int BURGLAR_ALARM_MIRROR_1_OFFSET           = 0x39;
@@ -97,6 +107,8 @@ public class C200bParameters implements ElkrommSerializer<org.paternostro.elkrom
         if (obj == null) throw new IllegalArgumentException("Missing mandatory obj");
 
         byte[]  data = new byte[PAYLOAD_SIZE];
+
+        System.arraycopy(obj.getReserved(), 0, data, RESERVED_OFFSET, RESERVED_SIZE);
 
         for (Entry<Event,Byte> pivot : obj.getEventCodes().entrySet()) {
             data[pivot.getKey().getOffset()] = pivot.getValue();
@@ -143,7 +155,7 @@ public class C200bParameters implements ElkrommSerializer<org.paternostro.elkrom
         if (data.length != PAYLOAD_SIZE) throw new IllegalArgumentException("Wrong data length");
         if (ElkrommUtils.computeBlockChecksum(data) != ElkrommUtils.getBlockChecksum(data)) throw new IllegalArgumentException("Wrong checksum, expected: " + ElkrommUtils.computeBlockChecksum(data) + " found: " + ElkrommUtils.getBlockChecksum(data));
 
-        org.paternostro.elkromm.dto.C200bParameters retval = new org.paternostro.elkromm.dto.C200bParameters(new HashMap<>(), new byte[0]);
+        org.paternostro.elkromm.dto.C200bParameters retval = new org.paternostro.elkromm.dto.C200bParameters(Arrays.copyOfRange(data, RESERVED_OFFSET, RESERVED_OFFSET + RESERVED_SIZE), new HashMap<>(), new byte[0]);
 
         for (Event pivot : Event.values()) {
             retval.setEventCode(pivot, data[pivot.getOffset()]);

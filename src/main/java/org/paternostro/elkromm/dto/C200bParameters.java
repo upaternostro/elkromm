@@ -104,18 +104,62 @@ public class C200bParameters implements Serializable {
         }
     }
 
+    /** Size in bytes of the opaque block at the start of the C200B payload, see {@link #getReserved()} */
+    public static final int RESERVED_SIZE = 50;
+
+    private byte[]          reserved;
     private Map<Event,Byte> eventCodes;
     private byte[]          inputCodes;
+
+    /**
+     * Creates a new C200B configuration with a zero-filled opaque block.
+     *
+     * @param eventCodes the C200B code to report for each event
+     * @param inputCodes the C200B code for each logical input, {@code 0xff} where no input exists, length {@link ElkrommFacade#MAX_LOGICAL_INPUTS}
+     */
+    public C200bParameters(Map<Event,Byte> eventCodes, byte[] inputCodes) {
+        this(new byte[RESERVED_SIZE], eventCodes, inputCodes);
+    }
 
     /**
      * Creates a new C200B configuration.
      *
      * @param eventCodes the C200B code to report for each event
      * @param inputCodes the C200B code for each logical input, {@code 0xff} where no input exists, length {@link ElkrommFacade#MAX_LOGICAL_INPUTS}
+     * @param reserved the opaque block found at the start of the payload, length {@link #RESERVED_SIZE}, see {@link #getReserved()}
+     * @throws IllegalArgumentException if {@code reserved} is {@code null} or has the wrong length
      */
-    public C200bParameters(Map<Event,Byte> eventCodes, byte[] inputCodes) {
+    public C200bParameters(byte[] reserved, Map<Event,Byte> eventCodes, byte[] inputCodes) {
+        setReserved(reserved);
         setEventCodes(eventCodes);
         setInputCodes(inputCodes);
+    }
+
+    /**
+     * Returns a copy of the opaque block found at the start of the C200B payload.
+     * <p>
+     * The library does not interpret these bytes. They are supplied by the panel and
+     * covered by the block checksum, and Hi-Connect sends them back unchanged when it
+     * writes the block, so they must be preserved to write back the configuration that
+     * was read. See {@code PROTOCOL.md} for what is known about them.
+     *
+     * @return the opaque block, length {@link #RESERVED_SIZE}
+     */
+    public byte[] getReserved() {
+        return Arrays.copyOf(reserved, RESERVED_SIZE);
+    }
+
+    /**
+     * Sets the opaque block found at the start of the C200B payload, see {@link #getReserved()}.
+     *
+     * @param reserved the opaque block, exactly {@link #RESERVED_SIZE} bytes
+     * @throws IllegalArgumentException if {@code reserved} is {@code null} or has the wrong length
+     */
+    public void setReserved(byte[] reserved) {
+        if (reserved == null) throw new IllegalArgumentException("Missing mandatory reserved bytes");
+        if (reserved.length != RESERVED_SIZE) throw new IllegalArgumentException("Wrong reserved bytes length " + reserved.length + ", expected " + RESERVED_SIZE);
+
+        this.reserved = Arrays.copyOf(reserved, RESERVED_SIZE);
     }
 
     /**
@@ -191,7 +235,7 @@ public class C200bParameters implements Serializable {
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{eventCodes=").append(eventCodes).append(", inputCodes=").append(Arrays.toString(inputCodes)).append("}");
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{reserved=").append(Arrays.toString(reserved)).append(", eventCodes=").append(eventCodes).append(", inputCodes=").append(Arrays.toString(inputCodes)).append("}");
 
         return sb.toString();
     }

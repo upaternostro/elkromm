@@ -1,5 +1,6 @@
 package org.paternostro.elkromm;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -640,14 +641,23 @@ public class ElkrommFacadeFunctionalTest {
         assertNotNull(c200bParameters.getInputCodes());
 
         byte[]          inputCodes = c200bParameters.getInputCodes();
+        byte[]          reserved = c200bParameters.getReserved();
+        byte[]          newReserved = new byte[C200bParameters.RESERVED_SIZE];
+
+        for (int i = 0; i < newReserved.length; i++) {
+            newReserved[i] = (byte)(i + 1);
+        }
 
         c200bParameters.setInputCode(1, (byte)0x42);
+        c200bParameters.setReserved(newReserved);
         facade.setC200bParameters(c200bParameters);
         c200bParameters = facade.getC200bParameters();
         assertNotNull(c200bParameters);
         assertNotNull(c200bParameters.getInputCodes());
         assertTrue(c200bParameters.getInputCodes()[1] == 0x42);
+        assertArrayEquals(newReserved, c200bParameters.getReserved());
         c200bParameters.setInputCodes(inputCodes);
+        c200bParameters.setReserved(reserved);
         facade.setC200bParameters(c200bParameters);
         c200bParameters = facade.getC200bParameters();
         assertNotNull(c200bParameters);

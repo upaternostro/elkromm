@@ -628,6 +628,8 @@ Coerente con il `// FIXME: IP addresses in phone numbers!` ancora presente nel s
 * Gli offset **non sono consecutivi/ordinati** come nell'enum: sono sparsi nei restanti ~200 byte del payload (tra il termine dei record telefonici e il checksum), con ampie zone non utilizzate tra un evento e l'altro — coerente con le lunghe sequenze di `00 00 00 00...` osservate nei dump
 * Il serializer inoltre **duplica** il valore di alcuni eventi su più offset contemporaneamente (mirror, come già visto per [C200B](#c200b)): `PNSCE_BURGLAR_ALARM` → anche `0x00e8`, `0x00ec`, `0x00f0`; `PNSCE_INPUT_INCLUSION_EXCLUSION` → anche `0x0148`; `PNSCE_TAMPERING` → anche `0x0104`, `0x0170`; `PNSCE_SYSTEM_FAULT` → anche `0x0130`; `PNSCE_PARTITIONS_SYSTEM_ON_OFF` → offset primario `0x0134` → anche `0x0138` e `0x0140` (non solo `0x0140` come riportato in una versione precedente di questo documento — bug di mirror scovato e corretto grazie alla suite di test round trip)
 
+La tabella eventi è indicizzata dagli stessi 50 slot evento del payload [C200B](#c200b), vedi [Slot evento condivisi con i numeri telefonici](#slot-evento-condivisi-con-i-numeri-telefonici).
+
 Layout completo del payload da 408 byte, verificato su `serializer.PhoneNumbersSendingCodes` (le righe marcate `?` non sono mappate da nessun campo del DTO):
 
 Offset	| Significato	| Note
@@ -875,7 +877,7 @@ Payload 168 byte, verificato su `serializer.C200bParameters`.
 
 Offset	| Significato	| Note
 --------|---------------|-----
-0x00-0x31	| ?	| Non mappato da nessun campo del DTO
+0x00-0x31	| Blocco opaco	| 50 byte, conservati così come sono, vedi [Blocco opaco](#blocco-opaco-0x00-0x31)
 0x32	| Tampering	| `Event.C2PE_TAMPERING`; il serializer scrive lo stesso valore anche a `0x40` e `0x5b` (mirror, non eventi distinti)
 0x33	| ?	|
 0x34	| Batteria scarica	| `Event.C2PE_LOW_BATTERY`
@@ -912,6 +914,75 @@ Offset	| Significato	| Note
 0x5c-0x63	| ?	|
 0x64-0xa3	| Codici ingresso	| 64 byte, uno per ingresso logico (`MAX_LOGICAL_INPUTS`), `0xff` se l'ingresso non esiste
 0xa4-0xa7	| Checksum blocco	|
+
+### Blocco opaco (0x00-0x31)
+
+I primi 50 byte del payload **non sono interpretati** dalla libreria: `dto.C200bParameters` li conserva così come sono (`getReserved()` / `setReserved()`), il serializer li riscrive invariati e il checksum del blocco li include. Arrivano dalla centrale: Hi-Connect li memorizza quando legge il blocco e li rimanda invariati quando lo scrive (`0xe8`), quindi un client che voglia riscrivere la configurazione letta deve preservarli (un serializer che li azzera produce un payload diverso e un checksum diverso).
+
+Layout osservato su una centrale reale (versione del firmware V03.01) e riportato nell'ultima colonna della tabella seguente: un byte per **slot evento**, con il numero dello slot uguale all'offset del byte, e `0xfe` per gli slot senza evento. I valori formano sequenze di numeri consecutivi per famiglia di evento (`0x15-0x18` per i quattro slot dell'intrusione, `0x3d-0x40` per attivazione/disattivazione sistema, rapina e relativo mirror), e gli slot dell'intrusione e quelli del tampering hanno tutti valori *distinti*, quindi sembrano classi di evento distinte del firmware e non copie. Il significato effettivo dei valori **non è confermato**: una lettura possibile è che identifichino le classi di evento, forse i tipi di evento del registro della centrale.
+
+### Slot evento condivisi con i numeri telefonici
+
+Il payload C200B e la tabella eventi dei [Numeri telefonici](#numeri-telefonici) sono indicizzati dagli stessi 50 **slot evento** (verificato su `serializer.C200bParameters` e `serializer.PhoneNumbersSendingCodes`):
+
+* C200B: lo slot *i* ha il suo codice di 1 byte all'offset `0x32 + i` e, nel blocco opaco, il suo identificatore all'offset `i`;
+* Numeri telefonici: lo slot *i* ha la sua bitmask dei telefoni all'offset `0xcc + 4*i` (una word di 2 byte, seguita da 2 byte non mappati da nessun campo del DTO);
+* i mirror sono gli stessi nei due blocchi (gli slot 7-9 sono mirror dello slot 6, gli slot 14 e 41 dello slot 0, lo slot 25 dello slot 22, gli slot 27 e 29 dello slot 26, lo slot 31 dello slot 30).
+
+Non tutti gli eventi sono disponibili su ogni protocollo o canale: l'avviso generico (slot 35), per esempio, esiste solo per voce e SMS (è legato alla scadenza della SIM), quindi ha un identificatore ma non un codice C200B. Lo slot 24 (attivazione/disattivazione partizioni) e lo slot 32 (chiamata di test ciclica) sono mappati solo da C200B. Un `?` accanto a un offset indica che nessun campo del DTO lo mappa.
+
+Slot	| Offset C200B	| Offset numeri telefonici	| Evento	| Id osservato
+-----|-----|-----|-----|-----
+0	| 0x32	| 0xcc	| Tampering	| 0x00
+1	| 0x33 ?	| 0xd0 ?	| ?	| 0xfe
+2	| 0x34	| 0xd4	| Batteria scarica	| 0x02
+3	| 0x35	| 0xd8	| Mancanza rete	| 0x03
+4	| 0x36 ?	| 0xdc ?	| ?	| 0xfe
+5	| 0x37 ?	| 0xe0 ?	| ?	| 0xfe
+6	| 0x38	| 0xe4	| Allarme intrusione	| 0x15
+7	| 0x39	| 0xe8	| (mirror dello slot 6)	| 0x16
+8	| 0x3a	| 0xec	| (mirror dello slot 6)	| 0x17
+9	| 0x3b	| 0xf0	| (mirror dello slot 6)	| 0x18
+10	| 0x3c	| 0xf4	| Pre-allarme	| 0x19
+11	| 0x3d ?	| 0xf8 ?	| ?	| 0xfe
+12	| 0x3e ?	| 0xfc ?	| ?	| 0xfe
+13	| 0x3f ?	| 0x100 ?	| ?	| 0xfe
+14	| 0x40	| 0x104	| (mirror dello slot 0)	| 0x1d
+15	| 0x41	| 0x108	| Panico	| 0x1e
+16	| 0x42	| 0x10c	| Panico silenzioso	| 0x1f
+17	| 0x43	| 0x110	| Incendio	| 0x20
+18	| 0x44 ?	| 0x114 ?	| ?	| 0xfe
+19	| 0x45 ?	| 0x118 ?	| ?	| 0x25
+20	| 0x46 ?	| 0x11c ?	| ?	| 0x26
+21	| 0x47	| 0x120	| Emergenza medica	| 0x24
+22	| 0x48	| 0x124	| Guasto sistema	| 0x27
+23	| 0x49 ?	| 0x128 ?	| ?	| 0x44
+24	| 0x4a	| 0x12c ?	| Attivazione/disattivazione partizioni (solo C200B)	| 0x31
+25	| 0x4b	| 0x130	| (mirror dello slot 22)	| 0x37
+26	| 0x4c	| 0x134	| Attivazione/disattivazione sistema	| 0x3d
+27	| 0x4d	| 0x138	| (mirror dello slot 26)	| 0x3e
+28	| 0x4e	| 0x13c	| Rapina	| 0x3f
+29	| 0x4f	| 0x140	| (mirror dello slot 26)	| 0x40
+30	| 0x50	| 0x144	| Esclusione/inclusione ingresso	| 0x45
+31	| 0x51	| 0x148	| (mirror dello slot 30)	| 0x46
+32	| 0x52	| 0x14c ?	| Chiamata di test ciclica (solo C200B)	| 0x4d
+33	| 0x53	| 0x150	| Manutenzione	| 0x4f
+34	| 0x54	| 0x154	| Codice falso	| 0x55
+35	| 0x55 ?	| 0x158	| Avviso generico (solo numeri telefonici)	| 0x58
+36	| 0x56 ?	| 0x15c ?	| ?	| 0xfe
+37	| 0x57 ?	| 0x160 ?	| ?	| 0xfe
+38	| 0x58	| 0x164	| Allarme tecnico tipo 1	| 0x2b
+39	| 0x59	| 0x168	| Allarme tecnico tipo 2	| 0x2c
+40	| 0x5a	| 0x16c	| Allarme tecnico tipo 3	| 0x2d
+41	| 0x5b	| 0x170	| (mirror dello slot 0)	| 0x06
+42	| 0x5c ?	| 0x174 ?	| ?	| 0xfe
+43	| 0x5d ?	| 0x178 ?	| ?	| 0xfe
+44	| 0x5e ?	| 0x17c ?	| ?	| 0xfe
+45	| 0x5f ?	| 0x180 ?	| ?	| 0xfe
+46	| 0x60 ?	| 0x184 ?	| ?	| 0x80
+47	| 0x61 ?	| 0x188 ?	| ?	| 0xfe
+48	| 0x62 ?	| 0x18c ?	| ?	| 0xfe
+49	| 0x63 ?	| 0x190 ?	| ?	| 0xfe
 
 ## Time programmer e Day class commands
 

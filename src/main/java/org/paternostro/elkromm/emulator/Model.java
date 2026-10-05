@@ -213,7 +213,7 @@ public class Model {
         this.sMSs = new SMSs(texts);
 
         // Init C200b parameters
-        this.c200bParameters = new C200bParameters(new HashMap<>(), new byte[0]);
+        this.c200bParameters = new C200bParameters(config.getC200bReserved(), new HashMap<>(), new byte[0]);
 
         computeChecksum();
 

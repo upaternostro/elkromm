@@ -148,6 +148,7 @@ not present falls back to its default value below. Note the property key prefix 
 | `org.paternostro.elkron.output.<N>.type` | `NORMALLY_LOW` | Output `<N>` (1-64) type |
 | `org.paternostro.elkron.output.<N>.partitions` | `1` | Partitions belonging to output `<N>` (1-48), expressed as bitmask |
 | `org.paternostro.elkron.output.<N>.specialization` | `OR_TC` | Output `<N>` (1-64) specialization |
+| `org.paternostro.elkron.c200b.reserved` | all zeros | 100 hexadecimal digits (50 bytes; spaces, commas and colons are ignored): opaque block reported at the start of the C200B payload, see [PROTOCOL.md](PROTOCOL.md#c200b) |
 | `org.paternostro.elkron.output.<N>.name` | `Output <N>` | Output `<N>` (1-64) name |
 
 Minimal example, a single area/partition setup listening on the default port:

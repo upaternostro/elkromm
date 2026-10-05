@@ -272,7 +272,7 @@ public class RoundTripIT {
     public void c200BRoundTripIT() throws ElkrommException
     {
         if (config.areITEnabled()) {
-            roundTripIT(ElkronCommand.C200B, factory.getC200bParametersSerializer(), index -> index > 49, null);
+            roundTripIT(ElkronCommand.C200B, factory.getC200bParametersSerializer(), null, null);
         }
     }
 
