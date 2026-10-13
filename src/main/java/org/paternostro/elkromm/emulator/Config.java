@@ -33,8 +33,6 @@ public class Config {
     public static final String D_EXPANSIONS     = "0";
     public static final String K_AREAS          = "org.paternostro.elkron.areas";
     public static final String D_AREAS          = "0";
-    public static final String K_C200B_RESERVED = "org.paternostro.elkron.c200b.reserved";
-    public static final String D_C200B_RESERVED = "";
 
     public static final String K_AREA_PARTITIONS    = "org.paternostro.elkron.area.%d.partitions";
     public static final String[] D_AREA_PARTITIONS  = {"1", "0", "0", "0"};
@@ -92,6 +90,9 @@ public class Config {
 
     public static final String K_OUTPUT_NAME    = "org.paternostro.elkron.output.%d.name";
     public static final String D_OUTPUT_NAME    = "Output %d";
+
+    public static final String K_C200B_RESERVED = "org.paternostro.elkron.c200b.reserved";
+    public static final String D_C200B_RESERVED = "";
 
     protected static Config instance = null;
 
@@ -187,39 +188,6 @@ public class Config {
         defaultValue = D_AREA_NAME[area - 1];
 
         return properties.getProperty(key, defaultValue);
-    }
-
-    /**
-     * Returns the opaque block the emulator reports at the start of the C200B payload.
-     * <p>
-     * The value is read from the {@link #K_C200B_RESERVED} property as hexadecimal digits
-     * ({@link C200bParameters#RESERVED_SIZE} bytes; whitespace, commas and colons are ignored).
-     * If the property is missing or malformed, a zero-filled block is returned.
-     *
-     * @return the opaque block, length {@link C200bParameters#RESERVED_SIZE}
-     */
-    public byte[] getC200bReserved() {
-        return parseC200bReserved(properties.getProperty(K_C200B_RESERVED, D_C200B_RESERVED));
-    }
-
-    static byte[] parseC200bReserved(String value) {
-        byte[]  retval = new byte[C200bParameters.RESERVED_SIZE];
-        String  hex = value.replaceAll("[\\s,:]", "");
-
-        if (hex.isEmpty()) {
-            return retval;
-        }
-
-        if (hex.length() != 2 * retval.length || !hex.matches("[0-9a-fA-F]+")) {
-            logger.warn("Invalid C200b reserved bytes, expected " + retval.length + " bytes as hexadecimal digits, using zeros");
-            return retval;
-        }
-
-        for (int i = 0; i < retval.length; i++) {
-            retval[i] = (byte)Integer.parseInt(hex.substring(2 * i, 2 * i + 2), 16);
-        }
-
-        return retval;
     }
 
     public int getPartitions() {
@@ -392,5 +360,38 @@ public class Config {
         }
         
         return properties.getProperty(String.format(K_OUTPUT_NAME, output), String.format(D_OUTPUT_NAME, output));
+    }
+
+    /**
+     * Returns the opaque block the emulator reports at the start of the C200B payload.
+     * <p>
+     * The value is read from the {@link #K_C200B_RESERVED} property as hexadecimal digits
+     * ({@link C200bParameters#RESERVED_SIZE} bytes; whitespace, commas and colons are ignored).
+     * If the property is missing or malformed, a zero-filled block is returned.
+     *
+     * @return the opaque block, length {@link C200bParameters#RESERVED_SIZE}
+     */
+    public byte[] getC200bReserved() {
+        return parseC200bReserved(properties.getProperty(K_C200B_RESERVED, D_C200B_RESERVED));
+    }
+
+    static byte[] parseC200bReserved(String value) {
+        byte[]  retval = new byte[C200bParameters.RESERVED_SIZE];
+        String  hex = value.replaceAll("[\\s,:]", "");
+
+        if (hex.isEmpty()) {
+            return retval;
+        }
+
+        if (hex.length() != 2 * retval.length || !hex.matches("[0-9a-fA-F]+")) {
+            logger.warn("Invalid C200b reserved bytes, expected " + retval.length + " bytes as hexadecimal digits, using zeros");
+            return retval;
+        }
+
+        for (int i = 0; i < retval.length; i++) {
+            retval[i] = (byte)Integer.parseInt(hex.substring(2 * i, 2 * i + 2), 16);
+        }
+
+        return retval;
     }
 }
