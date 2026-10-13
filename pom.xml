@@ -41,7 +41,7 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <gpg.keyname>elkromm-dev@paternostro.org</gpg.keyname>
     <slf4j.version>2.0.17</slf4j.version>
-    <mock-ipc.version>0.2</mock-ipc.version>
+    <mock-ipc.version>0.3</mock-ipc.version>
     <junit.version>4.12</junit.version>
   </properties>
 

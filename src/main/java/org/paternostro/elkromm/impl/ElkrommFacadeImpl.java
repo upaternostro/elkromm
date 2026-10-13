@@ -141,8 +141,35 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     @Override
     public void disconnect() throws ElkrommException
     {
+        if (status == Status.ST_NOT_INITIALIZED || status == Status.ST_LOGGED_IN) throw new AssertionError("Wrong status");
         if (status == Status.ST_DISCONNECTED) return;
 
+        closeEndpoint();
+    }
+
+    @Override
+    public void close() throws ElkrommException
+    {
+        if (status == Status.ST_NOT_INITIALIZED) return;
+
+        boolean loggedOut = false;
+
+        try {
+            if (status == Status.ST_LOGGED_IN) logout();
+            loggedOut = true;
+        } finally {
+            // Forced teardown: the endpoint is closed even if logout failed
+            try {
+                closeEndpoint();
+            } catch (ElkrommException e) {
+                // If logout failed, that is the primary failure: do not mask it
+                if (loggedOut) throw e;
+            }
+        }
+    }
+
+    private void closeEndpoint() throws ElkrommException
+    {
         try {
             status = Status.ST_DISCONNECTED;
             // os.close();

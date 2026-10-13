@@ -39,11 +39,13 @@ import org.paternostro.mock.ipc.Endpoint;
  * {@link #init(Endpoint, int)} variant used for testing against
  * {@code elkromm}'s own emulator), {@link #connect()},
  * {@link #login(int, int)}, then any number of read/write operations,
- * finished by {@link #logout()} and {@link #disconnect()}.
+ * finished by {@link #logout()} and {@link #disconnect()}, or simply by
+ * {@link #close()} (so the facade can be used in a try-with-resources
+ * statement).
  * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
  */
-public interface ElkrommFacade
+public interface ElkrommFacade extends AutoCloseable
 {
     /** Connection lifecycle state, as tracked by {@link #getStatus()}. */
     enum Status {
@@ -295,6 +297,10 @@ public interface ElkrommFacade
      * <p>
      * Used to connect to the bundled emulator (see {@code org.paternostro.elkromm.emulator})
      * instead of a real panel, typically via an in-memory pipe endpoint from {@code mock-ipc}.
+     * <p>
+     * The facade takes over the lifecycle of the endpoint: it is connected by
+     * {@link #connect()} (a no-op for endpoints that are connected by
+     * construction) and closed by {@link #disconnect()} or {@link #close()}.
      *
      * @param endpoint the endpoint to communicate through
      * @param plantCode installer/plant identification code, used later at {@link #login(int, int)} time
@@ -317,10 +323,36 @@ public interface ElkrommFacade
 
     /**
      * Closes the connection to the panel (or emulator).
+     * <p>
+     * This is the counterpart of {@link #connect()} and works at transport
+     * level only: it does not log out, so {@link #logout()} must be called
+     * first if a session is open. Calling it on an already disconnected
+     * facade has no effect. See {@link #close()} for a method that tears
+     * everything down in one call.
      *
      * @throws ElkrommException if an error occurs while disconnecting
+     * @throws AssertionError if the facade is not initialized or is still
+     *         logged in ({@link Status#ST_LOGGED_IN})
      */
     void disconnect() throws ElkrommException;
+
+    /**
+     * Releases the connection, whatever its current state: logs out if a
+     * session is open and then closes the endpoint, even if the logout fails.
+     * <p>
+     * Does nothing if the facade is not initialized. The endpoint is closed
+     * even when the facade is already disconnected (this releases endpoints
+     * that are connected by construction and were never passed through
+     * {@link #connect()}), which is harmless because closing an
+     * {@link Endpoint} is idempotent; so this method can safely be called more
+     * than once. If both the logout and the closing of the endpoint fail, the
+     * logout failure is the one propagated and the other one is only logged.
+     *
+     * @throws ElkrommException if the logout or the closing of the endpoint
+     *         fails
+     */
+    @Override
+    void close() throws ElkrommException;
 
     /**
      * Performs the HELLO/LOGIN/SEND handshake required before any other

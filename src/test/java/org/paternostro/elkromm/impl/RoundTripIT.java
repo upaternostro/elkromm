@@ -313,19 +313,11 @@ public class RoundTripIT {
     {
         if (facade != null) {
             try {
-                facade.logout();
+                facade.close();
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
                 assertTrue(false);
-            } finally {
-                try {
-                    facade.disconnect();
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                    assertTrue(false);
-                }
             }
         }
     }

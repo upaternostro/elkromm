@@ -7,8 +7,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.paternostro.elkromm.ElkrommFacade.Status;
 import org.paternostro.elkromm.emulator.ClientConnection;
@@ -21,11 +21,12 @@ import org.paternostro.mock.ipc.EndpointFactory;
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
  */
 public class ElkrommFacadeTest {
-    private static ClientConnection server;
-    private static ElkrommFacade    facade;
+    private ClientConnection server;
+    private ElkrommFacade    facade;
 
-    @BeforeClass
-    public static void initTests() throws UnknownHostException, IOException
+    // Every test gets its own pipes, emulator and facade: once disconnected, a facade cannot be reconnected
+    @Before
+    public void initTest() throws UnknownHostException, IOException
     {
         Channel c2s = new Channel();
         Channel s2c = new Channel();
@@ -41,22 +42,6 @@ public class ElkrommFacadeTest {
 
         assertNotNull(facade);
         assertEquals(facade.getStatus(), Status.ST_DISCONNECTED);
-
-        try {
-            facade.connect();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            assertTrue(false);
-        }
-        
-        try {
-            facade.login(Config.getInstance().getPlantCode(), Config.getInstance().getTechnicalCode());
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            assertTrue(false);
-        }
     }
     
     @Test
@@ -247,23 +232,9 @@ public class ElkrommFacadeTest {
         }
     }
 
-    @AfterClass
-    public static void shutdownTests() throws UnknownHostException
+    @After
+    public void shutdownTest() throws ElkrommException
     {
-        try {
-            facade.logout();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            assertTrue(false);
-        }
-        
-        try {
-            facade.disconnect();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            assertTrue(false);
-        }
+        facade.close();
     }
 }
