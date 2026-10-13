@@ -1,0 +1,90 @@
+name: Release
+
+# Su push di un tag vX.Y.Z: compila, firma, carica su Maven Central (Sonatype
+# Central Portal) e crea la GitHub Release con i jar.
+#
+# Lanciato a mano (workflow_dispatch) fa una PROVA A SECCO: compila e firma
+# ma non carica nulla su Central e non crea la Release. Serve a verificare
+# secret e firma senza consumare release del limite mensile.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # serve solo a `gh release create`
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Niente `cache: maven`: in un job che maneggia chiavi di firma e token
+      # preferisco non ripristinare cache prodotte da altri run.
+      - name: Set up JDK 8 and Maven settings
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+          server-id: central # deve coincidere con publishingServerId nel pom.xml
+          server-username-env-var: CENTRAL_USERNAME
+          server-password-env-var: CENTRAL_PASSWORD
+
+      # See https://github.com/mavenplugins/central-publishing-maven-plugin/issues/78 ,
+      #     https://github.com/mavenplugins/central-publishing-maven-plugin/issues/79 and
+      #     https://github.com/mavenplugins/central-publishing-maven-plugin/pull/80
+      - name: Pin Maven 3.9.16 (central-publishing 0.11.0 breaks with Maven 3.10)
+        run: |
+          v=3.9.16
+          sha512=ed41650d42485cfc243fad22158caf9cbb5dc408ce7a09ddb94dd42a019de929ca43065bfa450612cf12bf78b5cafa3884b96c090de326ff590448c933454af3
+          curl -fsSLo "$RUNNER_TEMP/maven.zip" "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/$v/apache-maven-$v-bin.zip"
+          echo "$sha512  $RUNNER_TEMP/maven.zip" | sha512sum -c - >/dev/null
+          sudo unzip -qq -d /usr/share "$RUNNER_TEMP/maven.zip"
+          sudo ln -sf "/usr/share/apache-maven-$v/bin/mvn" /usr/bin/mvn
+          mvn -v
+          test "$(mvn -v | sed -n 's/^Apache Maven \([0-9.]*\).*/\1/p')" = "$v"
+      
+      - name: Check that the tag matches a release version in pom.xml
+        if: github.ref_type == 'tag'
+        run: |
+          version=$(mvn --batch-mode --quiet -DforceStdout \
+            org.apache.maven.plugins:maven-help-plugin:3.5.1:evaluate \
+            -Dexpression=project.version)
+          echo "pom.xml version: $version - tag: $GITHUB_REF_NAME"
+          if [ "v$version" != "$GITHUB_REF_NAME" ] || [[ "$version" == *-SNAPSHOT ]]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match a release version in pom.xml ($version)"
+            exit 1
+          fi
+
+      # La firma avviene in fase `verify`, prima dell'upload: se chiave o
+      # passphrase sono sbagliate il job fallisce senza toccare Central.
+      - name: Build, sign and (on tags) deploy to Maven Central
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          MAVEN_GPG_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then goal=deploy; else goal=verify; fi
+          mvn --batch-mode -Dgpg.signer=bc clean "$goal"
+
+      - name: List signed artifacts (dry run)
+        if: github.ref_type != 'tag'
+        run: ls -l target/*.jar target/*.asc target/*.zip target/*.tar.gz
+
+      # Gli archivi ZIP/TAR.GZ sono prodotti da maven-assembly-plugin (fase
+      # `package`, attach=false): finiscono in target/ ma non su Central.
+      - name: Create GitHub Release with jars and distribution archives
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            target/*.jar target/*.zip target/*.tar.gz \
+            --title "$GITHUB_REF_NAME" --generate-notes --verify-tag
