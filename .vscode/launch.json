@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Emulator",
+            "request": "launch",
+            "classPaths": ["$Test"],
+            "mainClass": "org.paternostro.elkromm.emulator.Emulator"
+        }
+    ]
+}
