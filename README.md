@@ -236,7 +236,8 @@ The public API is documented with Javadoc. Generate it locally with:
 mvn javadoc:javadoc
 ```
 
-The generated HTML is written to `target/site/apidocs`.
+The generated HTML is written to an `apidocs` folder under `target` (with the current version of
+the Maven Javadoc plugin, `target/reports/apidocs`; the exact location depends on the plugin version).
 
 ## Roadmap
 
