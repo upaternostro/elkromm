@@ -18,7 +18,59 @@ import org.slf4j.LoggerFactory;
 public class Config {
     public static final Logger logger       = LoggerFactory.getLogger(Config.class);
 
-    public static final String CONFIG_FILE      = "elkron.properties";
+    /** Name of the optional classpath properties file used to override components. */
+    public static final String PROPERTIES_FILE_NAME = "elkron.properties";
+    /** Property key used to override the {@code Config} implementation class itself. */
+    public static final String CLASS_NAME_PROPERTY  = "org.paternostro.elkromm.emulator.Config.class";
+    /** Default {@code Config} implementation class name. */
+    public static final String CLASS_NAME_DEFAULT   = "org.paternostro.elkromm.emulator.Config";
+
+    protected static volatile Config instance = null;
+
+    public static Config getInstance()
+    {
+        Config   retval = instance;
+
+        if (retval == null) {
+            synchronized (Config.class) {
+                retval = instance;
+
+                if (retval == null) {
+                    Properties  p = new Properties();
+
+                    try (InputStream propertiesStream = Config.class.getResourceAsStream(PROPERTIES_FILE_NAME)) {
+                        if (propertiesStream != null) {
+                            p.load(propertiesStream);
+                        }
+                    } catch (IOException e) {
+                        logger.warn("Error reading " + PROPERTIES_FILE_NAME + ", using defaults", e);
+                    }
+
+                    String className = p.getProperty(CLASS_NAME_PROPERTY, CLASS_NAME_DEFAULT);
+
+                    try {
+                        retval = Class.forName(className, false, Config.class.getClassLoader())
+                                        .asSubclass(Config.class)
+                                        .getDeclaredConstructor()
+                                        .newInstance();
+                    } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
+                        logger.warn("Cannot instantiate class " + className + ", using default class", e);
+                        retval = new Config();
+                    }
+
+                    /*
+                     * Configure the new instance before publishing it in 'instance': other threads calling
+                     * getInstance() must never see a Config that does not have its properties yet
+                     */
+                    retval.setProperties(p);
+                    instance = retval;
+                }
+            }
+        }
+
+        return retval;
+    }
+
     public static final String K_PORT           = "org.paternostro.elkron.port";
     public static final String D_PORT           = "8030";
     public static final String K_PLANT_CODE     = "org.paternostro.elkron.plant.code";
@@ -94,33 +146,17 @@ public class Config {
     public static final String K_C200B_RESERVED = "org.paternostro.elkron.c200b.reserved";
     public static final String D_C200B_RESERVED = "";
 
-    protected static Config instance = null;
-
     protected Properties properties;
 
-    private Config() {
+    Config() {
         this.properties = new Properties();
-
-        try {
-            logger.info("Loading configuration from " + CONFIG_FILE);
-            InputStream stream = this.getClass().getResourceAsStream(CONFIG_FILE);
-
-            if (stream != null) {
-                properties.load(stream);
-            } else {
-                logger.warn("Configuration file " + CONFIG_FILE + " not found, using default values");
-            }
-        } catch (IOException e) {
-            logger.warn("Error loading configuration from " + CONFIG_FILE + ", using default values", e);
-        }
     }
 
-    public synchronized static Config getInstance() {
-        if (instance == null) {
-            instance = new Config();
-        }
+    protected void setProperties(Properties properties)
+    {
+        if (properties == null) throw new IllegalArgumentException("Properties cannot be null");
 
-        return instance;
+        this.properties = (Properties)properties.clone();
     }
 
     protected int getIntProperty(String key, String defaultValue, String description) {
