@@ -73,7 +73,7 @@ public class ElkrommFactory {
     /** Default {@code ElkrommFactory} implementation class name. */
     public static final String CLASS_NAME_DEFAULT   = "org.paternostro.elkromm.ElkrommFactory";
 
-    private static ElkrommFactory   singleton = null;
+    private static volatile ElkrommFactory   singleton = null;
 
     /**
      * Returns the singleton factory instance, creating it on first call.
@@ -94,11 +94,9 @@ public class ElkrommFactory {
                 retval = singleton;
 
                 if (retval == null) {
-                    Properties p = new Properties();
+                    Properties  p = new Properties();
 
-                    try {
-                        InputStream propertiesStream = ElkrommFactory.class.getResourceAsStream(PROPERTIES_FILE_NAME);
-
+                    try (InputStream propertiesStream = ElkrommFactory.class.getResourceAsStream(PROPERTIES_FILE_NAME)) {
                         if (propertiesStream != null) {
                             p.load(propertiesStream);
                         }
@@ -109,21 +107,21 @@ public class ElkrommFactory {
                     String className = p.getProperty(CLASS_NAME_PROPERTY, CLASS_NAME_DEFAULT);
 
                     try {
-                        retval = singleton = (ElkrommFactory)Class.forName(className).newInstance();
-                        singleton.setProperties(p);
-                    } catch (ClassNotFoundException e) {
-                        logger.warn("Class " + className + " not found, using defaults", e);
-                        retval = singleton = new ElkrommFactory();
-                    } catch (InstantiationException e) {
-                        logger.warn("Class " + className + " instantiation error, using defaults", e);
-                        retval = singleton = new ElkrommFactory();
-                    } catch (IllegalAccessException e) {
-                        logger.warn("Class " + className + " instantiation error, using defaults", e);
-                        retval = singleton = new ElkrommFactory();
-                    } catch (ClassCastException e) {
-                        logger.warn("Cannot cast class " + className + " to ElkrommFactory, using defaults", e);
-                        retval = singleton = new ElkrommFactory();
+                        retval = Class.forName(className, false, ElkrommFactory.class.getClassLoader())
+                                        .asSubclass(ElkrommFactory.class)
+                                        .getDeclaredConstructor()
+                                        .newInstance();
+                    } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
+                        logger.warn("Cannot instantiate class " + className + ", using default class", e);
+                        retval = new ElkrommFactory();
                     }
+
+                    /*
+                     * Configure the new instance before publishing it in 'instance': other threads calling
+                     * getInstance() must never see a ElkrommFactory that does not have its properties yet
+                     */
+                    retval.setProperties(p);
+                    singleton = retval;
                 }
             }
         }
@@ -268,20 +266,15 @@ public class ElkrommFactory {
         String          className = properties.getProperty(FACADE_CLASS, FACADE_DEFAULT);
 
         try {
-            retval = (ElkrommFacade)Class.forName(className).newInstance();
-        } catch (ClassNotFoundException e) {
-            logger.warn("Class " + className + " not found, using defaults", e);
-            retval = new ElkrommFacadeImpl();
-        } catch (InstantiationException e) {
-            logger.warn("Class " + className + " instantiation error, using defaults", e);
-            retval = new ElkrommFacadeImpl();
-        } catch (IllegalAccessException e) {
-            logger.warn("Class " + className + " instantiation error, using defaults", e);
-            retval = new ElkrommFacadeImpl();
-        } catch (ClassCastException e) {
-            logger.warn("Cannot cast class " + className + " to ElkrommFactory, using defaults", e);
+            retval = Class.forName(className, false, ElkrommFacade.class.getClassLoader())
+                            .asSubclass(ElkrommFacade.class)
+                            .getDeclaredConstructor()
+                            .newInstance();
+        } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
+            logger.warn("Cannot instantiate class " + className + ", using default class", e);
             retval = new ElkrommFacadeImpl();
         }
+
         return retval;
     }
 
