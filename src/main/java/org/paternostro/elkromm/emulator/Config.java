@@ -19,7 +19,7 @@ public class Config {
     public static final Logger logger       = LoggerFactory.getLogger(Config.class);
 
     /** Name of the optional classpath properties file used to override components. */
-    public static final String PROPERTIES_FILE_NAME = "elkron.properties";
+    public static final String PROPERTIES_FILE_NAME = "elkromm-emulator.properties";
     /** Property key used to override the {@code Config} implementation class itself. */
     public static final String CLASS_NAME_PROPERTY  = "org.paternostro.elkromm.emulator.Config.class";
     /** Default {@code Config} implementation class name. */
@@ -71,79 +71,79 @@ public class Config {
         return retval;
     }
 
-    public static final String K_PORT           = "org.paternostro.elkron.port";
+    public static final String K_PORT           = "org.paternostro.elkromm.emulator.port";
     public static final String D_PORT           = "8030";
-    public static final String K_PLANT_CODE     = "org.paternostro.elkron.plant.code";
+    public static final String K_PLANT_CODE     = "org.paternostro.elkromm.emulator.plant.code";
     public static final String D_PLANT_CODE     = "55555555";
-    public static final String K_TECHNICAL_CODE = "org.paternostro.elkron.technical.code";
+    public static final String K_TECHNICAL_CODE = "org.paternostro.elkromm.emulator.technical.code";
     public static final String D_TECHNICAL_CODE = "000000";
-    public static final String K_KEYBOARDS      = "org.paternostro.elkron.keyboards";
+    public static final String K_KEYBOARDS      = "org.paternostro.elkromm.emulator.keyboards";
     public static final String D_KEYBOARDS      = "0";
-    public static final String K_READERS        = "org.paternostro.elkron.readers";
+    public static final String K_READERS        = "org.paternostro.elkromm.emulator.readers";
     public static final String D_READERS        = "0";
-    public static final String K_EXPANSIONS     = "org.paternostro.elkron.expansions";
+    public static final String K_EXPANSIONS     = "org.paternostro.elkromm.emulator.expansions";
     public static final String D_EXPANSIONS     = "0";
-    public static final String K_AREAS          = "org.paternostro.elkron.areas";
+    public static final String K_AREAS          = "org.paternostro.elkromm.emulator.areas";
     public static final String D_AREAS          = "0";
 
-    public static final String K_AREA_PARTITIONS    = "org.paternostro.elkron.area.%d.partitions";
+    public static final String K_AREA_PARTITIONS    = "org.paternostro.elkromm.emulator.area.%d.partitions";
     public static final String[] D_AREA_PARTITIONS  = {"1", "0", "0", "0"};
 
-    public static final String K_AREA_NAME      = "org.paternostro.elkron.area.%d.name";
+    public static final String K_AREA_NAME      = "org.paternostro.elkromm.emulator.area.%d.name";
     public static final String[] D_AREA_NAME    = {"...", ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME};
     
-    public static final String K_PARTITIONS     = "org.paternostro.elkron.partitions";
+    public static final String K_PARTITIONS     = "org.paternostro.elkromm.emulator.partitions";
     public static final String D_PARTITIONS     = "1";
 
-    public static final String K_PARTITION_ENTRY_TIME   = "org.paternostro.elkron.partition.%d.entry.time";
+    public static final String K_PARTITION_ENTRY_TIME   = "org.paternostro.elkromm.emulator.partition.%d.entry.time";
     public static final String[] D_PARTITION_ENTRY_TIME = {"0", "0", "0", "0", "0", "0", "0", "0"};
 
-    public static final String K_PARTITION_EXIT_TIME    = "org.paternostro.elkron.partition.%d.exit.time";
+    public static final String K_PARTITION_EXIT_TIME    = "org.paternostro.elkromm.emulator.partition.%d.exit.time";
     public static final String[] D_PARTITION_EXIT_TIME  = {"0", "0", "0", "0", "0", "0", "0", "0"};
 
-    public static final String K_PARTITION_NAME     = "org.paternostro.elkron.partition.%d.name";
+    public static final String K_PARTITION_NAME     = "org.paternostro.elkromm.emulator.partition.%d.name";
     public static final String[] D_PARTITION_NAME   = {ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME};
 
-    public static final String K_PARTITION_TYPE     = "org.paternostro.elkron.partition.%d.type";
+    public static final String K_PARTITION_TYPE     = "org.paternostro.elkromm.emulator.partition.%d.type";
     public static final String[] D_PARTITION_TYPE   = {"STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD"};
 
-    public static final String K_INPUT_CONFIGURATION    = "org.paternostro.elkron.input.%d.configuration";
+    public static final String K_INPUT_CONFIGURATION    = "org.paternostro.elkromm.emulator.input.%d.configuration";
     public static final String D_INPUT_CONFIGURATION    = "NORMALLY_CLOSED_DOUBLE_BALANCED";
 
-    public static final String K_INPUT_SPECIALIZATION   = "org.paternostro.elkron.input.%d.specialization";
+    public static final String K_INPUT_SPECIALIZATION   = "org.paternostro.elkromm.emulator.input.%d.specialization";
     public static final String D_INPUT_SPECIALIZATION   = "IMMEDIATE";
 
-    public static final String K_INPUT_SENSITIVITY  = "org.paternostro.elkron.input.%d.sensitivity";
+    public static final String K_INPUT_SENSITIVITY  = "org.paternostro.elkromm.emulator.input.%d.sensitivity";
     public static final String D_INPUT_SENSITIVITY  = "HIGH";
 
-    public static final String K_INPUT_FLAGS    = "org.paternostro.elkron.input.%d.flags";
+    public static final String K_INPUT_FLAGS    = "org.paternostro.elkromm.emulator.input.%d.flags";
     public static final String D_INPUT_FLAGS    = "0";
 
-    public static final String K_INPUT_VIDEO    = "org.paternostro.elkron.input.%d.video";
+    public static final String K_INPUT_VIDEO    = "org.paternostro.elkromm.emulator.input.%d.video";
     public static final String D_INPUT_VIDEO    = "NONE";
 
-    public static final String K_INPUT_PARTITIONS   = "org.paternostro.elkron.input.%d.partitions";
+    public static final String K_INPUT_PARTITIONS   = "org.paternostro.elkromm.emulator.input.%d.partitions";
     public static final String D_INPUT_PARTITIONS   = "1";
 
-    public static final String K_INPUT_NAME     = "org.paternostro.elkron.input.%d.name";
+    public static final String K_INPUT_NAME     = "org.paternostro.elkromm.emulator.input.%d.name";
     public static final String D_INPUT_NAME     = "Input %d";
 
-    public static final String K_INPUT_DELAY    = "org.paternostro.elkron.input.%d.delay";
+    public static final String K_INPUT_DELAY    = "org.paternostro.elkromm.emulator.input.%d.delay";
     public static final String D_INPUT_DELAY    = "5_SECS";
 
-    public static final String K_OUTPUT_TYPE    = "org.paternostro.elkron.output.%d.type";
+    public static final String K_OUTPUT_TYPE    = "org.paternostro.elkromm.emulator.output.%d.type";
     public static final String D_OUTPUT_TYPE    = "NORMALLY_LOW";
 
-    public static final String K_OUTPUT_PARTITIONS    = "org.paternostro.elkron.output.%d.partitions";
+    public static final String K_OUTPUT_PARTITIONS    = "org.paternostro.elkromm.emulator.output.%d.partitions";
     public static final String D_OUTPUT_PARTITIONS    = "1";
 
-    public static final String K_OUTPUT_SPECIALIZATION    = "org.paternostro.elkron.output.%d.specialization";
+    public static final String K_OUTPUT_SPECIALIZATION    = "org.paternostro.elkromm.emulator.output.%d.specialization";
     public static final String D_OUTPUT_SPECIALIZATION    = "OR_TC";
 
-    public static final String K_OUTPUT_NAME    = "org.paternostro.elkron.output.%d.name";
+    public static final String K_OUTPUT_NAME    = "org.paternostro.elkromm.emulator.output.%d.name";
     public static final String D_OUTPUT_NAME    = "Output %d";
 
-    public static final String K_C200B_RESERVED = "org.paternostro.elkron.c200b.reserved";
+    public static final String K_C200B_RESERVED = "org.paternostro.elkromm.emulator.c200b.reserved";
     public static final String D_C200B_RESERVED = "";
 
     protected Properties properties;

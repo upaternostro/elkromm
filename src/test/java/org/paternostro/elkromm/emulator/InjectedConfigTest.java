@@ -17,7 +17,7 @@ import org.paternostro.mock.ipc.Channel;
 import org.paternostro.mock.ipc.EndpointFactory;
 
 /**
- * An emulator configured by hand, without relying on the {@code elkron.properties} found on the
+ * An emulator configured by hand, without relying on the {@code elkromm-emulator.properties} found on the
  * classpath, so different configurations can coexist in the same JVM.
  * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
