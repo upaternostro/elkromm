@@ -1,7 +1,5 @@
 package org.paternostro.elkromm.emulator;
 
-import java.util.HashMap;
-
 import org.paternostro.elkromm.ElkrommFacade;
 import org.paternostro.elkromm.ElkrommFactory;
 import org.paternostro.elkromm.ElkrommUtils;
@@ -11,7 +9,6 @@ import org.paternostro.elkromm.dto.C200bParameters;
 import org.paternostro.elkromm.dto.Checksums;
 import org.paternostro.elkromm.dto.Command;
 import org.paternostro.elkromm.dto.Credential;
-import org.paternostro.elkromm.dto.Command.Action;
 import org.paternostro.elkromm.dto.DayClassCommands.DayClass;
 import org.paternostro.elkromm.dto.Expansion;
 import org.paternostro.elkromm.dto.Input;
@@ -20,38 +17,19 @@ import org.paternostro.elkromm.dto.Key;
 import org.paternostro.elkromm.dto.Keyboard;
 import org.paternostro.elkromm.dto.Output;
 import org.paternostro.elkromm.dto.PSTNGSM;
-import org.paternostro.elkromm.dto.PSTNGSM.Country;
-import org.paternostro.elkromm.dto.PSTNGSM.PABXLocalAccessDigit;
-import org.paternostro.elkromm.dto.PSTNGSM.PSTNAnsweringMachineRings;
-import org.paternostro.elkromm.dto.PSTNGSM.PSTNLineTestFrequency;
 import org.paternostro.elkromm.dto.ParametersEnablings;
-import org.paternostro.elkromm.dto.ParametersEnablings.AlarmCount;
-import org.paternostro.elkromm.dto.ParametersEnablings.DST;
-import org.paternostro.elkromm.dto.ParametersEnablings.Enabling;
-import org.paternostro.elkromm.dto.ParametersEnablings.Help;
-import org.paternostro.elkromm.dto.ParametersEnablings.Month;
-import org.paternostro.elkromm.dto.ParametersEnablings.Notice;
-import org.paternostro.elkromm.dto.ParametersEnablings.Play;
-import org.paternostro.elkromm.dto.ParametersEnablings.PowerLack;
-import org.paternostro.elkromm.dto.ParametersEnablings.Time;
 import org.paternostro.elkromm.dto.Partition;
 import org.paternostro.elkromm.dto.PeripheralUnits;
 import org.paternostro.elkromm.dto.PhoneNumber;
-import org.paternostro.elkromm.dto.PhoneNumber.Event;
-import org.paternostro.elkromm.dto.PhoneNumber.SendingMode;
-import org.paternostro.elkromm.dto.PhoneNumber.Type;
 import org.paternostro.elkromm.dto.PhoneNumbersSendingCodes;
 import org.paternostro.elkromm.dto.PhoneParameters;
-import org.paternostro.elkromm.dto.PhoneParameters.CyclicTestCallFrequency;
-import org.paternostro.elkromm.dto.PhoneParameters.CyclicTestCallInterval;
-import org.paternostro.elkromm.dto.PhoneParameters.ReturnCall;
-import org.paternostro.elkromm.dto.PhoneParameters.VoiceMessagesSendingMode;
 import org.paternostro.elkromm.dto.Reader;
 import org.paternostro.elkromm.dto.SMS;
 import org.paternostro.elkromm.dto.SMSs;
 import org.paternostro.elkromm.dto.SystemStatus;
 import org.paternostro.elkromm.dto.TimeProgrammer;
 import org.paternostro.elkromm.dto.User;
+import org.paternostro.elkromm.emulator.Config.Weekday;
 
 /**
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
@@ -111,22 +89,19 @@ public class Model {
         this.areasAndPartitions.setAreaNum((byte)config.getAreas());
 
         for (int i = 1; i <= config.getPartitions(); i++) {
-            this.areasAndPartitions.addPartition(new Partition(config.getPartitionName(i), false, config.getPartitionType(i), config.getPartitionEntryTime(i), config.getPartitionExitTime(i)));
+            this.areasAndPartitions.addPartition(new Partition(config.getPartitionName(i), config.getPartitionVocalName(i), config.getPartitionType(i), config.getPartitionEntryTime(i), config.getPartitionExitTime(i)));
         }
 
         this.areasAndPartitions.setPartitionNum((byte)config.getPartitions());
 
         // Init Users
-        this.users[0] = new User("TECNICO                 ", User.Enabling.DISABLED.getValue(), ElkrommUtils.unpackPartitions((byte)0xFF));
-        this.users[1] = new User("MASTER                  ", (byte)(User.Enabling.ALWAYS_ENABLED.getValue() | User.Enabling.ENABLED.getValue()), ElkrommUtils.unpackPartitions((byte)0xFF));
-
-        for (int i = 2; i < ElkrommFacade.MAX_CREDENTIALS; i++) {
-            this.users[i] = new User(ElkrommFacade.DEFAULT_NAME, User.Enabling.DISABLED.getValue(), ElkrommUtils.unpackPartitions((byte)0x01));
-        }
+        for (int i = 1; i <= ElkrommFacade.MAX_CREDENTIALS; i++) {
+            this.users[i - 1] = new User(config.getUserName(i), config.getUserEnablings(i), ElkrommUtils.unpackPartitions(config.getUserPartitions(i)));
+            }
 
         // Init Keys
-        for (int i = 0; i < ElkrommFacade.MAX_CREDENTIALS; i++) {
-            this.keys[i] = new Key(ElkrommFacade.DEFAULT_NAME, Key.Enabling.DISABLED.getValue(), Key.Specialization.KS_CHANGE_PARTITION_STATUS, ElkrommUtils.unpackPartitions((byte)0x01));
+        for (int i = 1; i <= ElkrommFacade.MAX_CREDENTIALS; i++) {
+            this.keys[i - 1] = new Key(config.getKeyName(i), config.getKeyEnablings(i), config.getKeySpecialization(i), ElkrommUtils.unpackPartitions(config.getKeyPartitions(i)));
         }
 
         // Init Expansions
@@ -134,7 +109,7 @@ public class Model {
         int outputNum = 1;
 
         for (int i = 0; i < expansions.length; i++) {
-            this.expansions[i] = new Expansion(i, String.format("%01d.%02d", 1, i), String.format(i == 0 ? "UC" : "EP %02d", i));
+            this.expansions[i] = new Expansion(i, config.getExpansionVersion(i), config.getExpansionName(i));
 
             for (int j = 1; j <= ElkrommFacade.MAX_EXP_INPUTS; j++) {
                 this.expansions[i].addInput(new Input(inputNum, config.getInputConfiguration(inputNum), config.getInputSpecialization(inputNum), config.getInputSensitivity(inputNum), config.getInputFlags(inputNum), config.getInputVideo(inputNum), ElkrommUtils.unpackPartitions(config.getInputPartitions(inputNum)), config.getInputName(inputNum), config.getInputDelay(inputNum)));
@@ -148,51 +123,61 @@ public class Model {
         }
 
         // Init Keyboards
-        for (int i = 0; i < keyboards.length; i++) {
-            this.keyboards[i] = new Keyboard(i+1, "2.71", 
-                                                new Input(inputNum, Input.Configuration.IC_NORMALLY_CLOSED_DOUBLE_BALANCED, Input.Specialization.IS_WAY, Input.Sensitivity.IS_HIGH, Input.Flags.IF_EXCLUSION_ENABLED.getValue(), Input.Video.IV_CAMERA_3, ElkrommUtils.unpackPartitions((byte)0x01), "input " + inputNum++, Input.Delay.ID_30_SECS),
-                                                new Input(inputNum, Input.Configuration.IC_NORMALLY_CLOSED_BALANCED, Input.Specialization.IS_DELAYED, Input.Sensitivity.IS_HIGH, Input.Flags.IF_OR_PARTITIONS.getValue(), Input.Video.IV_CAMERA_2, ElkrommUtils.unpackPartitions((byte)0x01), "input " + inputNum++, Input.Delay.ID_20_SECS),
-                                            Keyboard.Enablings.KE_ENTRY.getValue(), ElkrommUtils.unpackPartitions((byte)0x01), i % 2 == 0 ? Keyboard.AudioFeatures.KA_CAPABLE.getValue() : Keyboard.AudioFeatures.KA_NONE.getValue(), "Keyboard " + (i + 1));
+        for (int i = 1; i <= keyboards.length; i++) {
+            this.keyboards[i-1] = new Keyboard(i, config.getKeypadVersion(i), 
+                                                new Input(inputNum, config.getKeypadInputConfiguration(i, Config.InputOrdinal.FIRST), config.getKeypadInputSpecialization(i, Config.InputOrdinal.FIRST), config.getKeypadInputSensitivity(i, Config.InputOrdinal.FIRST), config.getKeypadInputFlags(i, Config.InputOrdinal.FIRST), config.getKeypadInputVideo(i, Config.InputOrdinal.FIRST), ElkrommUtils.unpackPartitions(config.getKeypadInputPartitions(i, Config.InputOrdinal.FIRST)), config.getKeypadInputName(i, Config.InputOrdinal.FIRST, inputNum++), config.getKeypadInputDelay(i, Config.InputOrdinal.FIRST)),
+                                                new Input(inputNum, config.getKeypadInputConfiguration(i, Config.InputOrdinal.SECOND), config.getKeypadInputSpecialization(i, Config.InputOrdinal.SECOND), config.getKeypadInputSensitivity(i, Config.InputOrdinal.SECOND), config.getKeypadInputFlags(i, Config.InputOrdinal.SECOND), config.getKeypadInputVideo(i, Config.InputOrdinal.SECOND), ElkrommUtils.unpackPartitions(config.getKeypadInputPartitions(i, Config.InputOrdinal.SECOND)), config.getKeypadInputName(i, Config.InputOrdinal.SECOND, inputNum++), config.getKeypadInputDelay(i, Config.InputOrdinal.SECOND)),
+                                            config.getKeypadEnablings(i), ElkrommUtils.unpackPartitions(config.getKeypadPartitions(i)), config.getKeypadAudioFeatures(i), config.getKeypadName(i));
         }
 
         // Init Readers
-        for (int i = 0; i < readers.length; i++) {
-            this.readers[i] = new Reader(i+1, 
-                                            new Input(i*2 + 1, Input.Configuration.IC_NORMALLY_CLOSED_DOUBLE_BALANCED, Input.Specialization.IS_WAY, Input.Sensitivity.IS_HIGH, Input.Flags.IF_EXCLUSION_ENABLED.getValue(), Input.Video.IV_CAMERA_3, ElkrommUtils.unpackPartitions((byte)0x01), "input " + (i*2+1), Input.Delay.ID_30_SECS),
-                                            new Input(i*2 + 2, Input.Configuration.IC_NORMALLY_CLOSED_BALANCED, Input.Specialization.IS_DELAYED, Input.Sensitivity.IS_HIGH, Input.Flags.IF_OR_PARTITIONS.getValue(), Input.Video.IV_CAMERA_2, ElkrommUtils.unpackPartitions((byte)0x01), "input " + (i*2+2), Input.Delay.ID_20_SECS),
-                                        ElkrommFacade.Partition.P_ONE, ElkrommFacade.Partition.P_TWO, ElkrommFacade.Partition.P_THREE, ElkrommFacade.Partition.P_FOUR, Reader.Enablings.RE_MASKING.getValue(), "Reader " + (i + 1));
+        for (int i = 1; i <= readers.length; i++) {
+            this.readers[i-1] = new Reader(i, 
+                                            new Input(inputNum, config.getReaderInputConfiguration(i, Config.InputOrdinal.FIRST), config.getReaderInputSpecialization(i, Config.InputOrdinal.FIRST), config.getReaderInputSensitivity(i, Config.InputOrdinal.FIRST), config.getReaderInputFlags(i, Config.InputOrdinal.FIRST), config.getReaderInputVideo(i, Config.InputOrdinal.FIRST), ElkrommUtils.unpackPartitions(config.getReaderInputPartitions(i, Config.InputOrdinal.FIRST)), config.getReaderInputName(i, Config.InputOrdinal.FIRST, inputNum++), config.getReaderInputDelay(i, Config.InputOrdinal.FIRST)),
+                                            new Input(inputNum, config.getReaderInputConfiguration(i, Config.InputOrdinal.SECOND), config.getReaderInputSpecialization(i, Config.InputOrdinal.SECOND), config.getReaderInputSensitivity(i, Config.InputOrdinal.SECOND), config.getReaderInputFlags(i, Config.InputOrdinal.SECOND), config.getReaderInputVideo(i, Config.InputOrdinal.SECOND), ElkrommUtils.unpackPartitions(config.getReaderInputPartitions(i, Config.InputOrdinal.SECOND)), config.getReaderInputName(i, Config.InputOrdinal.SECOND, inputNum++), config.getReaderInputDelay(i, Config.InputOrdinal.SECOND)),
+                                        config.getReaderLed(i, 1), config.getReaderLed(i, 2), config.getReaderLed(i, 3), config.getReaderLed(i, 4), config.getReaderEnablings(i), config.getReaderName(i));
         }
 
-        // Init ParametersEnablins
-        this.parametersEnablings = new ParametersEnablings(Time.PET_30_SECS, Time.PET_60_SECS, Time.PET_90_SECS, AlarmCount.PEAC_FOUR, PowerLack.PEPL_4_HOUR, Play.PEP_SECTS.getValue(), (byte)(Help.PEH_ENABLE.getValue() | 0x01), Enabling.PEE_ENABLE, Enabling.PEE_DISABLE, Notice.PEN_15_MINS, DST.PED_ENABLE.getValue(), Month.PEM_OCTOBER, Month.PEM_MARCH);
+        // Init ParametersEnablings
+        this.parametersEnablings = new ParametersEnablings(config.getParametersEnablingsBulgarTime(), config.getParametersEnablingsEmergencyTime(), config.getParametersEnablingsPreAlarmTime(), 
+                                                            config.getParametersEnablingsAlarmCount(), config.getParametersEnablingsPowerLack(), config.getParametersEnablingsPlay(), 
+                                                            (byte)(config.getParametersEnablingsHelp() | 0x01), config.getParametersEnablingsLAN(), config.getParametersEnablingsTimeProgrammer(), 
+                                                            config.getParametersEnablingsNotice(), config.getParametersEnablingsDST(), config.getParametersEnablingsDSTOn(), 
+                                                            config.getParametersEnablingsDSTOff());
 
         // Init TimeProgrammer
         Command[]   workingDayCommands = new Command[8];
         Command[]   preHolidayDayCommands = new Command[8];
         Command[]   holidayDayCommands = new Command[8];
-        DayClass[]  dayClasses = { DayClass.DCCDC_WORKING_DAY, DayClass.DCCDC_WORKING_DAY, DayClass.DCCDC_WORKING_DAY, DayClass.DCCDC_WORKING_DAY, DayClass.DCCDC_WORKING_DAY, DayClass.DCCDC_PRE_HOLIDAY, DayClass.DCCDC_HOLIDAY };
+        DayClass[]  dayClasses = { config.getTimeProgrammerDayClass(Weekday.MONDAY), config.getTimeProgrammerDayClass(Weekday.TUESDAY), config.getTimeProgrammerDayClass(Weekday.WEDNESDAY), 
+                                    config.getTimeProgrammerDayClass(Weekday.THURSDAY), config.getTimeProgrammerDayClass(Weekday.FRIDAY), config.getTimeProgrammerDayClass(Weekday.SATURDAY), 
+                                    config.getTimeProgrammerDayClass(Weekday.SUNDAY) };
 
-        for (int i = 0; i < workingDayCommands.length; i++) {
-            workingDayCommands[i] = new Command(Action.CA_NONE, (byte)1 , null, (byte)0, (byte)0);
-            preHolidayDayCommands[i] = new Command(Action.CA_NONE, (byte)1 , null, (byte)0, (byte)0);
-            holidayDayCommands[i] = new Command(Action.CA_NONE, (byte)1 , null, (byte)0, (byte)0);
+        for (int i = 1; i <= workingDayCommands.length; i++) {
+            workingDayCommands[i-1] = new Command(config.getTimeProgrammerCommandAction(DayClass.DCCDC_WORKING_DAY, i), config.getTimeProgrammerCommandObject(DayClass.DCCDC_WORKING_DAY, i), config.getTimeProgrammerCommandObjectType(DayClass.DCCDC_WORKING_DAY, i), config.getTimeProgrammerCommandHour(DayClass.DCCDC_WORKING_DAY, i), config.getTimeProgrammerCommandMinute(DayClass.DCCDC_WORKING_DAY, i));
+            preHolidayDayCommands[i-1] = new Command(config.getTimeProgrammerCommandAction(DayClass.DCCDC_PRE_HOLIDAY, i), config.getTimeProgrammerCommandObject(DayClass.DCCDC_PRE_HOLIDAY, i), config.getTimeProgrammerCommandObjectType(DayClass.DCCDC_PRE_HOLIDAY, i), config.getTimeProgrammerCommandHour(DayClass.DCCDC_PRE_HOLIDAY, i), config.getTimeProgrammerCommandMinute(DayClass.DCCDC_PRE_HOLIDAY, i));
+            holidayDayCommands[i-1] = new Command(config.getTimeProgrammerCommandAction(DayClass.DCCDC_HOLIDAY, i), config.getTimeProgrammerCommandObject(DayClass.DCCDC_HOLIDAY, i), config.getTimeProgrammerCommandObjectType(DayClass.DCCDC_HOLIDAY, i), config.getTimeProgrammerCommandHour(DayClass.DCCDC_HOLIDAY, i), config.getTimeProgrammerCommandMinute(DayClass.DCCDC_HOLIDAY, i));
         }
 
         this.timeProgrammer     = new TimeProgrammer(workingDayCommands, preHolidayDayCommands, holidayDayCommands, dayClasses);
 
         // Init PhoneParameters
-        this.phoneParameters = new PhoneParameters(org.paternostro.elkromm.dto.PhoneParameters.Enabling.PPE_DISABLED, ReturnCall.PPRC_DISABLED, org.paternostro.elkromm.dto.PhoneParameters.Enabling.PPE_DISABLED, VoiceMessagesSendingMode.PPVMSM_NONE, CyclicTestCallFrequency.PPCTCF_DISABLE, (byte)1, (byte)0, (byte)0, CyclicTestCallInterval.PPCTCI_1_HOUR);
+        this.phoneParameters = new PhoneParameters(config.getPhoneParametersCallDelay(), config.getPhoneParametersReturnCall(), config.getPhoneParametersRemoteSurveillance(), 
+                                                    config.getPhoneParametersVoiceMessagesSendingMode(), config.getPhoneParametersCyclicTestCallFrequency(), config.getPhoneParametersCyclicTestCallPhoneNumber(), 
+                                                    config.getPhoneParametersCyclicTestCallHour(), config.getPhoneParametersCyclicTestCallMinute(), config.getPhoneParametersCyclicTestCallInterval());
 
         // Init PSTNGSM
-        this.pSTNgSM = new PSTNGSM(org.paternostro.elkromm.dto.PSTNGSM.Enabling.PGE_DISABLED, Country.PGC_ITALY, PABXLocalAccessDigit.PGPLAD_DISABLE, org.paternostro.elkromm.dto.PSTNGSM.Enabling.PGE_DISABLED, org.paternostro.elkromm.dto.PSTNGSM.Enabling.PGE_DISABLED, PSTNLineTestFrequency.PGPLTF_DISABLE, PSTNAnsweringMachineRings.PGPAMR_DISABLE, org.paternostro.elkromm.dto.PSTNGSM.Enabling.PGE_DISABLED, org.paternostro.elkromm.dto.PSTNGSM.Enabling.PGE_DISABLED, org.paternostro.elkromm.dto.PSTNGSM.Enabling.PGE_DISABLED, 0, (byte)1, (byte)0);
+        this.pSTNgSM = new PSTNGSM(config.getPSTNGSMEnablePSTN(), config.getPSTNGSMCountry(), config.getPSTNGSMPABXLocalAccessDigit(), config.getPSTNGSMToneControl(), 
+                                    config.getPSTNGSMAnswerControl(), config.getPSTNGSMPSTNLineTestFrequency(), config.getPSTNGSMPSTNAnsweringMachineRings(), 
+                                    config.getPSTNGSMEnableGSM(), config.getPSTNGSMEnableGSMAnsweringMachine(), config.getPSTNGSMEnableIncomingSMS(), config.getPSTNGSMGSMPIN(), 
+                                    config.getPSTNGSMExpirationMonth(), config.getPSTNGSMExpirationYear());
 
         // Init PhoneNumbers
-        boolean[]       associatedPartitions = { false, false, false, false, false, false, false, false };
-        PhoneNumber     emptyPhoneNumber = new PhoneNumber("", associatedPartitions, Type.PNT_PSTN, SendingMode.PNSM_VOICE, new Event[0]);
-        PhoneNumber[]   phoneNumbers = new org.paternostro.elkromm.dto.PhoneNumber[ElkrommFacade.MAX_PHONE_NUMBERS];
+        PhoneNumber[]   phoneNumbers = new PhoneNumber[ElkrommFacade.MAX_PHONE_NUMBERS];
 
-        for (int i = 0; i < ElkrommFacade.MAX_PHONE_NUMBERS; i++) {
-            phoneNumbers[i] = emptyPhoneNumber;
+        for (int i = 1; i <= ElkrommFacade.MAX_PHONE_NUMBERS; i++) {
+            phoneNumbers[i-1] = new PhoneNumber(config.getPhoneNumberPhoneNumber(i), ElkrommUtils.unpackPartitions(config.getPhoneNumberPartitions(i)), config.getPhoneNumberType(i), 
+                                                config.getPhoneNumberSendingMode(i), config.getPhoneNumberAssignedEvents(i));
         }
 
         this.phoneNumbers = new PhoneNumbersSendingCodes(phoneNumbers);
@@ -200,20 +185,14 @@ public class Model {
         // Init SMSs
         SMS[]   texts = new SMS[ElkrommFacade.MAX_SMS];
 
-        texts[0] = new SMS("Burlgar");
-        texts[1] = new SMS("Technical alarm 1");
-        texts[2] = new SMS("Technical alarm 2");
-        texts[3] = new SMS("Technical alarm 3");
-        texts[4] = new SMS("Fire");
-        texts[5] = new SMS("Partition activated");
-        texts[6] = new SMS("Partition deactivated");
-        texts[7] = new SMS("Tampering");
-        texts[8] = new SMS("Notice");
+        for (int i = 1; i <= ElkrommFacade.MAX_SMS; i++) {
+            texts[i-1] = new SMS(config.getSMSesText(i));
+        }
 
         this.sMSs = new SMSs(texts);
 
         // Init C200b parameters
-        this.c200bParameters = new C200bParameters(config.getC200bReserved(), new HashMap<>(), new byte[0]);
+        this.c200bParameters = new C200bParameters(config.getC200bReserved(), config.getC200bEventCodes(), config.getC200bInputCodes());
 
         computeChecksum();
 

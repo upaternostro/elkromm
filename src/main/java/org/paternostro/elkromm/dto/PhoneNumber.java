@@ -217,6 +217,23 @@ public class PhoneNumber implements Serializable {
      * @param sendingMode how events are communicated to this number
      * @param assignedEvents which events this number reports
      */
+    public PhoneNumber(String phoneNumber, boolean[] associatedPartitions, Type type, SendingMode sendingMode, Set<Event> assignedEvents) {
+        setPhoneNumber(phoneNumber);
+        setAssociatedPartitions(associatedPartitions);
+        setType(type);
+        setSendingMode(sendingMode);
+        setAssignedEvents(assignedEvents);
+    }
+
+    /**
+     * Creates a new phone number.
+     *
+     * @param phoneNumber the destination, either a digit string (up to {@link ElkrommFacade#PHONE_NUMBER_LENGTH} digits) or an {@code ip:port} pair for {@link Type#PNT_LAN}
+     * @param associatedPartitions per-partition association flags, length {@link ElkrommFacade#MAX_PARTITIONS}
+     * @param type which network this number is dialed over
+     * @param sendingMode how events are communicated to this number
+     * @param assignedEvents which events this number reports
+     */
     public PhoneNumber(String phoneNumber, boolean[] associatedPartitions, Type type, SendingMode sendingMode, Event[] assignedEvents) {
         setPhoneNumber(phoneNumber);
         setAssociatedPartitions(associatedPartitions);
@@ -321,6 +338,16 @@ public class PhoneNumber implements Serializable {
      */
     public boolean isAssignedEvent(Event event) {
         return assignedEvents.contains(event);
+    }
+
+    /**
+     * Replaces the full set of events this number reports.
+     *
+     * @param assignedEvents the events to assign
+     */
+    public void setAssignedEvents(Set<Event> assignedEvents) {
+        this.assignedEvents = new HashSet<>();
+        this.assignedEvents.addAll(assignedEvents);
     }
 
     /**

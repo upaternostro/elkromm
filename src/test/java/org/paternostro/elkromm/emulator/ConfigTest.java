@@ -121,21 +121,21 @@ public class ConfigTest {
     @Test
     public void testC200bReservedEmptyIsZero()
     {
-        assertArrayEquals(new byte[C200bParameters.RESERVED_SIZE], Config.parseC200bReserved(""));
+        assertArrayEquals(new byte[C200bParameters.RESERVED_SIZE], Config.parseC200bReserved("", C200bParameters.RESERVED_SIZE));
     }
 
     @Test
     public void testC200bReservedHex()
     {
-        assertArrayEquals(sequence(), Config.parseC200bReserved(SEQUENCE_HEX));
-        assertArrayEquals(sequence(), Config.parseC200bReserved(SEQUENCE_HEX.toUpperCase()));
+        assertArrayEquals(sequence(), Config.parseC200bReserved(SEQUENCE_HEX, C200bParameters.RESERVED_SIZE));
+        assertArrayEquals(sequence(), Config.parseC200bReserved(SEQUENCE_HEX.toUpperCase(), C200bParameters.RESERVED_SIZE));
     }
 
     @Test
     public void testC200bReservedIgnoresSeparators()
     {
-        assertArrayEquals(sequence(), Config.parseC200bReserved(SEQUENCE_HEX.replaceAll("(..)", "$1 ").trim()));
-        assertArrayEquals(sequence(), Config.parseC200bReserved(SEQUENCE_HEX.replaceAll("(..)", "$1:").replaceAll(":$", "")));
+        assertArrayEquals(sequence(), Config.parseC200bReserved(SEQUENCE_HEX.replaceAll("(..)", "$1 ").trim(), C200bParameters.RESERVED_SIZE));
+        assertArrayEquals(sequence(), Config.parseC200bReserved(SEQUENCE_HEX.replaceAll("(..)", "$1:").replaceAll(":$", ""), C200bParameters.RESERVED_SIZE));
     }
 
     @Test
@@ -143,8 +143,8 @@ public class ConfigTest {
     {
         byte[]  zeros = new byte[C200bParameters.RESERVED_SIZE];
 
-        assertArrayEquals(zeros, Config.parseC200bReserved(SEQUENCE_HEX.substring(2)));
-        assertArrayEquals(zeros, Config.parseC200bReserved(SEQUENCE_HEX + "00"));
-        assertArrayEquals(zeros, Config.parseC200bReserved("zz" + SEQUENCE_HEX.substring(2)));
+        assertArrayEquals(zeros, Config.parseC200bReserved(SEQUENCE_HEX.substring(2), C200bParameters.RESERVED_SIZE));
+        assertArrayEquals(zeros, Config.parseC200bReserved(SEQUENCE_HEX + "00", C200bParameters.RESERVED_SIZE));
+        assertArrayEquals(zeros, Config.parseC200bReserved("zz" + SEQUENCE_HEX.substring(2), C200bParameters.RESERVED_SIZE));
     }
 }
