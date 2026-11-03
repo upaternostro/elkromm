@@ -14,7 +14,7 @@ import org.paternostro.elkromm.ElkrommUtils;
  * <p>
  * <table>
  *  <tr><th>Offset</th><th>Meaning</th><th>Note</th></tr>
- *  <tr><td>0x00-0x27</td><td>Message 1</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_BURLGAR} (burglary), see {@link SMS}</td></tr>
+ *  <tr><td>0x00-0x27</td><td>Message 1</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_BURGLAR} (burglary), see {@link SMS}</td></tr>
  *  <tr><td>0x28-0x4f</td><td>Message 2</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_TECHNICAL_ALARM_1}</td></tr>
  *  <tr><td>0x50-0x77</td><td>Message 3</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_TECHNICAL_ALARM_2}</td></tr>
  *  <tr><td>0x78-0x9f</td><td>Message 4</td><td>{@link org.paternostro.elkromm.dto.SMSs.SMSIndex#SMS_TECHNICAL_ALARM_3}</td></tr>

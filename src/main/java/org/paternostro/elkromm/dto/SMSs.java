@@ -14,7 +14,7 @@ public class SMSs implements Serializable {
     /** Which event an {@link SMS} message is sent for. */
     public enum SMSIndex {
         /** Burglary alarm. */
-        SMS_BURLGAR,
+        SMS_BURGLAR,
         /** Technical alarm, first type. */
         SMS_TECHNICAL_ALARM_1,
         /** Technical alarm, second type. */

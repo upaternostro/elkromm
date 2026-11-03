@@ -837,7 +837,7 @@ Command `0x59 SMS` (bulk read of all messages, see [Command types](#command-type
 
 Offset	| Meaning	| Note
 --------|---------------|-----
-0x00-0x27	| Message 1	| `SMS_BURLGAR` (burglary), ASCII, padding `0xff`
+0x00-0x27	| Message 1	| `SMS_BURGLAR` (burglary), ASCII, padding `0xff`
 0x28-0x4f	| Message 2	| `SMS_TECHNICAL_ALARM_1`
 0x50-0x77	| Message 3	| `SMS_TECHNICAL_ALARM_2`
 0x78-0x9f	| Message 4	| `SMS_TECHNICAL_ALARM_3`

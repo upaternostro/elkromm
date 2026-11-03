@@ -837,7 +837,7 @@ Payload 364 byte, un blocco di 40 caratteri per messaggio (padding `0xff`), **ne
 
 Offset	| Significato	| Note
 --------|---------------|-----
-0x00-0x27	| Messaggio 1	| `SMS_BURLGAR` (intrusione), ASCII, padding `0xff`
+0x00-0x27	| Messaggio 1	| `SMS_BURGLAR` (intrusione), ASCII, padding `0xff`
 0x28-0x4f	| Messaggio 2	| `SMS_TECHNICAL_ALARM_1`
 0x50-0x77	| Messaggio 3	| `SMS_TECHNICAL_ALARM_2`
 0x78-0x9f	| Messaggio 4	| `SMS_TECHNICAL_ALARM_3`
