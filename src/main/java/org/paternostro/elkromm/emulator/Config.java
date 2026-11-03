@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.paternostro.elkromm.ElkrommFacade;
+import org.paternostro.elkromm.ElkrommUtils;
 import org.paternostro.elkromm.dto.C200bParameters;
 import org.paternostro.elkromm.dto.Command;
 import org.paternostro.elkromm.dto.DayClassCommands;
@@ -1414,7 +1415,23 @@ public class Config {
      * @return the opaque block, length {@link C200bParameters#RESERVED_SIZE}
      */
     public byte[] getC200bReserved() {
-        return parseC200bReserved(properties.getProperty(K_C200B_RESERVED, D_C200B_RESERVED), C200bParameters.RESERVED_SIZE);
+        byte[]  retval;
+
+        try {
+            retval = ElkrommUtils.hexToBytes(properties.getProperty(K_C200B_RESERVED, D_C200B_RESERVED));
+
+            if (retval.length == 0) {
+                retval = new byte[C200bParameters.RESERVED_SIZE];
+            } else if (retval.length != C200bParameters.RESERVED_SIZE) {
+                logger.warn("Wrong length for " + K_C200B_RESERVED + ", using zeroes");
+                retval = new byte[C200bParameters.RESERVED_SIZE];
+            }
+        } catch (IllegalArgumentException e) {
+            logger.warn("Wrong hex string for " + K_C200B_RESERVED + " (" + e.getMessage() + "), using zeroes", e);
+            retval = new byte[C200bParameters.RESERVED_SIZE];
+        }
+
+        return retval;
     }
 
     public Map<C200bParameters.Event,Byte> getC200bEventCodes() {
@@ -1433,24 +1450,20 @@ public class Config {
     }
 
     public byte[] getC200bInputCodes() {
-        return parseC200bReserved(properties.getProperty(K_C200B_INPUT_CODES, D_C200B_INPUT_CODES), ElkrommFacade.MAX_LOGICAL_INPUTS);
-    }
+        byte[]  retval;
 
-    static byte[] parseC200bReserved(String value, int size) {
-        byte[]  retval = new byte[size];
-        String  hex = value.replaceAll("[\\s,:]", "");
+        try {
+            retval = ElkrommUtils.hexToBytes(properties.getProperty(K_C200B_INPUT_CODES, D_C200B_INPUT_CODES));
 
-        if (hex.isEmpty()) {
-            return retval;
-        }
-
-        if (hex.length() != 2 * retval.length || !hex.matches("[0-9a-fA-F]+")) {
-            logger.warn("Invalid C200b reserved bytes, expected " + retval.length + " bytes as hexadecimal digits, using zeros");
-            return retval;
-        }
-
-        for (int i = 0; i < retval.length; i++) {
-            retval[i] = (byte)Integer.parseInt(hex.substring(2 * i, 2 * i + 2), 16);
+            if (retval.length == 0) {
+                retval = new byte[ElkrommFacade.MAX_LOGICAL_INPUTS];
+            } else if (retval.length != ElkrommFacade.MAX_LOGICAL_INPUTS) {
+                logger.warn("Wrong length for " + K_C200B_INPUT_CODES + ", using zeroes");
+                retval = new byte[ElkrommFacade.MAX_LOGICAL_INPUTS];
+            }
+        } catch (IllegalArgumentException e) {
+            logger.warn("Wrong hex string for " + K_C200B_INPUT_CODES + " (" + e.getMessage() + "), using zeroes", e);
+            retval = new byte[ElkrommFacade.MAX_LOGICAL_INPUTS];
         }
 
         return retval;

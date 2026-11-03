@@ -437,6 +437,26 @@ public class ElkrommUtils
         return retval;
     }
 
+    public static byte[] hexToBytes(String value) {
+        String  hex = value.replaceAll("[\\s,:]", "");
+
+        if (hex.isEmpty()) {
+            return new byte[0];
+        }
+
+        if (hex.length() % 2 != 0 || !hex.matches("[0-9a-fA-F]+")) {
+            throw new IllegalArgumentException("Invalid hex sequence (expected an even number of hexadecimal digits): " + value);
+        }
+
+        byte[]  retval = new byte[hex.length() / 2];
+
+        for (int i = 0; i < retval.length; i++) {
+            retval[i] = (byte)Integer.parseInt(hex.substring(2 * i, 2 * i + 2), 16);
+        }
+
+        return retval;
+    }
+
     // Source - https://stackoverflow.com/a/9855338
     // Posted by maybeWeCouldStealAVan, modified by community. See post 'Timeline' for change history
     // Retrieved 2026-03-27, License - CC BY-SA 4.0

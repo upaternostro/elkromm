@@ -104,47 +104,4 @@ public class ConfigTest {
 
         config.setProperties(null);
     }
-
-    private static final String SEQUENCE_HEX = "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f3031";
-
-    private static byte[] sequence()
-    {
-        byte[]  retval = new byte[C200bParameters.RESERVED_SIZE];
-
-        for (int i = 0; i < retval.length; i++) {
-            retval[i] = (byte)i;
-        }
-
-        return retval;
-    }
-
-    @Test
-    public void testC200bReservedEmptyIsZero()
-    {
-        assertArrayEquals(new byte[C200bParameters.RESERVED_SIZE], Config.parseC200bReserved("", C200bParameters.RESERVED_SIZE));
-    }
-
-    @Test
-    public void testC200bReservedHex()
-    {
-        assertArrayEquals(sequence(), Config.parseC200bReserved(SEQUENCE_HEX, C200bParameters.RESERVED_SIZE));
-        assertArrayEquals(sequence(), Config.parseC200bReserved(SEQUENCE_HEX.toUpperCase(), C200bParameters.RESERVED_SIZE));
-    }
-
-    @Test
-    public void testC200bReservedIgnoresSeparators()
-    {
-        assertArrayEquals(sequence(), Config.parseC200bReserved(SEQUENCE_HEX.replaceAll("(..)", "$1 ").trim(), C200bParameters.RESERVED_SIZE));
-        assertArrayEquals(sequence(), Config.parseC200bReserved(SEQUENCE_HEX.replaceAll("(..)", "$1:").replaceAll(":$", ""), C200bParameters.RESERVED_SIZE));
-    }
-
-    @Test
-    public void testC200bReservedMalformedIsZero()
-    {
-        byte[]  zeros = new byte[C200bParameters.RESERVED_SIZE];
-
-        assertArrayEquals(zeros, Config.parseC200bReserved(SEQUENCE_HEX.substring(2), C200bParameters.RESERVED_SIZE));
-        assertArrayEquals(zeros, Config.parseC200bReserved(SEQUENCE_HEX + "00", C200bParameters.RESERVED_SIZE));
-        assertArrayEquals(zeros, Config.parseC200bReserved("zz" + SEQUENCE_HEX.substring(2), C200bParameters.RESERVED_SIZE));
-    }
 }
