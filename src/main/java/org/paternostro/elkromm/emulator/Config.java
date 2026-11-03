@@ -120,7 +120,7 @@ public class Config {
     public static final String K_PARTITION_NAME     = "org.paternostro.elkromm.emulator.partition.%d.name";
     public static final String[] D_PARTITION_NAME   = {ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME};
 
-    public static final String K_PARTITION_VOCAL_NAME     = "org.paternostro.elkromm.emulator.partition.%d.name";
+    public static final String K_PARTITION_VOCAL_NAME     = "org.paternostro.elkromm.emulator.partition.%d.vocalName";
     public static final String[] D_PARTITION_VOCAL_NAME   = {"false", "false", "false", "false", "false", "false", "false", "false"};
 
     public static final String K_PARTITION_TYPE     = "org.paternostro.elkromm.emulator.partition.%d.type";
@@ -246,7 +246,7 @@ public class Config {
     public static final String K_KEYPAD_INPUT_SPECIALIZATION   = "org.paternostro.elkromm.emulator.keypad.%d.%sInput.specialization";
     public static final String D_KEYPAD_INPUT_SPECIALIZATION   = "IMMEDIATE";
 
-    public static final String K_KEYPAD_INPUT_SENSITIVITY  = "org.paternostro.elkromm.emulator.keypad.%d.%sInput.ensitivity";
+    public static final String K_KEYPAD_INPUT_SENSITIVITY  = "org.paternostro.elkromm.emulator.keypad.%d.%sInput.sensitivity";
     public static final String D_KEYPAD_INPUT_SENSITIVITY  = "HIGH";
 
     public static final String K_KEYPAD_INPUT_FLAGS    = "org.paternostro.elkromm.emulator.keypad.%d.%sInput.flags";
@@ -279,7 +279,7 @@ public class Config {
     public static final String K_READER_INPUT_SPECIALIZATION   = "org.paternostro.elkromm.emulator.reader.%d.%sInput.specialization";
     public static final String D_READER_INPUT_SPECIALIZATION   = "IMMEDIATE";
 
-    public static final String K_READER_INPUT_SENSITIVITY  = "org.paternostro.elkromm.emulator.reader.%d.%sInput.ensitivity";
+    public static final String K_READER_INPUT_SENSITIVITY  = "org.paternostro.elkromm.emulator.reader.%d.%sInput.sensitivity";
     public static final String D_READER_INPUT_SENSITIVITY  = "HIGH";
 
     public static final String K_READER_INPUT_FLAGS    = "org.paternostro.elkromm.emulator.reader.%d.%sInput.flags";
@@ -344,7 +344,7 @@ public class Config {
     public static final String D_TIME_PROGRAMMER_COMMAND_OBJECT = "1";
 
     public static final String K_TIME_PROGRAMMER_COMMAND_OBJECT_TYPE    = "org.paternostro.elkromm.emulator.timeProgrammer.command.%s.%d.objectType";
-    // no default for Command.ObjectType: method return null if not set
+    // no default for Command.ObjectType: method returns null if not set
 
     public static final String K_TIME_PROGRAMMER_COMMAND_HOUR   = "org.paternostro.elkromm.emulator.timeProgrammer.command.%s.%d.hour";
     public static final String D_TIME_PROGRAMMER_COMMAND_HOUR   = "0";
@@ -447,18 +447,13 @@ public class Config {
     public static final String D_PHONE_NUMBERS_ASSIGNED_EVENTS    = "";
 
     public static final String K_SMSES_TEXT     = "org.paternostro.elkromm.emulator.sms.%d";
-    public static final String[] D_SMSES_TEXT   = {"Burlgar", "Technical alarm 1", "Technical alarm 2", "Technical alarm 3", "Fire", "Partition activated", "Partition deactivated", "Tampering", "Notice"};
-
-    // FIXME: C200b
-    // private byte[]          reserved;
-    // private Map<Event,Byte> eventCodes;
-    // private byte[]          inputCodes;
+    public static final String[] D_SMSES_TEXT   = {"Burglar", "Technical alarm 1", "Technical alarm 2", "Technical alarm 3", "Fire", "Partition activated", "Partition deactivated", "Tampering", "Notice"};
 
     public static final String K_C200B_RESERVED = "org.paternostro.elkromm.emulator.c200b.reserved";
     public static final String D_C200B_RESERVED = "";
 
     public static final String K_C200B_EVENT_CODES  = "org.paternostro.elkromm.emulator.c200b.event.%s";
-    // Default non presente
+    // No default
    
     public static final String K_C200B_INPUT_CODES  = "org.paternostro.elkromm.emulator.c200b.inputCodes";
     public static final String D_C200B_INPUT_CODES  = "";
@@ -798,7 +793,7 @@ public class Config {
             return Input.Flags.IF_NONE.getValue();
         }
         
-        return (byte)getIntProperty(String.format(K_KEYPAD_INPUT_FLAGS, keypad, input.toString().toLowerCase()), D_KEYPAD_INPUT_FLAGS, "first input flags");
+        return (byte)getIntProperty(String.format(K_KEYPAD_INPUT_FLAGS, keypad, input.toString().toLowerCase()), D_KEYPAD_INPUT_FLAGS, "keypad " + keypad + " " + input.toString().toLowerCase() + " input flags");
     }
 
     public Input.Video getKeypadInputVideo(int keypad, InputOrdinal input) {
@@ -826,7 +821,7 @@ public class Config {
             return 0x01;
         }
         
-        return (byte)getIntProperty(String.format(K_KEYPAD_INPUT_PARTITIONS, keypad, input.toString().toLowerCase()), D_KEYPAD_INPUT_PARTITIONS, "keypad inputs");
+        return (byte)getIntProperty(String.format(K_KEYPAD_INPUT_PARTITIONS, keypad, input.toString().toLowerCase()), D_KEYPAD_INPUT_PARTITIONS, "keypad " + keypad + " " + input.toString().toLowerCase() + " input partitions");
     }
 
     public String getKeypadInputName(int keypad, InputOrdinal input, int inputAddress) {
@@ -854,7 +849,7 @@ public class Config {
             return Input.Delay.ID_5_SECS;
         }
         
-        return Input.Delay.valueOf("ID_" + properties.getProperty(String.format(K_KEYPAD_INPUT_DELAY, keypad, input).toString().toLowerCase(), D_KEYPAD_INPUT_DELAY));
+        return Input.Delay.valueOf("ID_" + properties.getProperty(String.format(K_KEYPAD_INPUT_DELAY, keypad, input.toString().toLowerCase()), D_KEYPAD_INPUT_DELAY));
     }
 
     public String getReaderName(int reader) {
@@ -872,7 +867,7 @@ public class Config {
             return Reader.Enablings.RE_NONE.getValue();
         }
         
-        return (byte)getIntProperty(String.format(K_READER_ENABLINGS, reader), D_KEYPAD_ENABLINGS, "reader " + reader + " enablings");
+        return (byte)getIntProperty(String.format(K_READER_ENABLINGS, reader), D_READER_ENABLINGS, "reader " + reader + " enablings");
     }
 
     public ElkrommFacade.Partition getReaderLed(int reader, int led) {
@@ -956,7 +951,7 @@ public class Config {
             return Input.Flags.IF_NONE.getValue();
         }
         
-        return (byte)getIntProperty(String.format(K_READER_INPUT_FLAGS, reader, input.toString().toLowerCase()), D_READER_INPUT_FLAGS, "first input flags");
+        return (byte)getIntProperty(String.format(K_READER_INPUT_FLAGS, reader, input.toString().toLowerCase()), D_READER_INPUT_FLAGS, "reader " + reader + " " + input.toString().toLowerCase() + " input flags");
     }
 
     public Input.Video getReaderInputVideo(int reader, InputOrdinal input) {
@@ -984,7 +979,7 @@ public class Config {
             return 0x01;
         }
         
-        return (byte)getIntProperty(String.format(K_READER_INPUT_PARTITIONS, reader, input.toString().toLowerCase()), D_READER_INPUT_PARTITIONS, "reader inputs");
+        return (byte)getIntProperty(String.format(K_READER_INPUT_PARTITIONS, reader, input.toString().toLowerCase()), D_READER_INPUT_PARTITIONS, "reader " + reader + " " + input.toString().toLowerCase() + " input partitions");
     }
 
     public String getReaderInputName(int reader, InputOrdinal input, int inputAddress) {
@@ -1012,7 +1007,7 @@ public class Config {
             return Input.Delay.ID_5_SECS;
         }
         
-        return Input.Delay.valueOf("ID_" + properties.getProperty(String.format(K_READER_INPUT_DELAY, reader, input).toString().toLowerCase(), D_READER_INPUT_DELAY));
+        return Input.Delay.valueOf("ID_" + properties.getProperty(String.format(K_READER_INPUT_DELAY, reader, input.toString().toLowerCase()), D_READER_INPUT_DELAY));
     }
 
     public ParametersEnablings.Time getParametersEnablingsBulgarTime() {
@@ -1399,7 +1394,7 @@ public class Config {
 
     public Output.Type getOutputType(int output) {
         if (output < 1 || output > ElkrommFacade.MAX_LOGICAL_OUTPUTS) {
-            logger.warn("Invalid input number: " + output + ", must be between 1 and " + ElkrommFacade.MAX_LOGICAL_OUTPUTS);
+            logger.warn("Invalid output number: " + output + ", must be between 1 and " + ElkrommFacade.MAX_LOGICAL_OUTPUTS);
             return null;
         }
         
@@ -1408,7 +1403,7 @@ public class Config {
 
     public byte getOutputPartitions(int output) {
         if (output < 1 || output > ElkrommFacade.MAX_LOGICAL_OUTPUTS) {
-            logger.warn("Invalid input number: " + output + ", must be between 1 and " + ElkrommFacade.MAX_LOGICAL_OUTPUTS);
+            logger.warn("Invalid output number: " + output + ", must be between 1 and " + ElkrommFacade.MAX_LOGICAL_OUTPUTS);
             return 0;
         }
         
@@ -1417,7 +1412,7 @@ public class Config {
 
     public Output.Specialization getOutputSpecialization(int output) {
         if (output < 1 || output > ElkrommFacade.MAX_LOGICAL_OUTPUTS) {
-            logger.warn("Invalid input number: " + output + ", must be between 1 and " + ElkrommFacade.MAX_LOGICAL_OUTPUTS);
+            logger.warn("Invalid output number: " + output + ", must be between 1 and " + ElkrommFacade.MAX_LOGICAL_OUTPUTS);
             return null;
         }
         
