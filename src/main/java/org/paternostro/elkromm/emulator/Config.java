@@ -297,8 +297,8 @@ public class Config {
     public static final String K_READER_INPUT_DELAY    = "org.paternostro.elkromm.emulator.reader.%d.%sInput.delay";
     public static final String D_READER_INPUT_DELAY    = "5_SECS";
 
-    public static final String K_PARAMETERS_ENABLINGS_BULGAR_TIME   = "org.paternostro.elkromm.emulator.parametersEnablings.bulgarTime";
-    public static final String D_PARAMETERS_ENABLINGS_BULGAR_TIME   = "180_SECS";
+    public static final String K_PARAMETERS_ENABLINGS_BURGLAR_TIME  = "org.paternostro.elkromm.emulator.parametersEnablings.burglarTime";
+    public static final String D_PARAMETERS_ENABLINGS_BURGLAR_TIME  = "180_SECS";
 
     public static final String K_PARAMETERS_ENABLINGS_EMERGENCY_TIME    = "org.paternostro.elkromm.emulator.parametersEnablings.emergencyTime";
     public static final String D_PARAMETERS_ENABLINGS_EMERGENCY_TIME    = "180_SECS";
@@ -1010,8 +1010,8 @@ public class Config {
         return Input.Delay.valueOf("ID_" + properties.getProperty(String.format(K_READER_INPUT_DELAY, reader, input.toString().toLowerCase()), D_READER_INPUT_DELAY));
     }
 
-    public ParametersEnablings.Time getParametersEnablingsBulgarTime() {
-        return ParametersEnablings.Time.valueOf("PET_" + properties.getProperty(K_PARAMETERS_ENABLINGS_BULGAR_TIME, D_PARAMETERS_ENABLINGS_BULGAR_TIME));
+    public ParametersEnablings.Time getParametersEnablingsBurglarTime() {
+        return ParametersEnablings.Time.valueOf("PET_" + properties.getProperty(K_PARAMETERS_ENABLINGS_BURGLAR_TIME, D_PARAMETERS_ENABLINGS_BURGLAR_TIME));
     }
 
     public ParametersEnablings.Time getParametersEnablingsEmergencyTime() {

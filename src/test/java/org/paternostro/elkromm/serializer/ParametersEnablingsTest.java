@@ -27,7 +27,7 @@ public class ParametersEnablingsTest {
 
         ParametersEnablings pe2 = ElkrommFactory.getFactory().getParametersEnablingsSerializer().deserialize(data);
 
-        assert pe.getBulgarTime() == pe2.getBulgarTime();
+        assert pe.getBurglarTime() == pe2.getBurglarTime();
         assert pe.getEmergencyTime() == pe2.getEmergencyTime();
         assert pe.getPreAlarmTime() == pe2.getPreAlarmTime();
         assert pe.getAlarmCount() == pe2.getAlarmCount();

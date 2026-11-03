@@ -533,7 +533,7 @@ Definizione del payload "Parametri" (30 byte, offset 0-based), verificata dirett
 Offset	| Significato	| Note
 --------|---------------|-----
 0x00-0x04	| ?	| Non mappato da nessun campo del DTO
-0x05, 0x07, 0x09	| Tempo bulgar	| `Time`: 0=30s, 1=60s, 2=90s, 3=180s, 4=9min. **I tre offset contengono sempre lo stesso valore** (`data[5]=data[7]=data[9]`)
+0x05, 0x07, 0x09	| Tempo burglar	| `Time`: 0=30s, 1=60s, 2=90s, 3=180s, 4=9min. **I tre offset contengono sempre lo stesso valore** (`data[5]=data[7]=data[9]`)
 0x06	| Tempo pre-allarme	| `Time`, stessi valori
 0x08	| Tempo emergenza	| `Time`, stessi valori
 0x0a	| ?	| Non mappato da nessun campo del DTO

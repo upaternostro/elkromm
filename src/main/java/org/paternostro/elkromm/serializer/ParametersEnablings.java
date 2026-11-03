@@ -97,7 +97,7 @@ public class ParametersEnablings implements ElkrommSerializer<org.paternostro.el
         // BURGLAR_TIME_OFFSET and its two mirrors contain the same value
         data[BURGLAR_TIME_OFFSET] =
         data[BURGLAR_TIME_MIRROR_1_OFFSET] =
-        data[BURGLAR_TIME_MIRROR_2_OFFSET] = obj.getBulgarTime().getValue();
+        data[BURGLAR_TIME_MIRROR_2_OFFSET] = obj.getBurglarTime().getValue();
         data[PRE_ALARM_TIME_OFFSET] = obj.getPreAlarmTime().getValue();
         data[EMERGENCY_TIME_OFFSET] = obj.getEmergencyTime().getValue();
         data[POWER_LACK_OFFSET] = obj.getPowerLack().getValue();

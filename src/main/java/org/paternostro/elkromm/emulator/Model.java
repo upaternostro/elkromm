@@ -139,7 +139,7 @@ public class Model {
         }
 
         // Init ParametersEnablings
-        this.parametersEnablings = new ParametersEnablings(config.getParametersEnablingsBulgarTime(), config.getParametersEnablingsEmergencyTime(), config.getParametersEnablingsPreAlarmTime(), 
+        this.parametersEnablings = new ParametersEnablings(config.getParametersEnablingsBurglarTime(), config.getParametersEnablingsEmergencyTime(), config.getParametersEnablingsPreAlarmTime(), 
                                                             config.getParametersEnablingsAlarmCount(), config.getParametersEnablingsPowerLack(), config.getParametersEnablingsPlay(), 
                                                             (byte)(config.getParametersEnablingsHelp() | 0x01), config.getParametersEnablingsLAN(), config.getParametersEnablingsTimeProgrammer(), 
                                                             config.getParametersEnablingsNotice(), config.getParametersEnablingsDST(), config.getParametersEnablingsDSTOn(), 

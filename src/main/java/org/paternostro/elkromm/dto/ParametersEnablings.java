@@ -504,7 +504,7 @@ public class ParametersEnablings implements Serializable {
         }
     }
 
-    private Time        bulgarTime;
+    private Time        burglarTime;
     private Time        emergencyTime;
     private Time        preAlarmTime;
     private AlarmCount  alarmCount;
@@ -521,7 +521,7 @@ public class ParametersEnablings implements Serializable {
     /**
      * Creates a new parameters/enablings configuration.
      *
-     * @param bulgarTime burglary alarm duration
+     * @param burglarTime burglary alarm duration
      * @param emergencyTime emergency alarm duration
      * @param preAlarmTime pre-alarm duration
      * @param alarmCount how many consecutive alarms are counted
@@ -535,8 +535,8 @@ public class ParametersEnablings implements Serializable {
      * @param on month DST adjustment turns on
      * @param off month DST adjustment turns off
      */
-    public ParametersEnablings(Time bulgarTime, Time emergencyTime, Time preAlarmTime, AlarmCount alarmCount, PowerLack powerLack, byte play, byte help, Enabling lan, Enabling timeProgrammer, Notice notice, byte dST, Month on, Month off) {
-        setBulgarTime(bulgarTime);
+    public ParametersEnablings(Time burglarTime, Time emergencyTime, Time preAlarmTime, AlarmCount alarmCount, PowerLack powerLack, byte play, byte help, Enabling lan, Enabling timeProgrammer, Notice notice, byte dST, Month on, Month off) {
+        setBurglarTime(burglarTime);
         setEmergencyTime(emergencyTime);
         setPreAlarmTime(preAlarmTime);
         setAlarmCount(alarmCount);
@@ -556,20 +556,20 @@ public class ParametersEnablings implements Serializable {
      *
      * @return the duration
      */
-    public Time getBulgarTime() {
-        return bulgarTime;
+    public Time getBurglarTime() {
+        return burglarTime;
     }
 
     /**
      * Sets the burglary alarm duration.
      *
-     * @param bulgarTime the duration to set, not {@code null}
-     * @throws IllegalArgumentException if {@code bulgarTime} is {@code null}
+     * @param burglarTime the duration to set, not {@code null}
+     * @throws IllegalArgumentException if {@code burglarTime} is {@code null}
      */
-    public void setBulgarTime(Time bulgarTime) {
-        if (bulgarTime == null) throw new IllegalArgumentException("Missing mandatory bulgarTime");
+    public void setBurglarTime(Time burglarTime) {
+        if (burglarTime == null) throw new IllegalArgumentException("Missing mandatory burglarTime");
 
-        this.bulgarTime = bulgarTime;
+        this.burglarTime = burglarTime;
     }
 
     /**
@@ -826,7 +826,7 @@ public class ParametersEnablings implements Serializable {
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{bulgarTime=").append(bulgarTime).append(", emergencyTime=").append(emergencyTime).append(", preAlarmTime="
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("{burglarTime=").append(burglarTime).append(", emergencyTime=").append(emergencyTime).append(", preAlarmTime="
                ).append(preAlarmTime).append(", alarmCount=").append(alarmCount).append(", powerLack=").append(powerLack).append(", play=").append(play
                ).append(", help=").append(help).append(", lan=").append(lan).append(", timeProgrammer=").append(timeProgrammer).append(", notice=").append(notice
                ).append(", dST=").append(dST).append(", on=").append(on).append(", off=").append(off).append("}");
