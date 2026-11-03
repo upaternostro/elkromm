@@ -112,19 +112,19 @@ public class Config {
     public static final String D_PARTITIONS     = "1";
 
     public static final String K_PARTITION_ENTRY_TIME   = "org.paternostro.elkromm.emulator.partition.%d.entry.time";
-    public static final String[] D_PARTITION_ENTRY_TIME = {"0", "0", "0", "0", "0", "0", "0", "0"};
+    public static final String D_PARTITION_ENTRY_TIME   = "0";
 
     public static final String K_PARTITION_EXIT_TIME    = "org.paternostro.elkromm.emulator.partition.%d.exit.time";
-    public static final String[] D_PARTITION_EXIT_TIME  = {"0", "0", "0", "0", "0", "0", "0", "0"};
+    public static final String D_PARTITION_EXIT_TIME    = "0";
 
-    public static final String K_PARTITION_NAME     = "org.paternostro.elkromm.emulator.partition.%d.name";
-    public static final String[] D_PARTITION_NAME   = {ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME};
+    public static final String K_PARTITION_NAME = "org.paternostro.elkromm.emulator.partition.%d.name";
+    public static final String D_PARTITION_NAME = ElkrommFacade.DEFAULT_NAME;
 
-    public static final String K_PARTITION_VOCAL_NAME     = "org.paternostro.elkromm.emulator.partition.%d.vocalName";
-    public static final String[] D_PARTITION_VOCAL_NAME   = {"false", "false", "false", "false", "false", "false", "false", "false"};
+    public static final String K_PARTITION_VOCAL_NAME   = "org.paternostro.elkromm.emulator.partition.%d.vocalName";
+    public static final String D_PARTITION_VOCAL_NAME   = "false";
 
-    public static final String K_PARTITION_TYPE     = "org.paternostro.elkromm.emulator.partition.%d.type";
-    public static final String[] D_PARTITION_TYPE   = {"STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD", "STANDARD"};
+    public static final String K_PARTITION_TYPE = "org.paternostro.elkromm.emulator.partition.%d.type";
+    public static final String D_PARTITION_TYPE = "STANDARD";
 
     public static final String K_USER_NAME      = "org.paternostro.elkromm.emulator.user.%d.name";
     public static final String[] D_USER_NAME    = { "TECNICO                 ", 
@@ -546,48 +546,30 @@ public class Config {
     }
 
     public int getPartitionEntryTime(int partition) {
-        String  key,
-                defaultValue;
-        
         if (partition < 1 || partition > ElkrommFacade.MAX_PARTITIONS) {
             logger.warn("Invalid partition number: " + partition + ", must be between 1 and " + ElkrommFacade.MAX_PARTITIONS);
             return 0;
         }
         
-        key = String.format(K_PARTITION_ENTRY_TIME, partition);
-        defaultValue = D_PARTITION_ENTRY_TIME[partition - 1];
-
-        return getIntProperty(key, defaultValue, "partition " + partition + " entry time");
+        return getIntProperty(String.format(K_PARTITION_ENTRY_TIME, partition), D_PARTITION_ENTRY_TIME, "partition " + partition + " entry time");
     }
 
     public int getPartitionExitTime(int partition) {
-        String  key,
-                defaultValue;
-        
         if (partition < 1 || partition > ElkrommFacade.MAX_PARTITIONS) {
             logger.warn("Invalid partition number: " + partition + ", must be between 1 and " + ElkrommFacade.MAX_PARTITIONS);
             return 0;
         }
         
-        key = String.format(K_PARTITION_EXIT_TIME, partition);
-        defaultValue = D_PARTITION_EXIT_TIME[partition - 1];
-        
-        return getIntProperty(key, defaultValue, "partition " + partition + " exit time");
+        return getIntProperty(String.format(K_PARTITION_EXIT_TIME, partition), D_PARTITION_EXIT_TIME, "partition " + partition + " exit time");
     }
 
     public String getPartitionName(int partition) {
-        String  key,
-                defaultValue;
-        
         if (partition < 1 || partition > ElkrommFacade.MAX_PARTITIONS) {
             logger.warn("Invalid partition number: " + partition + ", must be between 1 and " + ElkrommFacade.MAX_PARTITIONS);
             return "...";
         }
         
-        key = String.format(K_PARTITION_NAME, partition);
-        defaultValue = D_PARTITION_NAME[partition - 1];
-        
-        return properties.getProperty(key, defaultValue);
+        return properties.getProperty(String.format(K_PARTITION_NAME, partition), D_PARTITION_NAME);
     }
 
     public boolean getPartitionVocalName(int partition) {
@@ -596,22 +578,16 @@ public class Config {
             return false;
         }
         
-        return "true".equalsIgnoreCase(properties.getProperty(String.format(K_PARTITION_VOCAL_NAME, partition), D_PARTITION_VOCAL_NAME[partition - 1]));
+        return "true".equalsIgnoreCase(properties.getProperty(String.format(K_PARTITION_VOCAL_NAME, partition), D_PARTITION_VOCAL_NAME));
     }
 
     public Partition.Type getPartitionType(int partition) {
-        String  key,
-                defaultValue;
-        
         if (partition < 1 || partition > ElkrommFacade.MAX_PARTITIONS) {
             logger.warn("Invalid partition number: " + partition + ", must be between 1 and " + ElkrommFacade.MAX_PARTITIONS);
             return null;
         }
         
-        key = String.format(K_PARTITION_TYPE, partition);
-        defaultValue = D_PARTITION_TYPE[partition - 1];
-        
-        return Partition.Type.valueOf(properties.getProperty(key, defaultValue));
+        return Partition.Type.valueOf(properties.getProperty(String.format(K_PARTITION_TYPE, partition), D_PARTITION_TYPE));
     }
 
     public String getUserName(int user) {
