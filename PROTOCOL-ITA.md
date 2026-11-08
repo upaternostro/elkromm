@@ -865,7 +865,7 @@ Dump catturato:
 0020: ff ff ff ff ff ff ff ff  ff
 ```
 
-Il testo `41 67 61 69 6e 3f` decodifica in ASCII come **"Again?"** — testo di prova inserito dall'autore in Hi-Connect. Indice `0x01` = `SMS_BURLGAR`.
+Il testo `41 67 61 69 6e 3f` decodifica in ASCII come **"Again?"** — testo di prova inserito dall'autore in Hi-Connect. Indice `0x01` = `SMS_BURGLAR`.
 
 ## C200B
 
