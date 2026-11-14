@@ -233,7 +233,7 @@ public class ElkrommFacadeFunctionalTest {
 
     @Test
     public void testPeripheralUnitsAddresses() throws ElkrommException {
-        assertTrue(pu.getExpansionNum() > 0);
+        assertTrue(pu.getExpansionNum() >= 0);
         assertTrue(pu.getKeypadNum() >= 0);
         assertTrue(pu.getReaderNum() >= 0);
     }

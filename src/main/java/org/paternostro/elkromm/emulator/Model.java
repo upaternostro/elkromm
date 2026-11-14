@@ -77,7 +77,7 @@ public class Model {
             this.peripheralUnits.addReader(i + 1);
         }
 
-        for (int i = 0; i <= config.getExpansions(); i++) {
+        for (int i = 0; i < config.getExpansions(); i++) {
             this.peripheralUnits.addExpansion(i + 1);
         }
 
