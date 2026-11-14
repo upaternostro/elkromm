@@ -454,7 +454,7 @@ public class Config {
     public static final String D_C200B_RESERVED = "";
 
     public static final String K_C200B_EVENT_CODES  = "org.paternostro.elkromm.emulator.c200b.event.%s";
-    // No default
+    public static final String D_C200B_EVENT_CODES  = "255";
    
     public static final String K_C200B_INPUT_CODES  = "org.paternostro.elkromm.emulator.c200b.inputCodes";
     public static final String D_C200B_INPUT_CODES  = "";
@@ -1039,26 +1039,6 @@ public class Config {
         return ParametersEnablings.Month.valueOf("PEM_" + properties.getProperty(K_PARAMETERS_ENABLINGS_DST_OFF, D_PARAMETERS_ENABLINGS_DST_OFF));
     }
 
-    private String capitalize(String constantName)
-    {
-        StringTokenizer st = new StringTokenizer(constantName, "_");
-        String          token;
-        StringBuffer    sb = new StringBuffer();
-
-        while (st.hasMoreTokens()) {
-            token = st.nextToken().toLowerCase();
-
-            if (sb.length() > 0) {
-                sb.append(token.substring(0, 1).toUpperCase())
-                    .append(token.substring(1));
-            } else {
-                sb.append(token);
-            }
-        }
-
-        return sb.toString();
-    }
-
     public Command.Action getTimeProgrammerCommandAction(DayClass dayClass, int ordinal) {
         if (dayClass == null) {
             logger.warn("Null dayClass");
@@ -1070,7 +1050,7 @@ public class Config {
             return Command.Action.CA_NONE;
         }
         
-        return Command.Action.valueOf("CA_" + properties.getProperty(String.format(K_TIME_PROGRAMMER_COMMAND_ACTION, capitalize(dayClass.toString().substring(6)), ordinal), D_TIME_PROGRAMMER_COMMAND_ACTION));
+        return Command.Action.valueOf("CA_" + properties.getProperty(String.format(K_TIME_PROGRAMMER_COMMAND_ACTION, ElkrommUtils.toCamelCase(dayClass.toString().substring(6)), ordinal), D_TIME_PROGRAMMER_COMMAND_ACTION));
     }
 
     public byte getTimeProgrammerCommandObject(DayClass dayClass, int ordinal) {
@@ -1084,7 +1064,7 @@ public class Config {
             return 1;
         }
         
-        return (byte)getIntProperty(String.format(K_TIME_PROGRAMMER_COMMAND_OBJECT, capitalize(dayClass.toString().substring(6)), ordinal), D_TIME_PROGRAMMER_COMMAND_OBJECT, "command object");
+        return (byte)getIntProperty(String.format(K_TIME_PROGRAMMER_COMMAND_OBJECT, ElkrommUtils.toCamelCase(dayClass.toString().substring(6)), ordinal), D_TIME_PROGRAMMER_COMMAND_OBJECT, "command object");
     }
 
     public Command.ObjectType getTimeProgrammerCommandObjectType(DayClass dayClass, int ordinal) {
@@ -1098,7 +1078,7 @@ public class Config {
             return null;
         }
 
-        String  objectTypeName = properties.getProperty(String.format(K_TIME_PROGRAMMER_COMMAND_OBJECT_TYPE, capitalize(dayClass.toString().substring(6)), ordinal));
+        String  objectTypeName = properties.getProperty(String.format(K_TIME_PROGRAMMER_COMMAND_OBJECT_TYPE, ElkrommUtils.toCamelCase(dayClass.toString().substring(6)), ordinal));
         
         return objectTypeName == null ? null : Command.ObjectType.valueOf("COT_" + objectTypeName);
     }
@@ -1114,7 +1094,7 @@ public class Config {
             return 0;
         }
         
-        return (byte)getIntProperty(String.format(K_TIME_PROGRAMMER_COMMAND_HOUR, capitalize(dayClass.toString().substring(6)), ordinal), D_TIME_PROGRAMMER_COMMAND_HOUR, "command hour");
+        return (byte)getIntProperty(String.format(K_TIME_PROGRAMMER_COMMAND_HOUR, ElkrommUtils.toCamelCase(dayClass.toString().substring(6)), ordinal), D_TIME_PROGRAMMER_COMMAND_HOUR, "command hour");
     }
 
     public byte getTimeProgrammerCommandMinute(DayClass dayClass, int ordinal) {
@@ -1128,7 +1108,7 @@ public class Config {
             return 0;
         }
         
-        return (byte)getIntProperty(String.format(K_TIME_PROGRAMMER_COMMAND_MINUTE, capitalize(dayClass.toString().substring(6)), ordinal), D_TIME_PROGRAMMER_COMMAND_MINUTE, "command minute");
+        return (byte)getIntProperty(String.format(K_TIME_PROGRAMMER_COMMAND_MINUTE, ElkrommUtils.toCamelCase(dayClass.toString().substring(6)), ordinal), D_TIME_PROGRAMMER_COMMAND_MINUTE, "command minute");
     }
 
     public DayClassCommands.DayClass getTimeProgrammerDayClass(Weekday weekday) {
@@ -1436,14 +1416,9 @@ public class Config {
 
     public Map<C200bParameters.Event,Byte> getC200bEventCodes() {
         Map<C200bParameters.Event,Byte> retval = new HashMap<>();
-        String                          pValue;
 
         for (C200bParameters.Event pivot: C200bParameters.Event.values()) {
-            pValue = properties.getProperty(String.format(K_C200B_EVENT_CODES, capitalize(pivot.toString().substring(5))));
-
-            if (pValue != null) {
-                retval.put(pivot, Byte.valueOf(pValue));
-            }
+            retval.put(pivot, (byte)(Integer.valueOf(properties.getProperty(String.format(K_C200B_EVENT_CODES, ElkrommUtils.toCamelCase(pivot.toString().substring(5))), D_C200B_EVENT_CODES)) & 0xFF));
         }
 
         return retval;

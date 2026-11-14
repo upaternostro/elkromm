@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -435,6 +436,26 @@ public class ElkrommUtils
         }
 
         return retval;
+    }
+
+    public static String toCamelCase(String constantName)
+    {
+        StringTokenizer st = new StringTokenizer(constantName, "_");
+        String          token;
+        StringBuffer    sb = new StringBuffer();
+
+        while (st.hasMoreTokens()) {
+            token = st.nextToken().toLowerCase();
+
+            if (sb.length() > 0) {
+                sb.append(token.substring(0, 1).toUpperCase())
+                    .append(token.substring(1));
+            } else {
+                sb.append(token);
+            }
+        }
+
+        return sb.toString();
     }
 
     public static byte[] hexToBytes(String value) {
