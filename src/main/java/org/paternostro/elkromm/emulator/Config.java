@@ -53,17 +53,8 @@ public class Config {
                 retval = instance;
 
                 if (retval == null) {
-                    Properties  p = new Properties();
-
-                    try (InputStream propertiesStream = Config.class.getResourceAsStream(PROPERTIES_FILE_NAME)) {
-                        if (propertiesStream != null) {
-                            p.load(propertiesStream);
-                        }
-                    } catch (IOException e) {
-                        logger.warn("Error reading " + PROPERTIES_FILE_NAME + ", using defaults", e);
-                    }
-
-                    String className = p.getProperty(CLASS_NAME_PROPERTY, CLASS_NAME_DEFAULT);
+                    Properties  p = loadProperties();
+                    String      className = p.getProperty(CLASS_NAME_PROPERTY, CLASS_NAME_DEFAULT);
 
                     try {
                         retval = Class.forName(className, false, Config.class.getClassLoader())
@@ -86,6 +77,20 @@ public class Config {
         }
 
         return retval;
+    }
+
+    protected static Properties loadProperties() {
+        Properties  p = new Properties();
+
+        try (InputStream propertiesStream = Config.class.getResourceAsStream(PROPERTIES_FILE_NAME)) {
+            if (propertiesStream != null) {
+                p.load(propertiesStream);
+            }
+        } catch (IOException e) {
+            logger.warn("Error reading " + PROPERTIES_FILE_NAME + ", using defaults", e);
+        }
+
+        return p;
     }
 
     public static final String K_PORT           = "org.paternostro.elkromm.emulator.port";

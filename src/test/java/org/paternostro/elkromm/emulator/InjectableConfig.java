@@ -29,4 +29,9 @@ public class InjectableConfig extends Config
 
         properties = (Properties)snapshot.clone();
     }
+
+    public void reload()
+    {
+        setProperties(loadProperties());
+    }
 }

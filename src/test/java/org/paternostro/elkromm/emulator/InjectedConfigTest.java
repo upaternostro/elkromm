@@ -67,6 +67,11 @@ public class InjectedConfigTest {
     public void tearDown() throws ElkrommException
     {
         facade.close();
+
+        // restore config from properties file so other tests depending on the committed content work
+        InjectableConfig    config = (InjectableConfig)Config.getInstance();
+
+        config.reload();
     }
 
     @Test
