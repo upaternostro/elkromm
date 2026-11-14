@@ -160,6 +160,7 @@ public class ElkrommFacadeCloseTest {
     @Test
     public void disconnectNotInitializedFails() throws ElkrommException
     {
+        @SuppressWarnings("resource")
         ElkrommFacade notInitialized = new ElkrommFacadeImpl();
 
         assertEquals(Status.ST_NOT_INITIALIZED, notInitialized.getStatus());

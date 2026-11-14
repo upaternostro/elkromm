@@ -36,8 +36,8 @@ import org.paternostro.elkromm.dto.PhoneParameters.ReturnCall;
 import org.paternostro.elkromm.dto.Reader;
 import org.paternostro.elkromm.dto.SMS;
 import org.paternostro.elkromm.dto.SMSs;
-import org.paternostro.elkromm.dto.SingleCredential;
 import org.paternostro.elkromm.dto.SMSs.SMSIndex;
+import org.paternostro.elkromm.dto.SingleCredential;
 import org.paternostro.elkromm.dto.SingleKeyboard;
 import org.paternostro.elkromm.dto.SingleSMS;
 import org.paternostro.elkromm.dto.SystemStatus;
@@ -114,7 +114,7 @@ public class ElkrommFacadeFunctionalTest {
 
         assertNotNull(pu);
     }
-    
+
     @Test
     public void testPing() {
         try {
@@ -341,7 +341,7 @@ public class ElkrommFacadeFunctionalTest {
             assertTrue(users[i] instanceof User);
         }
 
-        assertEquals(users[1].getEnabling(), Credential.Enabling.ENABLED.getValue() | Credential.Enabling.ALWAYS_ENABLED.getValue());
+        assertEquals(Credential.Enabling.ENABLED.getValue() | Credential.Enabling.ALWAYS_ENABLED.getValue(), users[1].getEnabling());
     }
 
     @Test
