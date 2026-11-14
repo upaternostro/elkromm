@@ -177,7 +177,7 @@ public class Config {
     public static final String D_KEY_ENABLINGS  = Byte.toString(Key.Enabling.DISABLED.getValue());
 
     public static final String K_KEY_SPECIALIZATION = "org.paternostro.elkromm.emulator.key.%d.specialization";
-    public static final String D_KEY_SPECIALIZATION = "CHANGE_PARTITION_STATUS";
+    public static final String D_KEY_SPECIALIZATION = "NONE";
 
     public static final String K_KEY_PARTITIONS = "org.paternostro.elkromm.emulator.key.%d.partitions";
     public static final String D_KEY_PARTITIONS = "1";
@@ -191,7 +191,7 @@ public class Config {
     public static final String D_EXPANSION_VERSION          = "0200";
 
     public static final String K_INPUT_CONFIGURATION    = "org.paternostro.elkromm.emulator.input.%d.configuration";
-    public static final String D_INPUT_CONFIGURATION    = "NORMALLY_CLOSED_DOUBLE_BALANCED";
+    public static final String D_INPUT_CONFIGURATION    = "NOT_USED";
 
     public static final String K_INPUT_SPECIALIZATION   = "org.paternostro.elkromm.emulator.input.%d.specialization";
     public static final String D_INPUT_SPECIALIZATION   = "IMMEDIATE";
@@ -347,7 +347,7 @@ public class Config {
     public static final String D_TIME_PROGRAMMER_COMMAND_ACTION = "NONE";
 
     public static final String K_TIME_PROGRAMMER_COMMAND_OBJECT = "org.paternostro.elkromm.emulator.timeProgrammer.command.%s.%d.object";
-    public static final String D_TIME_PROGRAMMER_COMMAND_OBJECT = "1";
+    public static final String D_TIME_PROGRAMMER_COMMAND_OBJECT = "0";
 
     public static final String K_TIME_PROGRAMMER_COMMAND_OBJECT_TYPE    = "org.paternostro.elkromm.emulator.timeProgrammer.command.%s.%d.objectType";
     // no default for Command.ObjectType: method returns null if not set
@@ -441,7 +441,7 @@ public class Config {
     public static final String D_PHONE_NUMBERS_PHONE_NUMBER    = "";
 
     public static final String K_PHONE_NUMBERS_PARTITIONS    = "org.paternostro.elkromm.emulator.phoneNumbers.%d.partitions";
-    public static final String D_PHONE_NUMBERS_PARTITIONS    = "1";
+    public static final String D_PHONE_NUMBERS_PARTITIONS    = "0";
 
     public static final String K_PHONE_NUMBERS_TYPE    = "org.paternostro.elkromm.emulator.phoneNumbers.%d.type";
     public static final String D_PHONE_NUMBERS_TYPE    = "PSTN";
@@ -456,13 +456,13 @@ public class Config {
     public static final String[] D_SMSES_TEXT   = {"Burglar", "Technical alarm 1", "Technical alarm 2", "Technical alarm 3", "Fire", "Partition activated", "Partition deactivated", "Tampering", "Notice"};
 
     public static final String K_C200B_RESERVED = "org.paternostro.elkromm.emulator.c200b.reserved";
-    public static final String D_C200B_RESERVED = "";
+    public static final String D_C200B_RESERVED = ElkrommUtils.bytesToHex(new byte[C200bParameters.RESERVED_SIZE]);
 
     public static final String K_C200B_EVENT_CODES  = "org.paternostro.elkromm.emulator.c200b.event.%s";
     public static final String D_C200B_EVENT_CODES  = "255";
    
     public static final String K_C200B_INPUT_CODES  = "org.paternostro.elkromm.emulator.c200b.inputCodes";
-    public static final String D_C200B_INPUT_CODES  = "";
+    public static final String D_C200B_INPUT_CODES  = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
 
     // FIXME: input status?
     // FIXME: user enabling vero?
