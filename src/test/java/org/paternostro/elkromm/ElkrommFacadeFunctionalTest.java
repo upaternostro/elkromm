@@ -232,10 +232,12 @@ public class ElkrommFacadeFunctionalTest {
     }
 
     @Test
-    public void testPeripheralUnitsAddresses() throws ElkrommException {
-        assertTrue(pu.getExpansionNum() >= 0);
-        assertTrue(pu.getKeypadNum() >= 0);
-        assertTrue(pu.getReaderNum() >= 0);
+    public void testPeripheralUnitsCount() throws ElkrommException {
+        Config config = Config.getInstance();
+
+        assertEquals(config.getExpansions(), pu.getExpansionNum());
+        assertEquals(config.getKeyboards(),  pu.getKeypadNum());
+        assertEquals(config.getReaders(),    pu.getReaderNum());
     }
 
     @Test
