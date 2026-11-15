@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.AfterClass;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.paternostro.elkromm.ElkrommFacade.InputStatus;
@@ -418,7 +419,7 @@ public class ElkrommFacadeFunctionalTest {
 
     @Test
     public void testKeyboards() throws ElkrommException {
-        if (pu.getKeypadNum() < 1) return;
+        Assume.assumeTrue("No keypads configured", pu.getKeypadNum() >= 1);
 
         Keyboard[]  keyboards = facade.getKeyboards();
 
@@ -463,7 +464,7 @@ public class ElkrommFacadeFunctionalTest {
 
     @Test
     public void testReaders() throws ElkrommException {
-        if (pu.getReaderNum() < 1) return;
+        Assume.assumeTrue("No readers configured", pu.getReaderNum() >= 1);
 
         Reader[]    reader = facade.getReaders();
 
@@ -794,7 +795,7 @@ public class ElkrommFacadeFunctionalTest {
 
     @Test
     public void testSetKeyboard() throws ElkrommException {
-        if (pu.getKeypadNum() < 1) return;
+        Assume.assumeTrue("No keypads configured", pu.getKeypadNum() >= 1);
 
         Keyboard[]      keyboards = facade.getKeyboards();
 
@@ -829,7 +830,7 @@ public class ElkrommFacadeFunctionalTest {
 
     @Test
     public void testSetReader() throws ElkrommException {
-        if (pu.getReaderNum() < 1) return;
+        Assume.assumeTrue("No readers configured", pu.getReaderNum() >= 1);
 
         Reader[]    readers = facade.getReaders();
         
