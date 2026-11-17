@@ -219,7 +219,7 @@ public class ClientConnection extends Thread {
                     ExcludeIncludeInput eii = ElkrommFactory.getFactory().getExcludeIncludeInputSerializer().deserialize(totalPayload);
 
                     if (eii.getOrdinal() < 1 || eii.getOrdinal() > model.getInputStatus().length) {
-                        logger.warn(String.format("Trying to enable/disable unexisting input %d, ignoring", eii.getOrdinal()));
+                        logger.warn(String.format("Trying to enable/disable nonexistent input %d, ignoring", eii.getOrdinal()));
                         break;
                     }
 
