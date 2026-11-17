@@ -1423,7 +1423,7 @@ public class Config {
         Map<C200bParameters.Event,Byte> retval = new HashMap<>();
 
         for (C200bParameters.Event pivot: C200bParameters.Event.values()) {
-            retval.put(pivot, (byte)(Integer.valueOf(properties.getProperty(String.format(K_C200B_EVENT_CODES, ElkrommUtils.toCamelCase(pivot.toString().substring(5))), D_C200B_EVENT_CODES)) & 0xFF));
+            retval.put(pivot, (byte)(getIntProperty(String.format(K_C200B_EVENT_CODES, ElkrommUtils.toCamelCase(pivot.toString().substring(5))), D_C200B_EVENT_CODES, "C200b event codes")));
         }
 
         return retval;
