@@ -350,7 +350,7 @@ public class Config {
     public static final String D_TIME_PROGRAMMER_COMMAND_OBJECT = "0";
 
     public static final String K_TIME_PROGRAMMER_COMMAND_OBJECT_TYPE    = "org.paternostro.elkromm.emulator.timeProgrammer.command.%s.%d.objectType";
-    // no default for Command.ObjectType: method returns null if not set
+    public static final String D_TIME_PROGRAMMER_COMMAND_OBJECT_TYPE    = "NONE";
 
     public static final String K_TIME_PROGRAMMER_COMMAND_HOUR   = "org.paternostro.elkromm.emulator.timeProgrammer.command.%s.%d.hour";
     public static final String D_TIME_PROGRAMMER_COMMAND_HOUR   = "0";
@@ -1083,7 +1083,7 @@ public class Config {
             return null;
         }
 
-        String  objectTypeName = properties.getProperty(String.format(K_TIME_PROGRAMMER_COMMAND_OBJECT_TYPE, ElkrommUtils.toCamelCase(dayClass.toString().substring(6)), ordinal));
+        String  objectTypeName = properties.getProperty(String.format(K_TIME_PROGRAMMER_COMMAND_OBJECT_TYPE, ElkrommUtils.toCamelCase(dayClass.toString().substring(6)), ordinal), D_TIME_PROGRAMMER_COMMAND_OBJECT_TYPE);
         
         return objectTypeName == null ? null : Command.ObjectType.valueOf("COT_" + objectTypeName);
     }

@@ -64,6 +64,7 @@ public class Command implements Serializable {
      * protocol likely supports more (keys, outputs).
      */
     public enum ObjectType {
+        COT_NONE(0x00),
         /** The target is a partition/sector. */
         COT_PARTITIONS(0x10),
         /** The target is a user. */
@@ -187,6 +188,8 @@ public class Command implements Serializable {
      * @param objectType the object type to set
      */
     public void setObjectType(ObjectType objectType) {
+        if (objectType == null) throw new IllegalArgumentException("Missing mandatory objectType");
+
         this.objectType = objectType;
     }
 
