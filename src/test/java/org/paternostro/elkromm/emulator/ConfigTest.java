@@ -1,6 +1,5 @@
 package org.paternostro.elkromm.emulator;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
@@ -8,8 +7,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Properties;
 
+import org.junit.After;
 import org.junit.Test;
-import org.paternostro.elkromm.dto.C200bParameters;
 
 /**
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
@@ -103,5 +102,14 @@ public class ConfigTest {
         InjectableConfig  config = (InjectableConfig)Config.getInstance();
 
         config.setProperties(null);
+    }
+
+    @After
+    public void tearDown()
+    {
+        // restore config from properties file so other tests depending on the committed content work
+        InjectableConfig    config = (InjectableConfig)Config.getInstance();
+
+        config.reload();
     }
 }
