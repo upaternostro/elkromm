@@ -245,6 +245,14 @@ public class ClientConnection extends Thread {
 
                     this.model.computeChecksum();
                     break;
+                case SET_EXPANSIONS:
+                    this.model.setExpansions(ElkrommFactory.getFactory().getExpansionsSerializer().deserialize(totalPayload));
+                    this.model.computeChecksum();
+                    break;
+                case SET_KEYPADS:
+                    this.model.setKeyboards(ElkrommFactory.getFactory().getKeyboardsSerializer().deserialize(totalPayload));
+                    this.model.computeChecksum();
+                    break;
                 default:
                     break;
             }
@@ -427,6 +435,8 @@ public class ClientConnection extends Thread {
                             case EXCLUDE_INCLUDE_INPUT:
                             case ENABLE_DISABLE_USER:
                             case KEYPAD_PROGRAMMING:
+                            case SET_EXPANSIONS:
+                            case SET_KEYPADS:
                                 // solo SYN
                                 processPayload(packet);
                                 break;

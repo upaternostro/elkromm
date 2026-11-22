@@ -54,13 +54,10 @@ public class Commands implements ElkrommSerializer<Command[]>
         for (int i = 0; i < ElkrommFacade.NUM_COMMANDS; i++) {
             offset = i * SerializersConstants.COMMAND_LENGTH;
             data[offset] = obj[i].getAction().getValue();
-
-            if (obj[i].getAction() != Action.CA_NONE) {
-                data[offset + OBJECT_OFFSET] = obj[i].getObject();
-                data[offset + OBJECT_TYPE_OFFSET] = obj[i].getObjectType().getValue();
-                data[offset + HOUR_OFFSET] = obj[i].getHour();
-                data[offset + MINUTE_OFFSET] = obj[i].getMinute();
-            }
+            data[offset + OBJECT_OFFSET] = obj[i].getObject();
+            data[offset + OBJECT_TYPE_OFFSET] = obj[i].getObjectType().getValue();
+            data[offset + HOUR_OFFSET] = obj[i].getHour();
+            data[offset + MINUTE_OFFSET] = obj[i].getMinute();
         }
 
         return data;

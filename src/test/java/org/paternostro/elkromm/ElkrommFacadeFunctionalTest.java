@@ -26,6 +26,7 @@ import org.paternostro.elkromm.dto.Expansion;
 import org.paternostro.elkromm.dto.Input;
 import org.paternostro.elkromm.dto.Key;
 import org.paternostro.elkromm.dto.Keyboard;
+import org.paternostro.elkromm.dto.Output;
 import org.paternostro.elkromm.dto.PSTNGSM;
 import org.paternostro.elkromm.dto.PSTNGSM.Enabling;
 import org.paternostro.elkromm.dto.ParametersEnablings;
@@ -377,6 +378,55 @@ public class ElkrommFacadeFunctionalTest {
     }
 
     @Test
+    public void testSetExpansions() throws ElkrommException {
+        Expansion[] oldExpansions = facade.getExpansions();
+
+        assertNotNull(oldExpansions);
+
+        Expansion[] expansions = new Expansion[pu.getExpansionNum() + 1];
+        boolean[]   associatedPartitions = ElkrommUtils.unpackPartitions((byte)0x01);
+        int         inputNum = 1;
+        int         outputNum = 1;
+
+        for (int i = 0; i < expansions.length; i++) {
+            expansions[i] = new Expansion(i, String.format("01%02d", i + 1), "Expansion " + i);
+
+            for (int j = 0; j < ElkrommFacade.MAX_EXP_INPUTS; j++) {
+                expansions[i].addInput(new Input(
+                    inputNum,
+                    Input.Configuration.values()[j % Input.Configuration.values().length],
+                    Input.Specialization.values()[j % Input.Specialization.values().length],
+                    Input.Sensitivity.values()[j % Input.Sensitivity.values().length],
+                    Input.Flags.values()[j % Input.Flags.values().length].getValue(),
+                    Input.Video.values()[j % Input.Video.values().length],
+                    associatedPartitions,
+                    "Input " + inputNum++,
+                    Input.Delay.values()[j % Input.Delay.values().length]
+                ));
+            }
+
+            for (int j = 0; j < (i == 0 ? ElkrommFacade.MAX_PANEL_OUTPUTS : ElkrommFacade.MAX_EXP_OUTPUTS); j++) {
+                expansions[i].addOutput(new Output(
+                    outputNum,
+                    Output.Type.values()[j % Output.Type.values().length],
+                    associatedPartitions,
+                    Output.Specialization.values()[j % Output.Specialization.values().length],
+                    "Output " + outputNum++
+                ));
+            }
+        }
+
+        facade.setExpansions(expansions);
+
+        Expansion[] newExpansions = facade.getExpansions();
+
+        ElkrommTestUtils.assertEquals(expansions, newExpansions);
+        facade.setExpansions(oldExpansions);
+        expansions = facade.getExpansions();
+        ElkrommTestUtils.assertEquals(oldExpansions, expansions);
+    }
+
+    @Test
     public void testUserEnablings() throws ElkrommException {
         boolean[]   userEnablings = facade.getUserEnablings();
 
@@ -426,6 +476,40 @@ public class ElkrommFacadeFunctionalTest {
         assertNotNull(keyboards);
         assertTrue(keyboards.length > 0);
         assertNotNull(keyboards[0].getName());
+    }
+
+    @Test
+    public void testSetKeyboards() throws ElkrommException {
+        Assume.assumeTrue("No keypads configured", pu.getKeypadNum() >= 1);
+
+        Keyboard[]  oldKeyboards = facade.getKeyboards();
+
+        assertNotNull(oldKeyboards);
+        assertTrue(oldKeyboards.length == pu.getKeypadNum());
+
+        Keyboard[]  keyboards = new Keyboard[pu.getKeypadNum()];
+        boolean[]   associatedPartitions = ElkrommUtils.unpackPartitions((byte)0x01);
+        int         inputNum = 0;
+
+        for (int i = 1; i <= keyboards.length; i++) {
+            keyboards[i - 1] = new Keyboard(i,
+                                            String.format("01%02d", i),
+                                            new Input(inputNum++, Input.Configuration.IC_NORMALLY_CLOSED_DOUBLE_BALANCED, Input.Specialization.IS_WAY, Input.Sensitivity.IS_MEDIUM, Input.Flags.IF_EXCLUSION_ENABLED.getValue(), Input.Video.IV_CAMERA_3, associatedPartitions, "Input " + inputNum, Input.Delay.ID_30_SECS),
+                                            new Input(inputNum++, Input.Configuration.IC_NORMALLY_CLOSED_BALANCED, Input.Specialization.IS_DELAYED, Input.Sensitivity.IS_HIGH, Input.Flags.IF_OR_PARTITIONS.getValue(), Input.Video.IV_CAMERA_2, associatedPartitions, "Input " + inputNum, Input.Delay.ID_20_SECS),
+                                            Keyboard.Enablings.values()[i % Keyboard.Enablings.values().length].getValue(),
+                                            associatedPartitions,
+                                            Keyboard.AudioFeatures.values()[i % Keyboard.AudioFeatures.values().length].getValue(),
+                                            "Keypad " + i);
+        }
+
+        facade.setKeyboards(keyboards);
+
+        Keyboard[]  newKeyboards = facade.getKeyboards();
+
+        ElkrommTestUtils.assertEquals(keyboards, newKeyboards);
+        facade.setKeyboards(oldKeyboards);
+        keyboards = facade.getKeyboards();
+        ElkrommTestUtils.assertEquals(oldKeyboards, keyboards);
     }
 
     @Test
@@ -502,6 +586,53 @@ public class ElkrommFacadeFunctionalTest {
         assertNotNull(timeProgrammer.getPreHolidayDaysCommands()[0]);
         assertNotNull(timeProgrammer.getHolidayDaysCommands());
         assertNotNull(timeProgrammer.getHolidayDaysCommands()[0]);
+    }
+
+    @Test
+    public void testSetTimeProgrammer() throws ElkrommException {
+        TimeProgrammer   oldTimeProgrammer = facade.getTimeProgrammer();
+
+        assertNotNull(oldTimeProgrammer);
+
+        Command[]   workingDaysCommands = new Command[ElkrommFacade.NUM_COMMANDS];
+        Command[]   preHolidayDaysCommands = new Command[ElkrommFacade.NUM_COMMANDS];
+        Command[]   holidayDaysCommands = new Command[ElkrommFacade.NUM_COMMANDS];
+
+        for (int i = 0; i < ElkrommFacade.NUM_COMMANDS; i++) {
+            workingDaysCommands[i] = new Command(
+                Command.Action.values()[i % Command.Action.values().length],
+                (byte)i, Command.ObjectType.values()[i % Command.ObjectType.values().length],
+                (byte)(i % 24), (byte)(59 - (i % 60)));
+            preHolidayDaysCommands[i] = new Command(
+                Command.Action.values()[(i + 1) % Command.Action.values().length],
+                (byte)i, Command.ObjectType.values()[(i + 1) % Command.ObjectType.values().length],
+                (byte)(23 - (i % 24)), (byte)(i % 60));
+            holidayDaysCommands[i] = new Command(
+                Command.Action.values()[(i + 2) % Command.Action.values().length],
+                (byte)i, Command.ObjectType.values()[(i + 2) % Command.ObjectType.values().length],
+                (byte)(23 - (i % 24)), (byte)(59 - (i % 60)));
+        }
+
+        DayClassCommands.DayClass[] dayClasses = new DayClassCommands.DayClass[Config.Weekday.values().length];
+
+        dayClasses[Config.Weekday.MONDAY.ordinal()]     = DayClassCommands.DayClass.DCCDC_WORKING_DAY;
+        dayClasses[Config.Weekday.TUESDAY.ordinal()]    = DayClassCommands.DayClass.DCCDC_PRE_HOLIDAY;
+        dayClasses[Config.Weekday.WEDNESDAY.ordinal()]  = DayClassCommands.DayClass.DCCDC_HOLIDAY;
+        dayClasses[Config.Weekday.THURSDAY.ordinal()]   = DayClassCommands.DayClass.DCCDC_WORKING_DAY;
+        dayClasses[Config.Weekday.FRIDAY.ordinal()]     = DayClassCommands.DayClass.DCCDC_PRE_HOLIDAY;
+        dayClasses[Config.Weekday.SATURDAY.ordinal()]   = DayClassCommands.DayClass.DCCDC_HOLIDAY;
+        dayClasses[Config.Weekday.SUNDAY.ordinal()]     = DayClassCommands.DayClass.DCCDC_WORKING_DAY;
+
+        TimeProgrammer   timeProgrammer = new TimeProgrammer(workingDaysCommands, preHolidayDaysCommands, holidayDaysCommands, dayClasses);
+
+        facade.setTimeProgrammer(timeProgrammer);
+
+        TimeProgrammer   newTimeProgrammer = facade.getTimeProgrammer();
+
+        ElkrommTestUtils.assertEquals(timeProgrammer, newTimeProgrammer);
+        facade.setTimeProgrammer(oldTimeProgrammer);
+        timeProgrammer = facade.getTimeProgrammer();
+        ElkrommTestUtils.assertEquals(oldTimeProgrammer, timeProgrammer);
     }
 
     @Test
@@ -848,19 +979,42 @@ public class ElkrommFacadeFunctionalTest {
         readers = facade.getReaders();
         assertNotNull(readers);
         assertTrue(readers.length > 0);
-        assertEquals(1, readers[0].getAddress());
-        ElkrommTestUtils.testInput(newReader.getFirstInput(), readers[0].getFirstInput());
-        ElkrommTestUtils.testInput(newReader.getSecondInput(), readers[0].getSecondInput());
-        assertEquals(ElkrommFacade.Partition.P_ONE, readers[0].getLed1());
-        assertEquals(ElkrommFacade.Partition.P_TWO, readers[0].getLed2());
-        assertEquals(ElkrommFacade.Partition.P_THREE, readers[0].getLed3());
-        assertEquals(ElkrommFacade.Partition.P_FOUR, readers[0].getLed4());
-        assertEquals(Reader.Enablings.RE_MASKING.getValue(), readers[0].getEnablings());
-        assertEquals("Reader 1", readers[0].getName());
+        ElkrommTestUtils.assertEquals(newReader, readers[0]);
         facade.setReader(oldReader);
         readers = facade.getReaders();
         assertNotNull(readers);
         assertTrue(readers.length > 0);
+    }
+
+    @Test
+    public void testSetReaders() throws ElkrommException {
+        Assume.assumeTrue("No readers configured", pu.getReaderNum() >= 1);
+
+        Reader[]    oldReaders = facade.getReaders();
+
+        assertNotNull(oldReaders);
+        assertTrue(oldReaders.length == pu.getReaderNum());
+
+        Reader[]    readers = new Reader[pu.getReaderNum()];
+        boolean[]   associatedPartitions = ElkrommUtils.unpackPartitions((byte)0x01);
+        int         inputNum = 0;
+
+        for (int i = 1; i <= readers.length; i++) {
+            readers[i - 1] = new Reader(i,
+                                        new Input(inputNum++, Input.Configuration.IC_NORMALLY_CLOSED_DOUBLE_BALANCED, Input.Specialization.IS_WAY, Input.Sensitivity.IS_MEDIUM, Input.Flags.IF_EXCLUSION_ENABLED.getValue(), Input.Video.IV_CAMERA_3, associatedPartitions, "Input " + inputNum, Input.Delay.ID_30_SECS),
+                                        new Input(inputNum++, Input.Configuration.IC_NORMALLY_CLOSED_BALANCED, Input.Specialization.IS_DELAYED, Input.Sensitivity.IS_HIGH, Input.Flags.IF_OR_PARTITIONS.getValue(), Input.Video.IV_CAMERA_2, associatedPartitions, "Input " + inputNum, Input.Delay.ID_20_SECS),
+                                        ElkrommFacade.Partition.P_ONE, ElkrommFacade.Partition.P_TWO, ElkrommFacade.Partition.P_THREE, ElkrommFacade.Partition.P_FOUR, Reader.Enablings.RE_MASKING.getValue(), "Reader " + i
+                            );
+        }
+
+        facade.setReaders(readers);
+
+        Reader[]    newReaders = facade.getReaders();
+
+        ElkrommTestUtils.assertEquals(readers, newReaders);
+        facade.setReaders(oldReaders);
+        readers = facade.getReaders();
+        ElkrommTestUtils.assertEquals(oldReaders, readers);
     }
 
     @Test

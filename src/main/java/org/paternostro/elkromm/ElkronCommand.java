@@ -28,6 +28,8 @@ import org.paternostro.elkromm.packet.SMSProgramming;
 import org.paternostro.elkromm.packet.Send;
 import org.paternostro.elkromm.packet.SetAreasAndPartitions;
 import org.paternostro.elkromm.packet.SetC200bParameters;
+import org.paternostro.elkromm.packet.SetExpansions;
+import org.paternostro.elkromm.packet.SetKeypads;
 import org.paternostro.elkromm.packet.SetKeys;
 import org.paternostro.elkromm.packet.SetPSTNGSM;
 import org.paternostro.elkromm.packet.SetParametersEnablings;
@@ -39,8 +41,8 @@ import org.paternostro.elkromm.packet.SetTimeProgrammer;
 import org.paternostro.elkromm.packet.SetUsers;
 import org.paternostro.elkromm.packet.SystemStatus;
 import org.paternostro.elkromm.packet.TimeProgrammer;
-import org.paternostro.elkromm.packet.UserProgramming;
 import org.paternostro.elkromm.packet.UserEnablings;
+import org.paternostro.elkromm.packet.UserProgramming;
 import org.paternostro.elkromm.packet.Users;
 
 /**
@@ -138,10 +140,10 @@ public enum ElkronCommand {
     SMS_PROGRAMMING(0xa0, SMSProgramming.class), // No block checksum!
     /** Single-instance write: a single keypad's configuration. */
     KEYPAD_PROGRAMMING(0x92, KeypadProgramming.class), // No block checksum!
-    /** Single-instance write (hypothesis): a single expansion unit's configuration. Not yet implemented. */
-    EXPANSIONS_PROGRAMMING(0xe1, null), // FIXME: MISSING
-    /** Single-instance write (hypothesis): purpose unclear; not the same as {@link #KEYPAD_PROGRAMMING}. Not yet implemented. */
-    KEYPADS_PROGRAMMING(0xe2, null), // FIXME: MISSING ***multiple KEYPADS
+    /** Write: all expansions in a single block. */
+    SET_EXPANSIONS(0xe1, SetExpansions.class),
+    /** Write: all keypads in a single block. */
+    SET_KEYPADS(0xe2, SetKeypads.class),
     
     /** Read: all configured keypads. */
     KEYPADS(0x52, Keypads.class),

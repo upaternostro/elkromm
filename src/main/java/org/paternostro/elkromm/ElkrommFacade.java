@@ -695,4 +695,10 @@ public interface ElkrommFacade extends AutoCloseable
      * @throws ElkrommException if the write fails
      */
     void setKey(SingleCredential key) throws ElkrommException;
+
+    // v0.6 APIs
+    void setReaders(Reader[] readers) throws ElkrommException;
+    void setTimeProgrammer(TimeProgrammer timeProgrammer) throws ElkrommException;
+    void setExpansions(Expansion[] expansions) throws ElkrommException;
+    void setKeyboards(Keyboard[] keyboards) throws ElkrommException;
 }

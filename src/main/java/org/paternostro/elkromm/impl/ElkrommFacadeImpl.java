@@ -622,4 +622,28 @@ public class ElkrommFacadeImpl implements ElkrommFacade
     {
         sendCommand(ElkronCommand.KEY_PROGRAMMING, ElkrommFactory.getFactory().getSingleKeySerializer().serialize(key));
     }
+
+    @Override
+    public void setReaders(Reader[] readers) throws ElkrommException
+    {
+        sendCommand(ElkronCommand.SET_READERS, ElkrommFactory.getFactory().getReadersSerializer().serialize(readers));
+    }
+
+    @Override
+    public void setTimeProgrammer(TimeProgrammer timeProgrammer) throws ElkrommException
+    {
+        sendCommand(ElkronCommand.SET_TIME_PROGRAMMER, ElkrommFactory.getFactory().getTimeProgrammerSerializer().serialize(timeProgrammer));
+    }
+
+    @Override
+    public void setExpansions(Expansion[] expansions) throws ElkrommException
+    {
+        sendCommand(ElkronCommand.SET_EXPANSIONS, ElkrommFactory.getFactory().getExpansionsSerializer().serialize(expansions));
+    }
+
+    @Override
+    public void setKeyboards(Keyboard[] keyboards) throws ElkrommException
+    {
+        sendCommand(ElkronCommand.SET_KEYPADS, ElkrommFactory.getFactory().getKeyboardsSerializer().serialize(keyboards));
+    }
 }

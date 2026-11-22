@@ -250,8 +250,16 @@ public class Model {
         return expansions;
     }
 
+    public void setExpansions(Expansion[] expansions) {
+        this.expansions = expansions;
+    }
+
     public Keyboard[] getKeyboards() {
         return keyboards;
+    }
+
+    public void setKeyboards(Keyboard[] keyboards) {
+        this.keyboards =  keyboards;
     }
 
     public Reader[] getReaders() {
