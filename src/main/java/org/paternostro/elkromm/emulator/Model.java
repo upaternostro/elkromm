@@ -250,6 +250,12 @@ public class Model {
         return expansions;
     }
 
+    /**
+     * Replaces the expansions, as done by the {@code SET_EXPANSIONS} command.
+     *
+     * @param expansions the new expansions
+     * @since 0.6
+     */
     public void setExpansions(Expansion[] expansions) {
         this.expansions = expansions;
     }
@@ -258,6 +264,12 @@ public class Model {
         return keyboards;
     }
 
+    /**
+     * Replaces the keypads, as done by the {@code SET_KEYPADS} command.
+     *
+     * @param keyboards the new keypads
+     * @since 0.6
+     */
     public void setKeyboards(Keyboard[] keyboards) {
         this.keyboards =  keyboards;
     }

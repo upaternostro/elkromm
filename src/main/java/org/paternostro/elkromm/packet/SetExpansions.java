@@ -4,6 +4,8 @@ import org.paternostro.elkromm.ElkronCommand;
 
 /**
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
+ * 
+ * @since 0.6
  */
 public class SetExpansions extends ElkrommPacket {
     public SetExpansions(int plantCode12, int plantCode34, int totalPackets, int index, int dataLength, byte[] data) {

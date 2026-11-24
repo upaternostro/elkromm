@@ -129,8 +129,8 @@ Command	| Type	| Meaning	| Data		| Panel reply	| Notes
 0x8b	| Read (hypothesis)	| KEY STATUS	| TBD	| TBD	| packetClass not implemented (FIXME in the code); hypothesis based on naming analogy with INPUT/SYSTEM/USER STATUS
 0x70	| Read (hypothesis)	| EVENT LOG	| TBD	| TBD	| packetClass not implemented (FIXME in the code) — log reading
 0x91	| Single-instance write	| EXPANSION PROGRAMMING	| TBD	| TBD	| packetClass not implemented (FIXME in the code)
-0xe1	| Single-instance write (hypothesis)	| EXPANSIONS PROGRAMMING	| TBD	| TBD	| packetClass not implemented (FIXME in the code); hypothesis based on the "PROGRAMMING" naming analogy
-0xe2	| Write	| KEYPADS PROGRAMMING	| TBD	| TBD	| packetClass not implemented (FIXME in the code)
+0xe1	| Write	| SET EXPANSIONS	| data packet(s) 0xe1 carrying all the expansions, same payload as the read command 0x51, see [Block B](#block-b)	| 0x16 (SYN)	| packetClass: `SetExpansions`; block write of all the expansions, the unit embedded in the panel included. Exposed by `ElkrommFacade.setExpansions()`; handled by the emulator, not yet sent by the library to a real panel
+0xe2	| Write	| SET KEYPADS	| data packet(s) 0xe2 carrying all the keypads, same payload as the read command 0x52, see [Keypads](#keypads)	| 0x16 (SYN)	| packetClass: `SetKeypads`; block write of all the keypads. Exposed by `ElkrommFacade.setKeyboards()`; handled by the emulator, not yet sent by the library to a real panel
 0xe4	| Write	| SET TIME PROGRAMMER	| 131-byte packet, see [Time programmer and Day class commands](#time-programmer-and-day-class-commands)	| 0x16 (SYN)	| packetClass: `SetTimeProgrammer`
 0xe5	| Write	| SET PARTITIONS AND AREAS	| TBD	| TBD	| packetClass: `SetAreasAndPartitions`, never documented
 0xe6	| Write	| SET PHONE PARAMETERS	| 20-byte packet, see [Phone parameters](#phone-parameters)	| 0x16 (SYN)	| packetClass: `SetPhoneParameters`
@@ -327,7 +327,7 @@ Payload definition "Users" — 26 bytes per user (`Credential.CREDENTIAL_SIZE`),
 
 Offset (relative to the user)	| Meaning	| Note
 --------|---------------|-----
-0x00	| Enabling	| `Credential.Enabling`: 0=disabled, 1=enabled, 2=always enabled
+0x00	| Enabling	| `Credential.Enabling` bitmask: bit 0 (0x01) = enabled, bit 1 (0x02) = always enabled, 0 = disabled; the two bits can be set together (0x03)
 0x01	| Associated partitions	| Bitmask, LSB = partition 1
 0x02-0x19	| Name	| 24 bytes
 
@@ -438,7 +438,7 @@ Payload definition "Keys" — same structure as [Users](#users) (26 bytes per ke
 
 Offset (relative to the key)	| Meaning	| Note
 --------|---------------|-----
-0x00	| Enabling (bit 0) + Specialization (bits 2-3)	| Enabling: `Credential.Enabling` on the least significant bit. Specialization: `Key.Specialization` via `(byte & 0x0C) >> 2` — 0=none, 1=change partition status, 2=access control, 3=access control limited to associated partitions
+0x00	| Enabling (bits 0-1) + Specialization (bits 2-3)	| Enabling: `Credential.Enabling` bitmask on the two least significant bits. Specialization: `Key.Specialization` via `(byte & 0x0C) >> 2` — 0=none, 1=change partition status, 2=access control, 3=access control limited to associated partitions
 0x01	| Associated partitions	| Bitmask, LSB = partition 1
 0x02-0x19	| Name	| 24 bytes
 

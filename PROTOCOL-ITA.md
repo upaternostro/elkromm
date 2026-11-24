@@ -129,8 +129,8 @@ Comando	| Tipo	| Significato	| Dati		| Risposta centrale	| Note
 0x8b	| Lettura (ipotesi)	| KEY STATUS	| TBD	| TBD	| packetClass non implementata (FIXME nel codice); ipotesi basata sull'analogia col naming di INPUT/SYSTEM/USER STATUS
 0x70	| Lettura (ipotesi)	| EVENT LOG	| TBD	| TBD	| packetClass non implementata (FIXME nel codice) — lettura log
 0x91	| Scrittura singola istanza	| EXPANSION PROGRAMMING	| TBD	| TBD	| packetClass non implementata (FIXME nel codice)
-0xe1	| Scrittura singola istanza (ipotesi)	| EXPANSIONS PROGRAMMING	| TBD	| TBD	| packetClass non implementata (FIXME nel codice); ipotesi basata sull'analogia col naming "PROGRAMMING"
-0xe2	| Scrittura	| KEYPADS PROGRAMMING	| TBD	| TBD	| packetClass non implementata (FIXME nel codice)
+0xe1	| Scrittura	| SET EXPANSIONS	| pacchetti dati 0xe1 con tutte le espansioni, stesso payload del comando di lettura 0x51, vedi [Blocco B](#blocco-b)	| 0x16 (SYN)	| packetClass: `SetExpansions`; scrittura a blocco di tutte le espansioni, compresa l'unità integrata nella centrale. Esposta da `ElkrommFacade.setExpansions()`; gestita dall'emulatore, non ancora inviata dalla libreria a una centrale reale
+0xe2	| Scrittura	| SET KEYPADS	| pacchetti dati 0xe2 con tutte le tastiere, stesso payload del comando di lettura 0x52, vedi [Keypads](#keypads)	| 0x16 (SYN)	| packetClass: `SetKeypads`; scrittura a blocco di tutte le tastiere. Esposta da `ElkrommFacade.setKeyboards()`; gestita dall'emulatore, non ancora inviata dalla libreria a una centrale reale
 0xe4	| Scrittura	| SET TIME PROGRAMMER	| pacchetto 131 byte, vedi [Time programmer e Day class commands](#time-programmer-e-day-class-commands)	| 0x16 (SYN)	| packetClass: `SetTimeProgrammer`
 0xe5	| Scrittura	| SET PARTITIONS AND AREAS	| TBD	| TBD	| packetClass: `SetAreasAndPartitions`, mai documentata
 0xe6	| Scrittura	| SET PHONE PARAMETERS	| pacchetto 20 byte, vedi [Parametri telefonici](#parametri-telefonici)	| 0x16 (SYN)	| packetClass: `SetPhoneParameters`
@@ -327,7 +327,7 @@ Definizione del payload "Utenti" — 26 byte per utente (`Credential.CREDENTIAL_
 
 Offset (relativo all'utente)	| Significato	| Note
 --------|---------------|-----
-0x00	| Abilitazione	| `Credential.Enabling`: 0=disabilitato, 1=abilitato, 2=sempre abilitato
+0x00	| Abilitazione	| Bitmask `Credential.Enabling`: bit 0 (0x01) = abilitato, bit 1 (0x02) = sempre abilitato, 0 = disabilitato; i due bit possono essere attivi insieme (0x03)
 0x01	| Partizioni associate	| Bitmask, LSB = partizione 1
 0x02-0x19	| Nome	| 24 byte
 
@@ -438,7 +438,7 @@ Definizione del payload "Chiavi" — stessa struttura di [Utenti](#utenti) (26 b
 
 Offset (relativo alla chiave)	| Significato	| Note
 --------|---------------|-----
-0x00	| Abilitazione (bit 0) + Specializzazione (bit 2-3)	| Abilitazione: `Credential.Enabling` sul bit meno significativo. Specializzazione: `Key.Specialization` su `(byte & 0x0C) >> 2` — 0=nessuna, 1=cambio stato partizione, 2=controllo accessi, 3=controllo accessi limitato alle partizioni associate
+0x00	| Abilitazione (bit 0-1) + Specializzazione (bit 2-3)	| Abilitazione: bitmask `Credential.Enabling` sui due bit meno significativi. Specializzazione: `Key.Specialization` su `(byte & 0x0C) >> 2` — 0=nessuna, 1=cambio stato partizione, 2=controllo accessi, 3=controllo accessi limitato alle partizioni associate
 0x01	| Partizioni associate	| Bitmask, LSB = partizione 1
 0x02-0x19	| Nome	| 24 byte
 

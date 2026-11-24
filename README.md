@@ -79,22 +79,22 @@ The main entry point is the `ElkrommFacade` interface, obtained through `Elkromm
 The following code snippet shows the LOGIN-READ STATUS-ARM PARTITION-LOGOUT cycle:
 
 ```java
-ElkrommFacade facade = ElkrommFactory.getFactory()
-    .getElkrommFacade(InetAddress.getByName("192.168.1.100"), 8030, plantCode);
+try (ElkrommFacade facade = ElkrommFactory.getFactory()
+        .getElkrommFacade(InetAddress.getByName("192.168.1.100"), 8030, plantCode)) {
+    facade.connect();
+    facade.login(plantCode, technicalCode);
 
-facade.connect();
-facade.login(plantCode, technicalCode);
-
-SystemStatus status = facade.getSystemStatus();
-facade.armDisarmPartition(ElkrommFacade.Partition.P_ONE, true);
-
-facade.logout();
-facade.disconnect();
+    SystemStatus status = facade.getSystemStatus();
+    facade.armDisarmPartition(ElkrommFacade.Partition.P_ONE, true);
+}
 ```
+
+`ElkrommFacade` is `AutoCloseable`: `close()` logs out if a session is open and closes the connection,
+so the explicit `logout()` and `disconnect()` calls (still available) are not needed.
 
 The `getElkrommFacade(...)` factory call above can itself throw `IOException` (it calls
 `init()` internally before returning); every other method shown can throw
-`ElkrommException` (protocol/communication errors). Omitted here for brevity — production
+`ElkrommException` (protocol/communication errors), as does `close()`. Omitted here for brevity — production
 code should handle both.
 
 See the Javadoc on `ElkrommFacade` for the full list of available operations.
@@ -123,32 +123,122 @@ not present falls back to its default value below.
 | Property | Default | Notes |
 |---|---|---|
 | `org.paternostro.elkromm.emulator.port` | `8030` | TCP port the emulator listens on |
-| `org.paternostro.elkromm.emulator.plant.code` | `55555555` | Plant code expected at login |
-| `org.paternostro.elkromm.emulator.technical.code` | `000000` | Technical/installer code expected at login |
-| `org.paternostro.elkromm.emulator.keyboards` | `0` | Number of emulated keypads |
-| `org.paternostro.elkromm.emulator.readers` | `0` | Number of emulated proximity readers |
-| `org.paternostro.elkromm.emulator.expansions` | `0` | Number of emulated expansion units |
-| `org.paternostro.elkromm.emulator.areas` | `0` | Number of emulated areas (0-4), zero means no areas |
-| `org.paternostro.elkromm.emulator.area.<N>.partitions` | `1` for area 1, `0` otherwise | Partitions belonging to area `<N>` (1-4), expressed as bitmask |
-| `org.paternostro.elkromm.emulator.area.<N>.name` | `...` for area 1, `...               ` otherwise | Display name of area `<N>` |
-| `org.paternostro.elkromm.emulator.partitions` | `1` | Number of emulated partitions (1-8) |
-| `org.paternostro.elkromm.emulator.partition.<N>.entry.time` | `0` | Entry delay, in seconds, for partition `<N>` (1-8) |
-| `org.paternostro.elkromm.emulator.partition.<N>.exit.time` | `0` | Exit delay, in seconds, for partition `<N>` (1-8) |
-| `org.paternostro.elkromm.emulator.partition.<N>.name` | `...               `| Display name of partition `<N>` |
-| `org.paternostro.elkromm.emulator.partition.<N>.type` | `STANDARD` | Partition behavior type: `STANDARD`, `SELF_EXCLUSION`, or `ARMING_BLOCK` |
-| `org.paternostro.elkromm.emulator.input.<N>.configuration` | `NORMALLY_CLOSED_DOUBLE_BALANCED` | Input `<N>` (1-64) configuration: `NOT_USED`, `NORMALLY_CLOSED`, `NORMALLY_OPEN`, `NORMALLY_CLOSED_BALANCED`, `NORMALLY_CLOSED_DOUBLE_BALANCED`, `SHOCK` or `ROLLER` | |
-| `org.paternostro.elkromm.emulator.input.<N>.specialization` | `IMMEDIATE` | Input `<N>` (1-64) specialization |
-| `org.paternostro.elkromm.emulator.input.<N>.sensitivity` | `HIGH` | Input `<N>` (1-64) sensitivity |
-| `org.paternostro.elkromm.emulator.input.<N>.flags` | `0` | Input `<N>` (1-64) flags (bitmask) |
-| `org.paternostro.elkromm.emulator.input.<N>.video` | `NONE` | Input `<N>` (1-64) video |
-| `org.paternostro.elkromm.emulator.input.<N>.partitions` | `1` | Partitions belonging to input `<N>` (1-64), expressed as bitmask |
-| `org.paternostro.elkromm.emulator.input.<N>.name` | `Input <N>` | Input `<N>` (1-64) name |
-| `org.paternostro.elkromm.emulator.input.<N>.delay` | `5_SECS` | Input `<N>` (1-64) delay |
-| `org.paternostro.elkromm.emulator.output.<N>.type` | `NORMALLY_LOW` | Output `<N>` (1-64) type |
-| `org.paternostro.elkromm.emulator.output.<N>.partitions` | `1` | Partitions belonging to output `<N>` (1-48), expressed as bitmask |
-| `org.paternostro.elkromm.emulator.output.<N>.specialization` | `OR_TC` | Output `<N>` (1-64) specialization |
-| `org.paternostro.elkromm.emulator.output.<N>.name` | `Output <N>` | Output `<N>` (1-64) name |
-| `org.paternostro.elkromm.emulator.c200b.reserved` | all zeros | 100 hexadecimal digits (50 bytes; spaces, commas and colons are ignored): opaque block reported at the start of the C200B payload, see [PROTOCOL.md](PROTOCOL.md#c200b) |
+| `org.paternostro.elkromm.emulator.plant.code` | `55555555` | Plant code the emulator expects at login |
+| `org.paternostro.elkromm.emulator.technical.code` | `000000` | Technician PIN the emulator expects at login |
+| `org.paternostro.elkromm.emulator.keyboards` | `0` | Number of keypads connected to the emulated panel |
+| `org.paternostro.elkromm.emulator.readers` | `0` | Number of readers connected to the emulated panel |
+| `org.paternostro.elkromm.emulator.expansions` | `0` | Number of expansion boards connected to the emulated panel (not counting the one embedded in the panel) |
+| `org.paternostro.elkromm.emulator.areas` | `0` | Number of areas of the emulated panel |
+| `org.paternostro.elkromm.emulator.area.<N>.partitions` | `1` for area 1, `0` otherwise | Partitions of an area (`<N>`: 1-4) |
+| `org.paternostro.elkromm.emulator.area.<N>.name` | `...` | Name of an area (`<N>`: 1-4) |
+| `org.paternostro.elkromm.emulator.partitions` | `1` | Number of partitions of the emulated panel |
+| `org.paternostro.elkromm.emulator.partition.<N>.entry.time` | `0` | Entry time of a partition (`<N>`: 1-8) |
+| `org.paternostro.elkromm.emulator.partition.<N>.exit.time` | `0` | Exit time of a partition (`<N>`: 1-8) |
+| `org.paternostro.elkromm.emulator.partition.<N>.name` | `...` | Name of a partition (`<N>`: 1-8) |
+| `org.paternostro.elkromm.emulator.partition.<N>.vocalName` | `false` | Vocal name of a partition (`<N>`: 1-8) |
+| `org.paternostro.elkromm.emulator.partition.<N>.type` | `STANDARD` | Type of a partition (`<N>`: 1-8) |
+| `org.paternostro.elkromm.emulator.user.<N>.name` | `TECNICO` for user 1, `MASTER` for user 2, `...` otherwise | Name of a user (`<N>`: 1-32) |
+| `org.paternostro.elkromm.emulator.user.<N>.enablings` | `3` (enabled + always enabled) for user 2, `0` otherwise | Enablings of a user (`<N>`: 1-32) |
+| `org.paternostro.elkromm.emulator.user.<N>.partitions` | `255` for users 1-2, `1` otherwise | Partitions of a user (`<N>`: 1-32) |
+| `org.paternostro.elkromm.emulator.key.<N>.name` | `...` | Name of a key (`<N>`: 1-32) |
+| `org.paternostro.elkromm.emulator.key.<N>.enablings` | `0` | Enablings of a key (`<N>`: 1-32) |
+| `org.paternostro.elkromm.emulator.key.<N>.specialization` | `NONE` | Specialization of a key (`<N>`: 1-32). Values: `NONE`, `CHANGE_PARTITION_STATUS`, `CTRL_ACCESS`, `CTRL_ACCESS_PARTITION` |
+| `org.paternostro.elkromm.emulator.key.<N>.partitions` | `1` | Partitions of a key (`<N>`: 1-32) |
+| `org.paternostro.elkromm.emulator.expansion.<N>.name` | `UC` for expansion 0, `EP <NN>` otherwise | Name of an expansion (`<N>`: 0-7, 0 is the unit embedded in the panel) |
+| `org.paternostro.elkromm.emulator.expansion.<N>.version` | `0301` for expansion 0, `0200` otherwise | Version of an expansion (`<N>`: 0-7, 0 is the unit embedded in the panel) |
+| `org.paternostro.elkromm.emulator.input.<N>.configuration` | `NOT_USED` | Configuration of an input (`<N>`: 1-64). Values: `NOT_USED`, `NORMALLY_CLOSED`, `NORMALLY_OPEN`, `NORMALLY_CLOSED_BALANCED`, `NORMALLY_CLOSED_DOUBLE_BALANCED`, `SHOCK`, `ROLLER` |
+| `org.paternostro.elkromm.emulator.input.<N>.specialization` | `IMMEDIATE` | Specialization of an input (`<N>`: 1-64). Values: constants of `Input.Specialization` |
+| `org.paternostro.elkromm.emulator.input.<N>.sensitivity` | `HIGH` | Sensitivity of an input (`<N>`: 1-64). Values: `LOW`, `MEDIUM`, `HIGH` |
+| `org.paternostro.elkromm.emulator.input.<N>.flags` | `0` | Flags of an input (`<N>`: 1-64) |
+| `org.paternostro.elkromm.emulator.input.<N>.video` | `NONE` | Video of an input (`<N>`: 1-64). Values: `NONE`, `CAMERA_1`, `CAMERA_2`, `CAMERA_3`, `CAMERA_4` |
+| `org.paternostro.elkromm.emulator.input.<N>.partitions` | `1` | Partitions of an input (`<N>`: 1-64) |
+| `org.paternostro.elkromm.emulator.input.<N>.name` | `Input <N>` | Name of an input (`<N>`: 1-64) |
+| `org.paternostro.elkromm.emulator.input.<N>.delay` | `5_SECS` | Delay of an input (`<N>`: 1-64). Values: `5_SECS`, `10_SECS`, `30_SECS`, `60_SECS`, `90_SECS`, `5_MINS`, `20_SECS` |
+| `org.paternostro.elkromm.emulator.output.<N>.type` | `NORMALLY_LOW` | Type of an output (`<N>`: 1-48). Values: `NOT_USED`, `NORMALLY_LOW`, `NORMALLY_HIGH` |
+| `org.paternostro.elkromm.emulator.output.<N>.partitions` | `1` | Partitions of an output (`<N>`: 1-48) |
+| `org.paternostro.elkromm.emulator.output.<N>.specialization` | `OR_TC` | Specialization of an output (`<N>`: 1-48). Values: constants of `Output.Specialization` |
+| `org.paternostro.elkromm.emulator.output.<N>.name` | `Output <N>` | Name of an output (`<N>`: 1-48) |
+| `org.paternostro.elkromm.emulator.keypad.<N>.name` | `KP <NN>` | Name of a keypad (`<N>`: 1-8) |
+| `org.paternostro.elkromm.emulator.keypad.<N>.version` | `0200` | Version of a keypad (`<N>`: 1-8) |
+| `org.paternostro.elkromm.emulator.keypad.<N>.enablings` | `6` | Enablings of a keypad (`<N>`: 1-8) |
+| `org.paternostro.elkromm.emulator.keypad.<N>.partitions` | `1` | Partitions of a keypad (`<N>`: 1-8) |
+| `org.paternostro.elkromm.emulator.keypad.<N>.audioFeatures` | `0` | Audio features of a keypad (`<N>`: 1-8) |
+| `org.paternostro.elkromm.emulator.keypad.<N>.<I>Input.configuration` | `NOT_USED` | Configuration of an input of a keypad (`<N>`: 1-8). Values: `NOT_USED`, `NORMALLY_CLOSED`, `NORMALLY_OPEN`, `NORMALLY_CLOSED_BALANCED`, `NORMALLY_CLOSED_DOUBLE_BALANCED`, `SHOCK`, `ROLLER` |
+| `org.paternostro.elkromm.emulator.keypad.<N>.<I>Input.specialization` | `IMMEDIATE` | Specialization of an input of a keypad (`<N>`: 1-8). Values: constants of `Input.Specialization` |
+| `org.paternostro.elkromm.emulator.keypad.<N>.<I>Input.sensitivity` | `HIGH` | Sensitivity of an input of a keypad (`<N>`: 1-8). Values: `LOW`, `MEDIUM`, `HIGH` |
+| `org.paternostro.elkromm.emulator.keypad.<N>.<I>Input.flags` | `0` | Flags of an input of a keypad (`<N>`: 1-8) |
+| `org.paternostro.elkromm.emulator.keypad.<N>.<I>Input.video` | `NONE` | Video of an input of a keypad (`<N>`: 1-8). Values: `NONE`, `CAMERA_1`, `CAMERA_2`, `CAMERA_3`, `CAMERA_4` |
+| `org.paternostro.elkromm.emulator.keypad.<N>.<I>Input.partitions` | `1` | Partitions of an input of a keypad (`<N>`: 1-8) |
+| `org.paternostro.elkromm.emulator.keypad.<N>.<I>Input.name` | `Input <N>` | Name of an input of a keypad (`<N>`: 1-8; in the default, `<N>` is the input address) |
+| `org.paternostro.elkromm.emulator.keypad.<N>.<I>Input.delay` | `5_SECS` | Delay of an input of a keypad (`<N>`: 1-8). Values: `5_SECS`, `10_SECS`, `30_SECS`, `60_SECS`, `90_SECS`, `5_MINS`, `20_SECS` |
+| `org.paternostro.elkromm.emulator.reader.<N>.name` | `DK <NN>` | Name of a reader (`<N>`: 1-16) |
+| `org.paternostro.elkromm.emulator.reader.<N>.enablings` | `0` | Enablings of a reader (`<N>`: 1-16) |
+| `org.paternostro.elkromm.emulator.reader.<N>.led<L>` | `NONE` | LED of a reader (`<N>`: 1-16). Values: `NONE`, `ONE`, `TWO`, `THREE`, `FOUR`, `FIVE`, `SIX`, `SEVEN`, `EIGHT`, `ALL` |
+| `org.paternostro.elkromm.emulator.reader.<N>.<I>Input.configuration` | `NOT_USED` | Configuration of an input of a reader (`<N>`: 1-16). Values: `NOT_USED`, `NORMALLY_CLOSED`, `NORMALLY_OPEN`, `NORMALLY_CLOSED_BALANCED`, `NORMALLY_CLOSED_DOUBLE_BALANCED`, `SHOCK`, `ROLLER` |
+| `org.paternostro.elkromm.emulator.reader.<N>.<I>Input.specialization` | `IMMEDIATE` | Specialization of an input of a reader (`<N>`: 1-16). Values: constants of `Input.Specialization` |
+| `org.paternostro.elkromm.emulator.reader.<N>.<I>Input.sensitivity` | `HIGH` | Sensitivity of an input of a reader (`<N>`: 1-16). Values: `LOW`, `MEDIUM`, `HIGH` |
+| `org.paternostro.elkromm.emulator.reader.<N>.<I>Input.flags` | `0` | Flags of an input of a reader (`<N>`: 1-16) |
+| `org.paternostro.elkromm.emulator.reader.<N>.<I>Input.video` | `NONE` | Video of an input of a reader (`<N>`: 1-16). Values: `NONE`, `CAMERA_1`, `CAMERA_2`, `CAMERA_3`, `CAMERA_4` |
+| `org.paternostro.elkromm.emulator.reader.<N>.<I>Input.partitions` | `1` | Partitions of an input of a reader (`<N>`: 1-16) |
+| `org.paternostro.elkromm.emulator.reader.<N>.<I>Input.name` | `Input <N>` | Name of an input of a reader (`<N>`: 1-16; in the default, `<N>` is the input address) |
+| `org.paternostro.elkromm.emulator.reader.<N>.<I>Input.delay` | `5_SECS` | Delay of an input of a reader (`<N>`: 1-16). Values: `5_SECS`, `10_SECS`, `30_SECS`, `60_SECS`, `90_SECS`, `5_MINS`, `20_SECS` |
+| `org.paternostro.elkromm.emulator.parametersEnablings.burglarTime` | `180_SECS` | Burglar time (general parameters and enablings of the panel). Values: `30_SECS`, `60_SECS`, `90_SECS`, `180_SECS`, `9_MINS` |
+| `org.paternostro.elkromm.emulator.parametersEnablings.emergencyTime` | `180_SECS` | Emergency time (general parameters and enablings of the panel). Values: `30_SECS`, `60_SECS`, `90_SECS`, `180_SECS`, `9_MINS` |
+| `org.paternostro.elkromm.emulator.parametersEnablings.preAlarmTime` | `180_SECS` | Pre alarm time (general parameters and enablings of the panel). Values: `30_SECS`, `60_SECS`, `90_SECS`, `180_SECS`, `9_MINS` |
+| `org.paternostro.elkromm.emulator.parametersEnablings.alarmCount` | `NO_COUNT` | Alarm count (general parameters and enablings of the panel). Values: `NO_COUNT`, `TWO`, `FOUR`, `SIX`, `EIGHT` |
+| `org.paternostro.elkromm.emulator.parametersEnablings.powerLack` | `1_HOUR` | Power lack (general parameters and enablings of the panel). Values: `1_HOUR`, `2_HOUR`, `4_HOUR` |
+| `org.paternostro.elkromm.emulator.parametersEnablings.play` | `0` | Play (general parameters and enablings of the panel) |
+| `org.paternostro.elkromm.emulator.parametersEnablings.help` | `0` | Help (general parameters and enablings of the panel) |
+| `org.paternostro.elkromm.emulator.parametersEnablings.lan` | `DISABLE` | Lan (general parameters and enablings of the panel). Values: `DISABLE`, `ENABLE` |
+| `org.paternostro.elkromm.emulator.parametersEnablings.timeProgrammer` | `DISABLE` | Time programmer (general parameters and enablings of the panel). Values: `DISABLE`, `ENABLE` |
+| `org.paternostro.elkromm.emulator.parametersEnablings.notice` | `NO_NOTICE` | Notice (general parameters and enablings of the panel). Values: `NO_NOTICE`, `5_MINS`, `10_MINS`, `15_MINS`, `20_MINS` |
+| `org.paternostro.elkromm.emulator.parametersEnablings.dst` | `0` | Dst (general parameters and enablings of the panel) |
+| `org.paternostro.elkromm.emulator.parametersEnablings.dst.on` | `OCTOBER` | Dst on (general parameters and enablings of the panel). Values: `JANUARY`, `FEBRUARY`, `MARCH`, `APRIL`, `MAY`, `JUNE`, `JULY`, `AUGUST`, `SEPTEMBER`, `OCTOBER`, `NOVEMBER`, `DECEMBER` |
+| `org.paternostro.elkromm.emulator.parametersEnablings.dst.off` | `MARCH` | Dst off (general parameters and enablings of the panel). Values: `JANUARY`, `FEBRUARY`, `MARCH`, `APRIL`, `MAY`, `JUNE`, `JULY`, `AUGUST`, `SEPTEMBER`, `OCTOBER`, `NOVEMBER`, `DECEMBER` |
+| `org.paternostro.elkromm.emulator.timeProgrammer.command.<D>.<N>.action` | `NONE` | Action of a command of the time programmer. Values: `NONE`, `ENABLE`, `DISABLE` |
+| `org.paternostro.elkromm.emulator.timeProgrammer.command.<D>.<N>.object` | `0` | Object of a command of the time programmer |
+| `org.paternostro.elkromm.emulator.timeProgrammer.command.<D>.<N>.objectType` | `NONE` | Object type of a command of the time programmer. Values: `NONE`, `PARTITIONS`, `USER` |
+| `org.paternostro.elkromm.emulator.timeProgrammer.command.<D>.<N>.hour` | `0` | Hour of a command of the time programmer |
+| `org.paternostro.elkromm.emulator.timeProgrammer.command.<D>.<N>.minute` | `0` | Minute of a command of the time programmer |
+| `org.paternostro.elkromm.emulator.timeProgrammer.dayClasses.<W>` | `WORKING_DAY` Monday-Friday, `PRE_HOLIDAY` Saturday, `HOLIDAY` Sunday | Day class of a weekday. Values: `WORKING_DAY`, `PRE_HOLIDAY`, `HOLIDAY` |
+| `org.paternostro.elkromm.emulator.phoneParameters.callDelay` | `DISABLED` | Call delay (phone parameters). Values: `DISABLED`, `ENABLED` |
+| `org.paternostro.elkromm.emulator.phoneParameters.returnCall` | `DISABLED` | Return call (phone parameters). Values: `DISABLED`, `TYPE_A`, `TYPE_B` |
+| `org.paternostro.elkromm.emulator.phoneParameters.remoteSurveillance` | `DISABLED` | Remote surveillance (phone parameters). Values: `DISABLED`, `ENABLED` |
+| `org.paternostro.elkromm.emulator.phoneParameters.voiceMessagesSendingMode` | `NONE` | Voice message sending mode (phone parameters). Values: `NONE`, `MODE_1`, `MODE_2`, `MODE_3`, `MODE_4` |
+| `org.paternostro.elkromm.emulator.phoneParameters.cyclicTestCallFrequency` | `DISABLE` | Cyclic test call frequency (phone parameters). Values: `DISABLE`, `24_HOURS`, `SYSTEM_ON` |
+| `org.paternostro.elkromm.emulator.phoneParameters.cyclicTestCallPhoneNumber` | `1` | Cyclic test call phone number (phone parameters) |
+| `org.paternostro.elkromm.emulator.phoneParameters.cyclicTestCallHour` | `0` | Cyclic test call hour (phone parameters) |
+| `org.paternostro.elkromm.emulator.phoneParameters.cyclicTestCallMinute` | `0` | Cyclic test call minute (phone parameters) |
+| `org.paternostro.elkromm.emulator.phoneParameters.cyclicTestCallInterval` | `1_HOUR` | Cyclic test call interval (phone parameters). Values: `1_HOUR`, `4_HOURS`, `8_HOURS`, `12_HOURS`, `24_HOURS`, `48_HOURS`, `72_HOURS`, `96_HOURS`, `120_HOURS`, `144_HOURS`, `168_HOURS` |
+| `org.paternostro.elkromm.emulator.PSTNGSM.enablePSTN` | `DISABLED` | Enable pstn (PSTN/GSM module). Values: `DISABLED`, `ENABLED` |
+| `org.paternostro.elkromm.emulator.PSTNGSM.country` | `ITALY` | Country (PSTN/GSM module). Values: `ITALY`, `FRANCE`, `GERMANY`, `CZECH_REPUBLIC`, `POLAND`, `SPAIN`, `PORTUGAL`, `GREECE`, `ENGLAND` |
+| `org.paternostro.elkromm.emulator.PSTNGSM.PABXLocalAccessDigit` | `DISABLE` | Pabx local access digit (PSTN/GSM module). Values: `0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `DISABLE` |
+| `org.paternostro.elkromm.emulator.PSTNGSM.toneControl` | `DISABLED` | Tone control (PSTN/GSM module). Values: `DISABLED`, `ENABLED` |
+| `org.paternostro.elkromm.emulator.PSTNGSM.answerControl` | `DISABLED` | Answer control (PSTN/GSM module). Values: `DISABLED`, `ENABLED` |
+| `org.paternostro.elkromm.emulator.PSTNGSM.PSTNLineTestFrequency` | `DISABLE` | Pstn line test frequency (PSTN/GSM module). Values: `DISABLE`, `24_HOURS`, `SYSTEM_ON` |
+| `org.paternostro.elkromm.emulator.PSTNGSM.PSTNAnsweringMachineRings` | `DISABLE` | Pstn answering machine rings (PSTN/GSM module). Values: `DISABLE`, `2_RINGS`, `4_RINGS`, `8_RINGS` |
+| `org.paternostro.elkromm.emulator.PSTNGSM.enableGSM` | `DISABLED` | Enable gsm (PSTN/GSM module). Values: `DISABLED`, `ENABLED` |
+| `org.paternostro.elkromm.emulator.PSTNGSM.enableGSMAnsweringMachine` | `DISABLED` | Enable gsm answering machine (PSTN/GSM module). Values: `DISABLED`, `ENABLED` |
+| `org.paternostro.elkromm.emulator.PSTNGSM.enableIncomingSMS` | `DISABLED` | Enable incoming sms (PSTN/GSM module). Values: `DISABLED`, `ENABLED` |
+| `org.paternostro.elkromm.emulator.PSTNGSM.GSMPin` | `-1` | Gsm pin (PSTN/GSM module) |
+| `org.paternostro.elkromm.emulator.PSTNGSM.expirationMonth` | `1` | Expiration month (PSTN/GSM module) |
+| `org.paternostro.elkromm.emulator.PSTNGSM.expirationYear` | `0` | Expiration year (PSTN/GSM module) |
+| `org.paternostro.elkromm.emulator.phoneNumbers.<N>.phoneNumber` | (empty) | Phone number of a phone number (`<N>`: 1-12) |
+| `org.paternostro.elkromm.emulator.phoneNumbers.<N>.partitions` | `0` | Partitions of a phone number (`<N>`: 1-12) |
+| `org.paternostro.elkromm.emulator.phoneNumbers.<N>.type` | `PSTN` | Type of a phone number (`<N>`: 1-12). Values: `PSTN`, `GSM`, `LAN` |
+| `org.paternostro.elkromm.emulator.phoneNumbers.<N>.sendingMode` | `VOICE` | Sending mode of a phone number (`<N>`: 1-12). Values: `VOICE`, `IDP`, `ADF`, `MODEM`, `SMS`, `C200B` |
+| `org.paternostro.elkromm.emulator.phoneNumbers.<N>.assignedEvents` | (empty) | Assigned events of a phone number (`<N>`: 1-12). Values: constants of `PhoneNumber.Event` |
+| `org.paternostro.elkromm.emulator.sms.<N>` | English texts, e.g. `Burglar`, `Technical alarm 1`... | SMS text (`<N>`: 1-9) |
+| `org.paternostro.elkromm.emulator.c200b.reserved` | all zeros | 100 hexadecimal digits (50 bytes; spaces, commas and colons are ignored): opaque block at the start of the C200B payload, see [PROTOCOL.md](PROTOCOL.md) |
+| `org.paternostro.elkromm.emulator.c200b.event.<E>` | `255` | Event code of the C200b block. `<E>` is the event name in camel case |
+| `org.paternostro.elkromm.emulator.c200b.inputCodes` | all `FF` (`0xff`, no input) | Input codes (C200b block). 128 hexadecimal digits, one byte per logical input |
+
+In the keys, `<N>` is the (1-based, unless noted) number of the object; the other placeholders are
+`<I>` the input of a keypad or reader, `first` or `second`; `<L>` the LED number of a reader;
+`<D>` the day class in camel case (`workingDay`, `preHoliday`, `holiday`); `<W>` the weekday in lowercase
+(`monday`...`sunday`); `<E>` the event name of the C200B block in camel case. In the defaults, `<NN>` is the number
+on two digits. Names are fixed-width on the wire (24 characters): default names are shown here without their
+trailing spaces. Properties holding a bitmask or a raw byte take a decimal number.
 
 Minimal example, a single area/partition setup listening on the default port:
 

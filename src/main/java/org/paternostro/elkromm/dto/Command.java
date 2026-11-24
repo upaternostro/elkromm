@@ -64,6 +64,7 @@ public class Command implements Serializable {
      * protocol likely supports more (keys, outputs).
      */
     public enum ObjectType {
+        /** No target: the command does not act on any object. */
         COT_NONE(0x00),
         /** The target is a partition/sector. */
         COT_PARTITIONS(0x10),

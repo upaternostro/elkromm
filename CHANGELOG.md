@@ -16,6 +16,60 @@ following the [Keep a Changelog](https://keepachangelog.com/) convention (Added 
 > talking to it efficient.
 > Even before (summer 2016) the project spawn as a Go PoC.
 
+## [0.6] — Unreleased
+
+### Added
+- `ElkrommFacade` is now `AutoCloseable`: `close()` logs out and disconnects, so the facade can be used in a
+  try-with-resources statement. `disconnect()` now checks the facade state: it fails if the facade is not
+  initialized or still logged in, and does nothing if already disconnected
+- `ElkrommFacade.setReaders()`, `setTimeProgrammer()`, `setExpansions()` and `setKeyboards()`, to write the
+  whole set of readers, the time programmer, the expansions and the keypads in a single block;
+  `SET_EXPANSIONS` (`0xe1`) and `SET_KEYPADS` (`0xe2`) are now implemented (`SetExpansions` and `SetKeypads`
+  packets) and handled by the emulator
+- `C200bParameters` now keeps the opaque first 50 bytes of the C200B payload (`getReserved()`/`setReserved()`,
+  `RESERVED_SIZE`): they are preserved by the serializer and by the emulator, since the panel includes them in
+  the block checksum and Hi-Connect sends them back unchanged
+- `Credential.Enabling.is()` and `isValid()`, and the `NONE` and `ALL` values, to handle enablings as a bitmask
+- `Command.ObjectType.COT_NONE`, to avoid null object types
+- `ElkrommUtils.hexToBytes()` and `toCamelCase()`
+- Emulator: the whole panel configuration (users, keys, expansions, keypads, readers, general parameters, time
+  programmer, phone parameters, PSTN/GSM, phone numbers, SMS, C200B) can now be read from the properties file,
+  see the README for the list of keys; the `Config` implementation can be replaced (`InjectableConfig`, used by
+  the tests) and its properties reloaded during tests
+- GitHub Actions workflows: CI (build and test on every push) and deployment to Maven Central
+- Release archive built by Maven (jar, dependencies in `lib/`, `CHANGELOG.md`)
+
+### Changed
+- **Breaking:** `Credential.Enabling` is now handled as a bitmask (`ENABLED` = `0x01`, `ALWAYS_ENABLED` = `0x02`,
+  both = `0x03`): the constructors of `Credential`, `User` and `Key` and `setEnabling()` take a `byte` instead of
+  an `Enabling`, and `Enabling.UNKNOWN` was removed
+- **Breaking:** "burglar" spelling fixed: `ParametersEnablings.getBulgarTime()`/`setBulgarTime()` are now
+  `getBurglarTime()`/`setBurglarTime()`, and `SMSs.SMSIndex.SMS_BURLGAR` is now `SMS_BURGLAR`
+- **Breaking:** `ElkronCommand.EXPANSIONS_PROGRAMMING` and `KEYPADS_PROGRAMMING` renamed `SET_EXPANSIONS` and
+  `SET_KEYPADS`
+- **Breaking (emulator):** the properties file is now `elkromm-emulator.properties` (was `elkron.properties`) and
+  the keys now start with `org.paternostro.elkromm.emulator.` (was `org.paternostro.elkron.`): an existing file
+  must be renamed and updated
+- Emulator: expansion #0 is always present, as it is embedded in the panel, and is no longer announced as an
+  expansion board; defaults aligned to a physical panel (e.g. inputs are `NOT_USED` by default); partitions'
+  defaults simplified
+- `ElkrommFactory` allocation strengthened
+- Requires `mock-ipc` 0.3
+- `pom.xml`: dependency versions are properties, `slf4j-simple` is now test-scoped (no longer packaged), the
+  build refuses `-SNAPSHOT` dependencies on releases
+
+### Fixed
+- Unit tests no longer hardcode the plant code and the technician PIN (fixes #9)
+- Emulator: guard added when including/excluding an input, logs accessing the wrong inputs, number of expansions
+- `ElkrommFacadeImpl`: wrong exception message
+- Emulator `Config` not reset between tests, which made some tests depend on the execution order
+- README: `mock-ipc` requirement and Javadoc path; typos found in code review
+
+### Documentation
+- Javadoc completed for the emulator (`Config`, `Model`) and for the new API
+- README: full list of the emulator properties; usage with try-with-resources
+- `PROTOCOL.md` and `PROTOCOL-ITA.md`: `SET_EXPANSIONS`/`SET_KEYPADS`, enabling bitmask, C200B opaque block
+
 ## [0.5] — 2026-09-22
 
 ### Added

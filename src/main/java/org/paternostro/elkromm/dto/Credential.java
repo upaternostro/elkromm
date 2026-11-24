@@ -21,6 +21,7 @@ public abstract class Credential implements Serializable
      */
     // bitmask!
     public enum Enabling {
+        /** No bit set; an alias of {@link #DISABLED}, not a real bitmask value. */
         NONE(0x00), // not a real bitmask
         /** The credential cannot arm/disarm anything. */
         DISABLED(0x00),
@@ -28,6 +29,7 @@ public abstract class Credential implements Serializable
         ENABLED(0x01),
         /** The credential can arm/disarm even when it would otherwise be restricted (e.g. by a day class schedule). */
         ALWAYS_ENABLED(0x02),
+        /** Every bit set ({@link #ENABLED} and {@link #ALWAYS_ENABLED}); an alias, not a real bitmask value. */
         ALL(0x03); // not a real bitmask
 
         private byte    value;
@@ -86,8 +88,11 @@ public abstract class Credential implements Serializable
         }
     }
 
+    /** The display name of this credential. */
     protected String    name;
+    /** The {@link Enabling} bitmask of this credential. */
     protected byte      enabling;
+    /** The per-partition association flags of this credential. */
     protected boolean[] associatedPartitions;
 
     /**

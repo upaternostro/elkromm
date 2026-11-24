@@ -37,6 +37,19 @@ public class ElkrommPacket {
     protected ElkronCommand command;
     protected byte[]        data;
 
+    /**
+     * Creates a packet. Every packet class has a constructor like this one, which the subclasses specialize
+     * by fixing the direction and the command.
+     *
+     * @param direction whether the packet is sent from the client to the panel or the other way round; used to adapt the escape requirements, see {@link #escapeInnerArray}
+     * @param plantCode12 the first two digits of the plant code, as one BCD byte
+     * @param plantCode34 the third and fourth digits of the plant code, as one BCD byte (the others are not carried by packets)
+     * @param totalPackets the number of packets the whole message is split into, between 0 and 255
+     * @param index the index of this packet in the message, between 0 and {@code totalPackets}
+     * @param dataLength the length of {@code data}, between 0 and 255
+     * @param command the command code, between 1 and 255, see {@link ElkronCommand}
+     * @param data the portion of the payload carried by this packet, {@code null} or empty if {@code dataLength} is 0
+     */
     public ElkrommPacket(Direction direction, int plantCode12, int plantCode34, int totalPackets, int index, int dataLength, int command, byte[] data) {
         assert direction != null : "ElkrommPacket: missing mandatory direction";
         assert totalPackets >= 0 && totalPackets < 256 : "ElkrommPacket: totalPackets: expected [0,255], found " + totalPackets;

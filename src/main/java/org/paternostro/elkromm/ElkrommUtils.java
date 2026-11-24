@@ -438,6 +438,15 @@ public class ElkrommUtils
         return retval;
     }
 
+    /**
+     * Converts an upper-case constant name into lower camel case, e.g.
+     * {@code WORKING_DAY} becomes {@code workingDay}. It is used to build the property
+     * keys of the emulator configuration from enum constant names.
+     *
+     * @param constantName the name to convert, with words separated by underscores
+     * @return the name in lower camel case
+     * @since 0.6
+     */
     public static String toCamelCase(String constantName)
     {
         StringTokenizer st = new StringTokenizer(constantName, "_");
@@ -458,6 +467,15 @@ public class ElkrommUtils
         return sb.toString();
     }
 
+    /**
+     * Parses a string of hexadecimal digits into a byte array. Whitespace, commas and colons
+     * are ignored, so both {@code 0a1b2c} and {@code 0A:1B:2C} are accepted.
+     *
+     * @param value the hexadecimal digits, two per byte
+     * @return the decoded bytes; an empty array if {@code value} holds no digits
+     * @throws IllegalArgumentException if the digits are odd in number or not hexadecimal
+     * @since 0.6
+     */
     public static byte[] hexToBytes(String value) {
         String  hex = value.replaceAll("[\\s,:]", "");
 

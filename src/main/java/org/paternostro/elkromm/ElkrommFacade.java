@@ -279,6 +279,7 @@ public interface ElkrommFacade extends AutoCloseable
      * 
      * @param delay delay in ms, defaults to {@link #DEFAULT_DELAY}
      * @throws ElkrommException if the parameter is less than zero
+     * @since 0.5
      */
     void setDelay(int delay) throws ElkrommException;
     
@@ -289,6 +290,7 @@ public interface ElkrommFacade extends AutoCloseable
      * @param port TCP port the panel is listening on (protocol default: 8030)
      * @param plantCode installer/plant identification code, used later at {@link #login(int, int)} time
      * @throws IOException if the underlying endpoint cannot be prepared
+     * @since 0.1
      */
     void init(InetAddress inetAddr, int port, int plantCode) throws IOException;
 
@@ -304,6 +306,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @param endpoint the endpoint to communicate through
      * @param plantCode installer/plant identification code, used later at {@link #login(int, int)} time
+     * @since 0.4
      */
     void init(Endpoint endpoint, int plantCode);
 
@@ -311,6 +314,7 @@ public interface ElkrommFacade extends AutoCloseable
      * Returns the current connection lifecycle state.
      *
      * @return the current {@link Status}
+     * @since 0.1
      */
     Status getStatus();
 
@@ -318,6 +322,7 @@ public interface ElkrommFacade extends AutoCloseable
      * Opens the connection to the panel (or emulator) configured by {@code init}.
      *
      * @throws ElkrommException if the connection cannot be established
+     * @since 0.1
      */
     void connect() throws ElkrommException;
 
@@ -333,6 +338,7 @@ public interface ElkrommFacade extends AutoCloseable
      * @throws ElkrommException if an error occurs while disconnecting
      * @throws AssertionError if the facade is not initialized or is still
      *         logged in ({@link Status#ST_LOGGED_IN})
+     * @since 0.1
      */
     void disconnect() throws ElkrommException;
 
@@ -350,6 +356,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @throws ElkrommException if the logout or the closing of the endpoint
      *         fails
+     * @since 0.6
      */
     @Override
     void close() throws ElkrommException;
@@ -361,6 +368,7 @@ public interface ElkrommFacade extends AutoCloseable
      * @param plantCode installer/plant identification code
      * @param technicalCode installer's technical access code
      * @throws ElkrommException if the handshake fails (e.g. wrong codes, protocol error)
+     * @since 0.1
      */
     void login(int plantCode, int technicalCode) throws ElkrommException;
 
@@ -368,6 +376,7 @@ public interface ElkrommFacade extends AutoCloseable
      * Sends a keepalive (SEND) to the panel.
      *
      * @throws ElkrommException if the keepalive fails
+     * @since 0.1
      */
     void ping() throws ElkrommException;
 
@@ -376,6 +385,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @return the areas/partitions configuration
      * @throws ElkrommException if the read fails
+     * @since 0.1
      */
     AreasAndPartitions getAreasAndPartitions() throws ElkrommException;
 
@@ -384,6 +394,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @return the current system (partition arming) status
      * @throws ElkrommException if the read fails
+     * @since 0.1
      */
     SystemStatus getSystemStatus() throws ElkrommException;
 
@@ -393,6 +404,7 @@ public interface ElkrommFacade extends AutoCloseable
      * @param partition the partition to act on
      * @param arm {@code true} to arm, {@code false} to disarm
      * @throws ElkrommException if the command fails
+     * @since 0.1
      */
     void armDisarmPartition(Partition partition, boolean arm) throws ElkrommException;
 
@@ -402,6 +414,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @return the raw input status bytes
      * @throws ElkrommException if the read fails
+     * @since 0.5
      */
     byte[] getRawInputStatus() throws ElkrommException;
 
@@ -410,6 +423,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @return a map from each status flag to the (1-based) ordinals of the inputs currently in that state
      * @throws ElkrommException if the read fails
+     * @since 0.1
      */
     Map<InputStatus,List<Integer>> getInputStatus() throws ElkrommException;
 
@@ -419,6 +433,7 @@ public interface ElkrommFacade extends AutoCloseable
      * @param inputOrdinal 1-based ordinal of the input to act on
      * @param exclude {@code true} to exclude, {@code false} to include
      * @throws ElkrommException if the command fails
+     * @since 0.1
      */
     void excludeIncludeInput(byte inputOrdinal, boolean exclude) throws ElkrommException;
 
@@ -427,6 +442,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @return the peripheral unit addresses
      * @throws ElkrommException if the read fails
+     * @since 0.1
      */
     PeripheralUnits getPeripheralUnitsAddresses() throws ElkrommException;
 
@@ -436,6 +452,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @return the current checksums
      * @throws ElkrommException if the read fails
+     * @since 0.1
      */
     Checksums getChecksums() throws ElkrommException;
 
@@ -444,6 +461,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @return the configured users
      * @throws ElkrommException if the read fails
+     * @since 0.1
      */
     Credential[] getUsers() throws ElkrommException;
 
@@ -452,6 +470,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @return the configured keys
      * @throws ElkrommException if the read fails
+     * @since 0.1
      */
     Credential[] getKeys() throws ElkrommException;
 
@@ -460,6 +479,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @return the configured expansions
      * @throws ElkrommException if the read fails
+     * @since 0.1
      */
     Expansion[] getExpansions() throws ElkrommException;
 
@@ -468,6 +488,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @return a flag array, one entry per user, {@code true} if enabled
      * @throws ElkrommException if the read fails
+     * @since 0.1
      */
     boolean[] getUserEnablings() throws ElkrommException;
 
@@ -477,6 +498,7 @@ public interface ElkrommFacade extends AutoCloseable
      * @param userOrdinal 1-based ordinal of the user to act on (user 0 is TECNICO/installer)
      * @param enable {@code true} to enable, {@code false} to disable
      * @throws ElkrommException if the command fails
+     * @since 0.1
      */
     void enableDisableUser(byte userOrdinal, boolean enable) throws ElkrommException;
 
@@ -484,6 +506,7 @@ public interface ElkrommFacade extends AutoCloseable
      * Logs out of the current session, without closing the underlying connection.
      *
      * @throws ElkrommException if the logout fails
+     * @since 0.1
      */
     void logout() throws ElkrommException;
 
@@ -493,6 +516,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @return the configured keypads
      * @throws ElkrommException if the read fails
+     * @since 0.3
      */
     Keyboard[] getKeyboards() throws ElkrommException;
 
@@ -501,6 +525,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @return the current parameters/enablings
      * @throws ElkrommException if the read fails
+     * @since 0.3
      */
     ParametersEnablings getParametersEnablings() throws ElkrommException;
 
@@ -509,6 +534,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @return the current sending codes
      * @throws ElkrommException if the read fails
+     * @since 0.3
      */
     PhoneNumbersSendingCodes getPhoneNumbersSendingCodes() throws ElkrommException;
 
@@ -517,6 +543,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @return the current phone parameters
      * @throws ElkrommException if the read fails
+     * @since 0.3
      */
     PhoneParameters getPhoneParameters() throws ElkrommException;
 
@@ -525,6 +552,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @return the current PSTN/GSM configuration
      * @throws ElkrommException if the read fails
+     * @since 0.3
      */
     PSTNGSM getPSTNGSM() throws ElkrommException;
 
@@ -533,6 +561,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @return the configured readers
      * @throws ElkrommException if the read fails
+     * @since 0.3
      */
     Reader[] getReaders() throws ElkrommException;
 
@@ -541,6 +570,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @return the configured SMS messages
      * @throws ElkrommException if the read fails
+     * @since 0.3
      */
     SMSs getSMSs() throws ElkrommException;
 
@@ -549,6 +579,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @return the current C200B configuration
      * @throws ElkrommException if the read fails
+     * @since 0.3
      */
     C200bParameters getC200bParameters() throws ElkrommException;
 
@@ -557,6 +588,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @return the current time programmer configuration
      * @throws ElkrommException if the read fails
+     * @since 0.3
      */
     TimeProgrammer getTimeProgrammer() throws ElkrommException;
 
@@ -566,6 +598,7 @@ public interface ElkrommFacade extends AutoCloseable
      * @param partitions bitmask (see {@link Partition}) selecting which partitions to act on
      * @param armingMask bitmask of the same shape, with a bit set for each partition to arm
      * @throws ElkrommException if the command fails
+     * @since 0.3
      */
     void armDisarmPartitions(byte partitions, byte armingMask) throws ElkrommException;
 
@@ -575,6 +608,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @param parametersEnablings the parameters/enablings to write
      * @throws ElkrommException if the write fails
+     * @since 0.3
      */
     void setParametersEnablings(ParametersEnablings parametersEnablings) throws ElkrommException;
 
@@ -583,6 +617,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @param areasAndPartitions the configuration to write
      * @throws ElkrommException if the write fails
+     * @since 0.3
      */
     void setAreasAndPartitions(AreasAndPartitions areasAndPartitions) throws ElkrommException;
 
@@ -591,6 +626,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @param phoneParameters the parameters to write
      * @throws ElkrommException if the write fails
+     * @since 0.3
      */
     void setPhoneParameters(PhoneParameters phoneParameters) throws ElkrommException;
 
@@ -599,6 +635,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @param phoneNumbersSendingCodes the sending codes to write
      * @throws ElkrommException if the write fails
+     * @since 0.3
      */
     void setPhoneNumbersSendingCodes(PhoneNumbersSendingCodes phoneNumbersSendingCodes) throws ElkrommException;
 
@@ -607,6 +644,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @param c200bParameters the configuration to write
      * @throws ElkrommException if the write fails
+     * @since 0.3
      */
     void setC200bParameters(C200bParameters c200bParameters) throws ElkrommException;
 
@@ -615,6 +653,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @param sMSs the SMS messages to write
      * @throws ElkrommException if the write fails
+     * @since 0.3
      */
     void setSMSs(SMSs sMSs) throws ElkrommException;
 
@@ -623,6 +662,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @param pSTNGSM the configuration to write
      * @throws ElkrommException if the write fails
+     * @since 0.3
      */
     void setPSTNGSM(PSTNGSM pSTNGSM) throws ElkrommException;
 
@@ -631,6 +671,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @param users the users to write
      * @throws ElkrommException if the write fails
+     * @since 0.3
      */
     void setUsers(Credential[] users) throws ElkrommException;
 
@@ -639,6 +680,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @param keys the keys to write
      * @throws ElkrommException if the write fails
+     * @since 0.3
      */
     void setKeys(Credential[] keys) throws ElkrommException;
 
@@ -647,6 +689,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @param sMS the message (with its index) to write
      * @throws ElkrommException if the write fails
+     * @since 0.3
      */
     void setSMS(SingleSMS sMS) throws ElkrommException;
 
@@ -655,6 +698,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @param keyboard the keypad configuration (with its index) to write
      * @throws ElkrommException if the write fails
+     * @since 0.3
      */
     void setKeyboard(SingleKeyboard keyboard) throws ElkrommException;
 
@@ -667,6 +711,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @param reader the reader configuration to write
      * @throws ElkrommException if the write fails
+     * @since 0.3
      */
     void setReader(Reader reader) throws ElkrommException;
 
@@ -676,6 +721,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @param dayClassCommands the day class and its scheduled commands
      * @throws ElkrommException if the write fails
+     * @since 0.3
      */
     void setDayClassCommands(DayClassCommands dayClassCommands) throws ElkrommException;
 
@@ -685,6 +731,7 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @param user the user configuration (with its index) to write
      * @throws ElkrommException if the write fails
+     * @since 0.5
      */
     void setUser(SingleCredential user) throws ElkrommException;
 
@@ -693,12 +740,55 @@ public interface ElkrommFacade extends AutoCloseable
      *
      * @param key the key configuration (with its index) to write
      * @throws ElkrommException if the write fails
+     * @since 0.5
      */
     void setKey(SingleCredential key) throws ElkrommException;
 
     // v0.6 APIs
+    /**
+     * Writes the configuration of all the proximity key readers in a single block
+     * ({@link ElkronCommand#SET_READERS}).
+     * <p>
+     * Unlike {@link #setReader(Reader)}, which writes one reader, this replaces the
+     * whole set; the block checksum is computed by the library.
+     *
+     * @param readers the configuration of all the readers
+     * @throws ElkrommException if the write fails
+     * @since 0.6
+     */
     void setReaders(Reader[] readers) throws ElkrommException;
+
+    /**
+     * Writes the whole time programmer configuration in a single block
+     * ({@link ElkronCommand#SET_TIME_PROGRAMMER}): the day class of each weekday and the
+     * scheduled commands of every day class.
+     *
+     * @param timeProgrammer the time programmer configuration
+     * @throws ElkrommException if the write fails
+     * @since 0.6
+     */
     void setTimeProgrammer(TimeProgrammer timeProgrammer) throws ElkrommException;
+
+    /**
+     * Writes the configuration of all the expansions in a single block
+     * ({@link ElkronCommand#SET_EXPANSIONS}), including the unit embedded in the panel.
+     *
+     * @param expansions the configuration of all the expansions
+     * @throws ElkrommException if the write fails
+     * @since 0.6
+     */
     void setExpansions(Expansion[] expansions) throws ElkrommException;
+
+    /**
+     * Writes the configuration of all the keypads in a single block
+     * ({@link ElkronCommand#SET_KEYPADS}).
+     * <p>
+     * Unlike {@link #setKeyboard(SingleKeyboard)}, which writes one keypad, this replaces the
+     * whole set.
+     *
+     * @param keyboards the configuration of all the keypads
+     * @throws ElkrommException if the write fails
+     * @since 0.6
+     */
     void setKeyboards(Keyboard[] keyboards) throws ElkrommException;
 }
