@@ -237,7 +237,10 @@ In the keys, `<N>` is the (1-based, unless noted) number of the object; the othe
 `<I>` the input of a keypad or reader, `first` or `second`; `<L>` the LED number of a reader;
 `<D>` the day class in camel case (`workingDay`, `preHoliday`, `holiday`); `<W>` the weekday in lowercase
 (`monday`...`sunday`); `<E>` the event name of the C200B block in camel case. In the defaults, `<NN>` is the number
-on two digits. Names are fixed-width on the wire (24 characters): default names are shown here without their
+on two digits. Enumerations are written with the name of the constant **without its prefix** (`COT_PARTITIONS`
+becomes `PARTITIONS`, `IC_NOT_USED` becomes `NOT_USED`), in upper case, as listed in the Notes column; a name that
+does not belong to the enumeration makes reading that property fail with an `IllegalArgumentException`, while an invalid
+number or hexadecimal string is logged and replaced by the default. Names are fixed-width on the wire (24 characters): default names are shown here without their
 trailing spaces. Properties holding a bitmask or a raw byte take a decimal number.
 
 Minimal example, a single area/partition setup listening on the default port:

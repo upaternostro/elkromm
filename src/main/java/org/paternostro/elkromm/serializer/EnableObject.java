@@ -7,7 +7,7 @@ package org.paternostro.elkromm.serializer;
  * <p>
  * <table>
  *  <tr><th>Offset</th><th>Meaning</th><th>Note</th><th>Constant</th></tr>
- *  <tr><td>0x00</td><td>Object index</td><td>Can index an user or an input</td><td>{@link #OBJECT_INDEX_OFFSET}</td></tr>
+ *  <tr><td>0x00</td><td>Object index</td><td>Can index a user or an input</td><td>{@link #OBJECT_INDEX_OFFSET}</td></tr>
  *  <tr><td>0x01</td><td>Enabling flag</td><td>0 = disabled, 1 = enabled</td><td>{@link #ENABLING_FLAG_OFFSET}</td></tr>
  * </table>
  * <p>

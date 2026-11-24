@@ -31,6 +31,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Configuration of the emulator, read from the {@value #PROPERTIES_FILE_NAME} file found on the classpath.
+ * <p>
+ * Every property has a {@code K_*} constant with its key and a {@code D_*} constant with its default, used
+ * when the property is missing. Keys that apply to many objects (inputs, users, keypads...) are
+ * {@link String#format} patterns, filled with the number of the object.
+ * <p>
+ * Values are written as text:
+ * <ul>
+ * <li>numbers, bitmasks and raw bytes are written in decimal;</li>
+ * <li>enumerations are written with the name of the constant <b>without its prefix</b>, in upper case. Each
+ * enumeration of the library prefixes its constants with an abbreviation of its name (for example
+ * {@code COT_PARTITIONS} in {@link Command.ObjectType}, {@code IC_NOT_USED} in {@link Input.Configuration}
+ * or {@code P_ONE} in {@link ElkrommFacade.Partition}): in the properties file the prefix is dropped, so they
+ * become {@code PARTITIONS}, {@code NOT_USED} and {@code ONE}. The documentation of each key lists the
+ * enumeration it takes its values from.</li>
+ * </ul>
+ * <p>
+ * An invalid value is not always handled in the same way: a name that does not belong to an enumeration makes
+ * the getter throw an {@link IllegalArgumentException}, while an invalid number or hexadecimal string is
+ * logged and replaced by the default.
+ * <p>
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
  */
 public class Config {
@@ -175,7 +196,7 @@ public class Config {
     /** Default value of {@link #K_PARTITION_TYPE}. */
     public static final String D_PARTITION_TYPE = "STANDARD";
 
-    /** Property key: name of an user. This is a {@link String#format} pattern, filled with the user number (1-based). */
+    /** Property key: name of a user. This is a {@link String#format} pattern, filled with the user number (1-based). */
     public static final String K_USER_NAME      = "org.paternostro.elkromm.emulator.user.%d.name";
     /** Default values of {@link #K_USER_NAME}, indexed by the user number minus one. */
     public static final String[] D_USER_NAME    = { "TECNICO                 ", 
@@ -188,7 +209,7 @@ public class Config {
                                                     ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, 
                                                     ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME, 
                                                     ElkrommFacade.DEFAULT_NAME, ElkrommFacade.DEFAULT_NAME };
-    /** Property key: enablings of an user, see {@link Credential.Enabling}. This is a {@link String#format} pattern, filled with the user number (1-based). */
+    /** Property key: enablings of a user, see {@link Credential.Enabling}. This is a {@link String#format} pattern, filled with the user number (1-based). */
     public static final String K_USER_ENABLINGS    = "org.paternostro.elkromm.emulator.user.%d.enablings";
     /** Default values of {@link #K_USER_ENABLINGS}, indexed by the user number minus one. */
     public static final String[] D_USER_ENABLINGS  = { Byte.toString(User.Enabling.DISABLED.getValue()), 
@@ -208,7 +229,7 @@ public class Config {
                                                         Byte.toString(User.Enabling.DISABLED.getValue()), Byte.toString(User.Enabling.DISABLED.getValue()),
                                                         Byte.toString(User.Enabling.DISABLED.getValue()), Byte.toString(User.Enabling.DISABLED.getValue()),
                                                         Byte.toString(User.Enabling.DISABLED.getValue()), Byte.toString(User.Enabling.DISABLED.getValue()) };
-    /** Property key: partitions of an user. This is a {@link String#format} pattern, filled with the user number (1-based). */
+    /** Property key: partitions of a user. This is a {@link String#format} pattern, filled with the user number (1-based). */
     public static final String K_USER_PARTITIONS    = "org.paternostro.elkromm.emulator.user.%d.partitions";
     /** Default values of {@link #K_USER_PARTITIONS}, indexed by the user number minus one. */
     public static final String[] D_USER_PARTITIONS  = { "255", "255", 
@@ -221,7 +242,7 @@ public class Config {
     public static final String K_KEY_NAME   = "org.paternostro.elkromm.emulator.key.%d.name";
     /** Default value of {@link #K_KEY_NAME}. */
     public static final String D_KEY_NAME   = ElkrommFacade.DEFAULT_NAME;
-    /** Property key: enablings of a key., see {@link Credential.Enabling} This is a {@link String#format} pattern, filled with the key number (1-based). */
+    /** Property key: enablings of a key, see {@link Credential.Enabling}. This is a {@link String#format} pattern, filled with the key number (1-based). */
     public static final String K_KEY_ENABLINGS  = "org.paternostro.elkromm.emulator.key.%d.enablings";
     /** Default value of {@link #K_KEY_ENABLINGS}. */
     public static final String D_KEY_ENABLINGS  = Byte.toString(Credential.Enabling.DISABLED.getValue());
@@ -367,7 +388,7 @@ public class Config {
     public static final String K_READER_ENABLINGS  = "org.paternostro.elkromm.emulator.reader.%d.enablings";
     /** Default value of {@link #K_READER_ENABLINGS}. */
     public static final String D_READER_ENABLINGS  = Byte.toString(Reader.Enablings.RE_NONE.getValue());
-    /** Property key: partition associated with a LED of a reader, see {@link ElkrommFacade.Partition}. This is a {@link String#format} pattern, filled with the reader number (1-based), then the LED number. */
+    /** Property key: partition associated with an LED of a reader, see {@link ElkrommFacade.Partition}. This is a {@link String#format} pattern, filled with the reader number (1-based), then the LED number. */
     public static final String K_READER_LED = "org.paternostro.elkromm.emulator.reader.%d.led%d";
     /** Default value of {@link #K_READER_LED}. */
     public static final String D_READER_LED = "NONE";
@@ -413,7 +434,7 @@ public class Config {
     public static final String K_PARAMETERS_ENABLINGS_EMERGENCY_TIME    = "org.paternostro.elkromm.emulator.parametersEnablings.emergencyTime";
     /** Default value of {@link #K_PARAMETERS_ENABLINGS_EMERGENCY_TIME}. */
     public static final String D_PARAMETERS_ENABLINGS_EMERGENCY_TIME    = "180_SECS";
-    /** Property key: pre alarm time (general parameters and enablings of the panel), see {@link ParametersEnablings.Time}. */
+    /** Property key: pre-alarm time (general parameters and enablings of the panel), see {@link ParametersEnablings.Time}. */
     public static final String K_PARAMETERS_ENABLINGS_PRE_ALARM_TIME    = "org.paternostro.elkromm.emulator.parametersEnablings.preAlarmTime";
     /** Default value of {@link #K_PARAMETERS_ENABLINGS_PRE_ALARM_TIME}. */
     public static final String D_PARAMETERS_ENABLINGS_PRE_ALARM_TIME    = "180_SECS";
@@ -433,7 +454,7 @@ public class Config {
     public static final String K_PARAMETERS_ENABLINGS_HELP  = "org.paternostro.elkromm.emulator.parametersEnablings.help";
     /** Default value of {@link #K_PARAMETERS_ENABLINGS_HELP}. */
     public static final String D_PARAMETERS_ENABLINGS_HELP  = "0";
-    /** Property key: lan (general parameters and enablings of the panel), see {@link ParametersEnablings.Enabling}. */
+    /** Property key: LAN (general parameters and enablings of the panel), see {@link ParametersEnablings.Enabling}. */
     public static final String K_PARAMETERS_ENABLINGS_LAN   = "org.paternostro.elkromm.emulator.parametersEnablings.lan";
     /** Default value of {@link #K_PARAMETERS_ENABLINGS_LAN}. */
     public static final String D_PARAMETERS_ENABLINGS_LAN   = "DISABLE";
@@ -445,16 +466,16 @@ public class Config {
     public static final String K_PARAMETERS_ENABLINGS_NOTICE    = "org.paternostro.elkromm.emulator.parametersEnablings.notice";
     /** Default value of {@link #K_PARAMETERS_ENABLINGS_NOTICE}. */
     public static final String D_PARAMETERS_ENABLINGS_NOTICE    = "NO_NOTICE";
-    /** Property key: dst (general parameters and enablings of the panel), see {@link ParametersEnablings.DST}. */
+    /** Property key: DST (general parameters and enablings of the panel), see {@link ParametersEnablings.DST}. */
     public static final String K_PARAMETERS_ENABLINGS_DST   = "org.paternostro.elkromm.emulator.parametersEnablings.dst";
     /** Default value of {@link #K_PARAMETERS_ENABLINGS_DST}. */
     public static final String D_PARAMETERS_ENABLINGS_DST   = "0";
     // FIXME: on&off DST da scambiare?
-    /** Property key: dst on (general parameters and enablings of the panel), see {@link ParametersEnablings.Month}. */
+    /** Property key: DST on (general parameters and enablings of the panel), see {@link ParametersEnablings.Month}. */
     public static final String K_PARAMETERS_ENABLINGS_DST_ON    = "org.paternostro.elkromm.emulator.parametersEnablings.dst.on";
     /** Default value of {@link #K_PARAMETERS_ENABLINGS_DST_ON}. */
     public static final String D_PARAMETERS_ENABLINGS_DST_ON    = "OCTOBER";
-    /** Property key: dst off (general parameters and enablings of the panel), see {@link ParametersEnablings.Month}. */
+    /** Property key: DST off (general parameters and enablings of the panel), see {@link ParametersEnablings.Month}. */
     public static final String K_PARAMETERS_ENABLINGS_DST_OFF   = "org.paternostro.elkromm.emulator.parametersEnablings.dst.off";
     /** Default value of {@link #K_PARAMETERS_ENABLINGS_DST_OFF}. */
     public static final String D_PARAMETERS_ENABLINGS_DST_OFF   = "MARCH";
@@ -540,7 +561,7 @@ public class Config {
     /** Default value of {@link #K_PHONE_PARAMETERS_CYCLIC_TEST_CALL_INTERVAL}. */
     public static final String D_PHONE_PARAMETERS_CYCLIC_TEST_CALL_INTERVAL = "1_HOUR";
 
-    /** Property key: enable pstn (PSTN/GSM module), see {@link PSTNGSM.Enabling}. */
+    /** Property key: enable PSTN (PSTN/GSM module), see {@link PSTNGSM.Enabling}. */
     public static final String K_PSTNGSM_ENABLE_PSTN    = "org.paternostro.elkromm.emulator.PSTNGSM.enablePSTN";
     /** Default value of {@link #K_PSTNGSM_ENABLE_PSTN}. */
     public static final String D_PSTNGSM_ENABLE_PSTN    = "DISABLED";
@@ -548,7 +569,7 @@ public class Config {
     public static final String K_PSTNGSM_COUNTRY    = "org.paternostro.elkromm.emulator.PSTNGSM.country";
     /** Default value of {@link #K_PSTNGSM_COUNTRY}. */
     public static final String D_PSTNGSM_COUNTRY    = "ITALY";
-    /** Property key: pabx local access digit (PSTN/GSM module), see {@link PSTNGSM.PABXLocalAccessDigit}. */
+    /** Property key: PABX local access digit (PSTN/GSM module), see {@link PSTNGSM.PABXLocalAccessDigit}. */
     public static final String K_PSTNGSM_PABX_LOCAL_ACCESS_DIGIT    = "org.paternostro.elkromm.emulator.PSTNGSM.PABXLocalAccessDigit";
     /** Default value of {@link #K_PSTNGSM_PABX_LOCAL_ACCESS_DIGIT}. */
     public static final String D_PSTNGSM_PABX_LOCAL_ACCESS_DIGIT    = "DISABLE";
@@ -560,27 +581,27 @@ public class Config {
     public static final String K_PSTNGSM_ANSWER_CONTROL = "org.paternostro.elkromm.emulator.PSTNGSM.answerControl";
     /** Default value of {@link #K_PSTNGSM_ANSWER_CONTROL}. */
     public static final String D_PSTNGSM_ANSWER_CONTROL = "DISABLED";
-    /** Property key: pstn line test frequency (PSTN/GSM module), see {@link PSTNGSM.PSTNLineTestFrequency}. */
+    /** Property key: PSTN line test frequency (PSTN/GSM module), see {@link PSTNGSM.PSTNLineTestFrequency}. */
     public static final String K_PSTNGSM_PSTN_LINE_TEST_FREQUENCY   = "org.paternostro.elkromm.emulator.PSTNGSM.PSTNLineTestFrequency";
     /** Default value of {@link #K_PSTNGSM_PSTN_LINE_TEST_FREQUENCY}. */
     public static final String D_PSTNGSM_PSTN_LINE_TEST_FREQUENCY   = "DISABLE";
-    /** Property key: pstn answering machine rings (PSTN/GSM module), see {@link PSTNGSM.PSTNAnsweringMachineRings}. */
+    /** Property key: PSTN answering machine rings (PSTN/GSM module), see {@link PSTNGSM.PSTNAnsweringMachineRings}. */
     public static final String K_PSTNGSM_PSTN_ANSWERING_MACHINE_RINGS   = "org.paternostro.elkromm.emulator.PSTNGSM.PSTNAnsweringMachineRings";
     /** Default value of {@link #K_PSTNGSM_PSTN_ANSWERING_MACHINE_RINGS}. */
     public static final String D_PSTNGSM_PSTN_ANSWERING_MACHINE_RINGS   = "DISABLE";
-    /** Property key: enable gsm (PSTN/GSM module), see {@link PSTNGSM.Enabling}. */
+    /** Property key: enable GSM (PSTN/GSM module), see {@link PSTNGSM.Enabling}. */
     public static final String K_PSTNGSM_ENABLE_GSM = "org.paternostro.elkromm.emulator.PSTNGSM.enableGSM";
     /** Default value of {@link #K_PSTNGSM_ENABLE_GSM}. */
     public static final String D_PSTNGSM_ENABLE_GSM = "DISABLED";
-    /** Property key: enable gsm answering machine (PSTN/GSM module), see {@link PSTNGSM.Enabling}. */
+    /** Property key: enable GSM answering machine (PSTN/GSM module), see {@link PSTNGSM.Enabling}. */
     public static final String K_PSTNGSM_ENABLE_GSM_ANSWERING_MACHINE   = "org.paternostro.elkromm.emulator.PSTNGSM.enableGSMAnsweringMachine";
     /** Default value of {@link #K_PSTNGSM_ENABLE_GSM_ANSWERING_MACHINE}. */
     public static final String D_PSTNGSM_ENABLE_GSM_ANSWERING_MACHINE   = "DISABLED";
-    /** Property key: enable incoming sms (PSTN/GSM module), see {@link PSTNGSM.Enabling}. */
+    /** Property key: enable incoming SMS (PSTN/GSM module), see {@link PSTNGSM.Enabling}. */
     public static final String K_PSTNGSM_ENABLE_INCOMING_SMS    = "org.paternostro.elkromm.emulator.PSTNGSM.enableIncomingSMS";
     /** Default value of {@link #K_PSTNGSM_ENABLE_INCOMING_SMS}. */
     public static final String D_PSTNGSM_ENABLE_INCOMING_SMS    = "DISABLED";
-    /** Property key: gsm pin (PSTN/GSM module), {@code -1} for no PIN. */
+    /** Property key: GSM pin (PSTN/GSM module), {@code -1} for no PIN. */
     public static final String K_PSTNGSM_GSM_PIN    = "org.paternostro.elkromm.emulator.PSTNGSM.GSMPin";
     /** Default value of {@link #K_PSTNGSM_GSM_PIN}. */
     public static final String D_PSTNGSM_GSM_PIN    = "-1";
@@ -1186,7 +1207,7 @@ public class Config {
     }
 
     /**
-     * Returns the partition associated with a LED of a reader from the property {@link #K_READER_LED}, or {@link #D_READER_LED} when the property is not set.
+     * Returns the partition associated with an LED of a reader from the property {@link #K_READER_LED}, or {@link #D_READER_LED} when the property is not set.
      *
      * @param reader the reader number, between 1 and {@link ElkrommFacade#MAX_READERS}
      * @param led the LED number
@@ -1406,7 +1427,7 @@ public class Config {
     }
 
     /**
-     * Returns the parameters enablings pre alarm time from the property {@link #K_PARAMETERS_ENABLINGS_PRE_ALARM_TIME}, or {@link #D_PARAMETERS_ENABLINGS_PRE_ALARM_TIME} when the property is not set.
+     * Returns the parameters enablings pre-alarm time from the property {@link #K_PARAMETERS_ENABLINGS_PRE_ALARM_TIME}, or {@link #D_PARAMETERS_ENABLINGS_PRE_ALARM_TIME} when the property is not set.
      * @return the configured {@link ParametersEnablings.Time} value
      */
     public ParametersEnablings.Time getParametersEnablingsPreAlarmTime() {
@@ -1446,7 +1467,7 @@ public class Config {
     }
 
     /**
-     * Returns the parameters enablings lan from the property {@link #K_PARAMETERS_ENABLINGS_LAN}, or {@link #D_PARAMETERS_ENABLINGS_LAN} when the property is not set.
+     * Returns the parameters enablings LAN from the property {@link #K_PARAMETERS_ENABLINGS_LAN}, or {@link #D_PARAMETERS_ENABLINGS_LAN} when the property is not set.
      * @return the configured {@link ParametersEnablings.Enabling} value
      */
     public ParametersEnablings.Enabling getParametersEnablingsLAN() {
@@ -1470,7 +1491,7 @@ public class Config {
     }
 
     /**
-     * Returns the parameters enablings dst from the property {@link #K_PARAMETERS_ENABLINGS_DST}, or {@link #D_PARAMETERS_ENABLINGS_DST} when the property is not set.
+     * Returns the parameters enablings DST from the property {@link #K_PARAMETERS_ENABLINGS_DST}, or {@link #D_PARAMETERS_ENABLINGS_DST} when the property is not set.
      * @return the raw byte value
      */
     public byte getParametersEnablingsDST() {
@@ -1688,7 +1709,7 @@ public class Config {
     }
 
     /**
-     * Returns the pstngsmenable pstn from the property {@link #K_PSTNGSM_ENABLE_PSTN}, or {@link #D_PSTNGSM_ENABLE_PSTN} when the property is not set.
+     * Returns the enable PSTN (PSTN/GSM module) from the property {@link #K_PSTNGSM_ENABLE_PSTN}, or {@link #D_PSTNGSM_ENABLE_PSTN} when the property is not set.
      * @return the configured {@link PSTNGSM.Enabling} value
      */
     public PSTNGSM.Enabling getPSTNGSMEnablePSTN() {
@@ -1696,7 +1717,7 @@ public class Config {
     }
 
     /**
-     * Returns the pstngsmcountry from the property {@link #K_PSTNGSM_COUNTRY}, or {@link #D_PSTNGSM_COUNTRY} when the property is not set.
+     * Returns the country (PSTN/GSM module) from the property {@link #K_PSTNGSM_COUNTRY}, or {@link #D_PSTNGSM_COUNTRY} when the property is not set.
      * @return the configured {@link PSTNGSM.Country} value
      */
     public PSTNGSM.Country getPSTNGSMCountry() {
@@ -1704,7 +1725,7 @@ public class Config {
     }
 
     /**
-     * Returns the pstngsmpabxlocal access digit from the property {@link #K_PSTNGSM_PABX_LOCAL_ACCESS_DIGIT}, or {@link #D_PSTNGSM_PABX_LOCAL_ACCESS_DIGIT} when the property is not set.
+     * Returns the PABX local access digit (PSTN/GSM module) from the property {@link #K_PSTNGSM_PABX_LOCAL_ACCESS_DIGIT}, or {@link #D_PSTNGSM_PABX_LOCAL_ACCESS_DIGIT} when the property is not set.
      * @return the configured {@link PSTNGSM.PABXLocalAccessDigit} value
      */
     public PSTNGSM.PABXLocalAccessDigit getPSTNGSMPABXLocalAccessDigit() {
@@ -1712,7 +1733,7 @@ public class Config {
     }
 
     /**
-     * Returns the pstngsmtone control from the property {@link #K_PSTNGSM_TONE_CONTROL}, or {@link #D_PSTNGSM_TONE_CONTROL} when the property is not set.
+     * Returns the tone control (PSTN/GSM module) from the property {@link #K_PSTNGSM_TONE_CONTROL}, or {@link #D_PSTNGSM_TONE_CONTROL} when the property is not set.
      * @return the configured {@link PSTNGSM.Enabling} value
      */
     public PSTNGSM.Enabling getPSTNGSMToneControl() {
@@ -1720,7 +1741,7 @@ public class Config {
     }
 
     /**
-     * Returns the pstngsmanswer control from the property {@link #K_PSTNGSM_ANSWER_CONTROL}, or {@link #D_PSTNGSM_ANSWER_CONTROL} when the property is not set.
+     * Returns the answer control (PSTN/GSM module) from the property {@link #K_PSTNGSM_ANSWER_CONTROL}, or {@link #D_PSTNGSM_ANSWER_CONTROL} when the property is not set.
      * @return the configured {@link PSTNGSM.Enabling} value
      */
     public PSTNGSM.Enabling getPSTNGSMAnswerControl() {
@@ -1728,7 +1749,7 @@ public class Config {
     }
 
     /**
-     * Returns the pstngsmpstnline test frequency from the property {@link #K_PSTNGSM_PSTN_LINE_TEST_FREQUENCY}, or {@link #D_PSTNGSM_PSTN_LINE_TEST_FREQUENCY} when the property is not set.
+     * Returns the PSTN line test frequency (PSTN/GSM module) from the property {@link #K_PSTNGSM_PSTN_LINE_TEST_FREQUENCY}, or {@link #D_PSTNGSM_PSTN_LINE_TEST_FREQUENCY} when the property is not set.
      * @return the configured {@link PSTNGSM.PSTNLineTestFrequency} value
      */
     public PSTNGSM.PSTNLineTestFrequency getPSTNGSMPSTNLineTestFrequency() {
@@ -1736,7 +1757,7 @@ public class Config {
     }
 
     /**
-     * Returns the pstngsmpstnanswering machine rings from the property {@link #K_PSTNGSM_PSTN_ANSWERING_MACHINE_RINGS}, or {@link #D_PSTNGSM_PSTN_ANSWERING_MACHINE_RINGS} when the property is not set.
+     * Returns the PSTN answering machine rings (PSTN/GSM module) from the property {@link #K_PSTNGSM_PSTN_ANSWERING_MACHINE_RINGS}, or {@link #D_PSTNGSM_PSTN_ANSWERING_MACHINE_RINGS} when the property is not set.
      * @return the configured {@link PSTNGSM.PSTNAnsweringMachineRings} value
      */
     public PSTNGSM.PSTNAnsweringMachineRings getPSTNGSMPSTNAnsweringMachineRings() {
@@ -1744,7 +1765,7 @@ public class Config {
     }
 
     /**
-     * Returns the pstngsmenable gsm from the property {@link #K_PSTNGSM_ENABLE_GSM}, or {@link #D_PSTNGSM_ENABLE_GSM} when the property is not set.
+     * Returns the enable GSM (PSTN/GSM module) from the property {@link #K_PSTNGSM_ENABLE_GSM}, or {@link #D_PSTNGSM_ENABLE_GSM} when the property is not set.
      * @return the configured {@link PSTNGSM.Enabling} value
      */
     public PSTNGSM.Enabling getPSTNGSMEnableGSM() {
@@ -1752,7 +1773,7 @@ public class Config {
     }
 
     /**
-     * Returns the pstngsmenable gsmanswering machine from the property {@link #K_PSTNGSM_ENABLE_GSM_ANSWERING_MACHINE}, or {@link #D_PSTNGSM_ENABLE_GSM_ANSWERING_MACHINE} when the property is not set.
+     * Returns the enable GSM answering machine (PSTN/GSM module) from the property {@link #K_PSTNGSM_ENABLE_GSM_ANSWERING_MACHINE}, or {@link #D_PSTNGSM_ENABLE_GSM_ANSWERING_MACHINE} when the property is not set.
      * @return the configured {@link PSTNGSM.Enabling} value
      */
     public PSTNGSM.Enabling getPSTNGSMEnableGSMAnsweringMachine() {
@@ -1760,7 +1781,7 @@ public class Config {
     }
 
     /**
-     * Returns the pstngsmenable incoming sms from the property {@link #K_PSTNGSM_ENABLE_INCOMING_SMS}, or {@link #D_PSTNGSM_ENABLE_INCOMING_SMS} when the property is not set.
+     * Returns the enable incoming SMS (PSTN/GSM module) from the property {@link #K_PSTNGSM_ENABLE_INCOMING_SMS}, or {@link #D_PSTNGSM_ENABLE_INCOMING_SMS} when the property is not set.
      * @return the configured {@link PSTNGSM.Enabling} value
      */
     public PSTNGSM.Enabling getPSTNGSMEnableIncomingSMS() {
@@ -1768,7 +1789,7 @@ public class Config {
     }
 
     /**
-     * Returns the pstngsmgsmpin from the property {@link #K_PSTNGSM_GSM_PIN}, or {@link #D_PSTNGSM_GSM_PIN} when the property is not set.
+     * Returns the GSM PIN (PSTN/GSM module) from the property {@link #K_PSTNGSM_GSM_PIN}, or {@link #D_PSTNGSM_GSM_PIN} when the property is not set.
      * @return the numeric value
      */
     public int getPSTNGSMGSMPIN() {
@@ -1776,7 +1797,7 @@ public class Config {
     }
 
     /**
-     * Returns the pstngsmexpiration month from the property {@link #K_PSTNGSM_EXPIRATION_MONTH}, or {@link #D_PSTNGSM_EXPIRATION_MONTH} when the property is not set.
+     * Returns the expiration month (PSTN/GSM module) from the property {@link #K_PSTNGSM_EXPIRATION_MONTH}, or {@link #D_PSTNGSM_EXPIRATION_MONTH} when the property is not set.
      * @return the raw byte value
      */
     public byte getPSTNGSMExpirationMonth() {
@@ -1784,7 +1805,7 @@ public class Config {
     }
 
     /**
-     * Returns the pstngsmexpiration year from the property {@link #K_PSTNGSM_EXPIRATION_YEAR}, or {@link #D_PSTNGSM_EXPIRATION_YEAR} when the property is not set.
+     * Returns the expiration year (PSTN/GSM module) from the property {@link #K_PSTNGSM_EXPIRATION_YEAR}, or {@link #D_PSTNGSM_EXPIRATION_YEAR} when the property is not set.
      * @return the raw byte value
      */
     public byte getPSTNGSMExpirationYear() {
