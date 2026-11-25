@@ -404,7 +404,7 @@ public interface ElkrommFacade extends AutoCloseable
      * @param partition the partition to act on
      * @param arm {@code true} to arm, {@code false} to disarm
      * @throws ElkrommException if the command fails
-     * @since 0.1
+     * @since 0.1 (as {@code armDisarmSector} before 0.5)
      */
     void armDisarmPartition(Partition partition, boolean arm) throws ElkrommException;
 
