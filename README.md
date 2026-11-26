@@ -265,8 +265,8 @@ reproduces the exact same bytes. This is how several protocol quirks documented 
 [PROTOCOL.md](PROTOCOL.md) were found — most notably the "ghost bit" that Elkron
 panels raise on an excluded input, in a byte otherwise dedicated to static configuration.
 
-Unlike the unit tests, these are **not** run by `mvn install`/`mvn test`, precisely
-because they require a real panel to be reachable on the network — they use the Maven
+Unlike the unit tests, these also run with mvn install/mvn verify: they need a real panel to be
+reachable, so they are skipped by mvn test, which is what the CI runs — they use the Maven
 Failsafe plugin (test classes named `*IT.java`, as opposed to the `*Test.java` picked up
 by Surefire) instead.
 
