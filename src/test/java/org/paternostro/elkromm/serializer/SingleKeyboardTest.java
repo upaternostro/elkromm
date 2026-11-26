@@ -31,8 +31,8 @@ public class SingleKeyboardTest {
         assert singleKeyboard.getKeyboard().getAddress() == singleKeyboard2.getKeyboard().getAddress() : "Expected address " + singleKeyboard.getKeyboard().getAddress() + " got " + singleKeyboard2.getKeyboard().getAddress();
         assert singleKeyboard.getKeyboard().getVersion().equals(singleKeyboard2.getKeyboard().getVersion()) : "Expected version " + singleKeyboard.getKeyboard().getVersion() + " got " + singleKeyboard2.getKeyboard().getVersion();
 
-        ElkrommTestUtils.testInput(singleKeyboard.getKeyboard().getFirstInput(), singleKeyboard2.getKeyboard().getFirstInput());
-        ElkrommTestUtils.testInput(singleKeyboard.getKeyboard().getSecondInput(), singleKeyboard2.getKeyboard().getSecondInput());
+        ElkrommTestUtils.assertEquals(singleKeyboard.getKeyboard().getFirstInput(), singleKeyboard2.getKeyboard().getFirstInput());
+        ElkrommTestUtils.assertEquals(singleKeyboard.getKeyboard().getSecondInput(), singleKeyboard2.getKeyboard().getSecondInput());
         
         assert singleKeyboard.getKeyboard().getEnablings() == singleKeyboard2.getKeyboard().getEnablings();
 

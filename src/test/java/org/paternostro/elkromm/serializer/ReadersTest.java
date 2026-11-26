@@ -35,8 +35,8 @@ public class ReadersTest {
         for (int i = 0; i < readers.length; i++) {
             assert readers[i].getAddress() == readers2[i].getAddress() : "Expected address " + readers[i].getAddress() + " got " + readers2[i].getAddress();
 
-            ElkrommTestUtils.testInput(readers[i].getFirstInput(), readers2[i].getFirstInput());
-            ElkrommTestUtils.testInput(readers[i].getSecondInput(), readers2[i].getSecondInput());
+            ElkrommTestUtils.assertEquals(readers[i].getFirstInput(), readers2[i].getFirstInput());
+            ElkrommTestUtils.assertEquals(readers[i].getSecondInput(), readers2[i].getSecondInput());
             
             assert readers[i].getLed1() == readers2[i].getLed1();
             assert readers[i].getLed2() == readers2[i].getLed2();

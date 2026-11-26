@@ -12,21 +12,21 @@ import org.paternostro.elkromm.dto.TimeProgrammer;
  * Copyright Ugo Paternostro 2017-2026. Licensed under the EUPL-1.2 or later.
  */
 public class ElkrommTestUtils {
-    public static void testInput(Input input, Input input2)
+    public static void assertEquals(Input expected, Input actual)
     {
-        assert input.getLogicNumber() == input2.getLogicNumber();
-        assert input.getConfiguration() == input2.getConfiguration();
-        assert input.getSpecialization() == input2.getSpecialization();
-        assert input.getDelay() == input2.getDelay();
-        assert input.getFlags() == input2.getFlags();
-        assert input.getSensitivity() == input2.getSensitivity();
-        assert input.getVideo() == input2.getVideo();
+        org.junit.Assert.assertEquals(expected.getLogicNumber(),                    actual.getLogicNumber());
+        org.junit.Assert.assertEquals(expected.getConfiguration(),                  actual.getConfiguration());
+        org.junit.Assert.assertEquals(expected.getSpecialization(),                 actual.getSpecialization());
+        org.junit.Assert.assertEquals(expected.getDelay(),                          actual.getDelay());
+        org.junit.Assert.assertEquals(expected.getFlags(),                          actual.getFlags());
+        org.junit.Assert.assertEquals(expected.getSensitivity(),                    actual.getSensitivity());
+        org.junit.Assert.assertEquals(expected.getVideo(),                          actual.getVideo());
 
         for (int k = 0; k < ElkrommFacade.MAX_PARTITIONS; k++) {
-            assert input.getAssociatedPartitions()[k] == input2.getAssociatedPartitions()[k];
+            org.junit.Assert.assertEquals(expected.getAssociatedPartitions()[k],    actual.getAssociatedPartitions()[k]);
         }
 
-        assert input.getName().equals(input2.getName());
+        org.junit.Assert.assertEquals(expected.getName(),                           actual.getName());
     }
 
     public static void assertEquals(Reader expected, Reader actual)
@@ -35,8 +35,8 @@ public class ElkrommTestUtils {
         org.junit.Assert.assertNotNull(actual);
 
         org.junit.Assert.assertEquals(expected.getAddress(),     actual.getAddress());
-        ElkrommTestUtils.testInput(   expected.getFirstInput(),  actual.getFirstInput());
-        ElkrommTestUtils.testInput(   expected.getSecondInput(), actual.getSecondInput());
+        ElkrommTestUtils.assertEquals(expected.getFirstInput(),  actual.getFirstInput());
+        ElkrommTestUtils.assertEquals(expected.getSecondInput(), actual.getSecondInput());
         org.junit.Assert.assertEquals(expected.getLed1(),        actual.getLed1());
         org.junit.Assert.assertEquals(expected.getLed2(),        actual.getLed2());
         org.junit.Assert.assertEquals(expected.getLed3(),        actual.getLed3());
@@ -111,7 +111,7 @@ public class ElkrommTestUtils {
         org.junit.Assert.assertEquals(expected.getInputNum(),       actual.getInputNum());
 
         for (int i = 0; i < expected.getInputNum(); i++) {
-            ElkrommTestUtils.testInput(expected.getInput(i),        actual.getInput(i));
+            ElkrommTestUtils.assertEquals(expected.getInput(i),     actual.getInput(i));
         }
 
         org.junit.Assert.assertEquals(expected.getOutputNum(),      actual.getOutputNum());
@@ -138,8 +138,8 @@ public class ElkrommTestUtils {
         org.junit.Assert.assertNotNull(actual);
         org.junit.Assert.assertEquals(expected.getAddress(),                    actual.getAddress());
         org.junit.Assert.assertEquals(expected.getVersion(),                    actual.getVersion());
-        ElkrommTestUtils.testInput(expected.getFirstInput(),                    actual.getFirstInput());
-        ElkrommTestUtils.testInput(expected.getSecondInput(),                   actual.getSecondInput());
+        ElkrommTestUtils.assertEquals(expected.getFirstInput(),                 actual.getFirstInput());
+        ElkrommTestUtils.assertEquals(expected.getSecondInput(),                actual.getSecondInput());
         org.junit.Assert.assertEquals(expected.getEnablings(),                  actual.getEnablings());
         org.junit.Assert.assertArrayEquals(expected.getAssociatedPartitions(),  actual.getAssociatedPartitions());
         org.junit.Assert.assertEquals(expected.getAudioFeatures(),              actual.getAudioFeatures());

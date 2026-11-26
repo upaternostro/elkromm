@@ -29,8 +29,8 @@ public class ReaderTest {
 
         assert reader.getAddress() == reader2.getAddress() : "Expected address " + reader.getAddress() + " got " + reader2.getAddress();
 
-        ElkrommTestUtils.testInput(reader.getFirstInput(), reader2.getFirstInput());
-        ElkrommTestUtils.testInput(reader.getSecondInput(), reader2.getSecondInput());
+        ElkrommTestUtils.assertEquals(reader.getFirstInput(), reader2.getFirstInput());
+        ElkrommTestUtils.assertEquals(reader.getSecondInput(), reader2.getSecondInput());
         
         assert reader.getLed1() == reader2.getLed1();
         assert reader.getLed2() == reader2.getLed2();

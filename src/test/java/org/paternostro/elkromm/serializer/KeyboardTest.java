@@ -30,8 +30,8 @@ public class KeyboardTest {
         assert keyboard.getAddress() == keyboard2.getAddress() : "Expected address " + keyboard.getAddress() + " got " + keyboard2.getAddress();
         assert keyboard.getVersion().equals(keyboard2.getVersion()) : "Expected version " + keyboard.getVersion() + " got " + keyboard2.getVersion();
 
-        ElkrommTestUtils.testInput(keyboard.getFirstInput(), keyboard2.getFirstInput());
-        ElkrommTestUtils.testInput(keyboard.getSecondInput(), keyboard2.getSecondInput());
+        ElkrommTestUtils.assertEquals(keyboard.getFirstInput(), keyboard2.getFirstInput());
+        ElkrommTestUtils.assertEquals(keyboard.getSecondInput(), keyboard2.getSecondInput());
         
         assert keyboard.getEnablings() == keyboard2.getEnablings();
 

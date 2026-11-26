@@ -36,8 +36,8 @@ public class KeyboardsTest {
             assert keyboards[i].getAddress() == keyboards2[i].getAddress() : "Expected address " + keyboards[i].getAddress() + " got " + keyboards2[i].getAddress();
             assert keyboards[i].getVersion().equals(keyboards2[i].getVersion()) : "Expected version " + keyboards[i].getVersion() + " got " + keyboards2[i].getVersion();
 
-            ElkrommTestUtils.testInput(keyboards[i].getFirstInput(), keyboards2[i].getFirstInput());
-            ElkrommTestUtils.testInput(keyboards[i].getSecondInput(), keyboards2[i].getSecondInput());
+            ElkrommTestUtils.assertEquals(keyboards[i].getFirstInput(), keyboards2[i].getFirstInput());
+            ElkrommTestUtils.assertEquals(keyboards[i].getSecondInput(), keyboards2[i].getSecondInput());
             
             assert keyboards[i].getEnablings() == keyboards2[i].getEnablings();
 

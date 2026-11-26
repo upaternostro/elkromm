@@ -946,8 +946,8 @@ public class ElkrommFacadeFunctionalTest {
         assertTrue(keyboards.length > 0);
         assertEquals(1, keyboards[0].getAddress());
         assertEquals("2.71", keyboards[0].getVersion());
-        ElkrommTestUtils.testInput(singleKeyboard.getKeyboard().getFirstInput(), keyboards[0].getFirstInput());
-        ElkrommTestUtils.testInput(singleKeyboard.getKeyboard().getSecondInput(), keyboards[0].getSecondInput());
+        ElkrommTestUtils.assertEquals(singleKeyboard.getKeyboard().getFirstInput(), keyboards[0].getFirstInput());
+        ElkrommTestUtils.assertEquals(singleKeyboard.getKeyboard().getSecondInput(), keyboards[0].getSecondInput());
         assertEquals(Keyboard.Enablings.KE_ENTRY.getValue(), keyboards[0].getEnablings());
         assertEquals(0x01, ElkrommUtils.packPartitions(keyboards[0].getAssociatedPartitions()));
         assertEquals(Keyboard.AudioFeatures.KA_NONE.getValue(), keyboards[0].getAudioFeatures());
