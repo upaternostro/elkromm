@@ -47,6 +47,14 @@ following the [Keep a Changelog](https://keepachangelog.com/) convention (Added 
   `getBurglarTime()`/`setBurglarTime()`, and `SMSs.SMSIndex.SMS_BURLGAR` is now `SMS_BURGLAR`
 - **Breaking:** `ElkronCommand.EXPANSIONS_PROGRAMMING` and `KEYPADS_PROGRAMMING` renamed `SET_EXPANSIONS` and
   `SET_KEYPADS`
+- **Breaking:** the entry and exit delays of a partition are now an enumeration, `Partition.EntryExitDelay`
+  (`PD_DISABLED`, `PD_TEN_SECONDS`, `PD_TWENTY_SECONDS`, `PD_THIRTY_SECONDS`, `PD_ONE_MINUTE`,
+  `PD_ONE_MINUTE_THIRTY_SECONDS`, `PD_FIVE_MINUTES`) instead of a number of seconds: the `Partition` constructor
+  and `getEntryDelay()`/`setEntryDelay()`/`getExitDelay()`/`setExitDelay()` use it. The raw value of the five
+  minutes delay is 230, not 300
+- **Breaking (emulator):** `partition.<N>.entry.time` and `partition.<N>.exit.time` now take the name of the
+  enumeration constant without its prefix (`DISABLED`, `THIRTY_SECONDS`...) instead of a number of seconds, and
+  default to `DISABLED`
 - **Breaking (emulator):** the properties file is now `elkromm-emulator.properties` (was `elkron.properties`) and
   the keys now start with `org.paternostro.elkromm.emulator.` (was `org.paternostro.elkron.`): an existing file
   must be renamed and updated

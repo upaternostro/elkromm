@@ -175,14 +175,14 @@ public class Config {
     /** Default value of {@link #K_PARTITIONS}. */
     public static final String D_PARTITIONS     = "1";
 
-    /** Property key: entry time in seconds of a partition. This is a {@link String#format} pattern, filled with the partition number (1-based). */
+    /** Property key: entry time of a partition, see {@link Partition.EntryExitDelay}. This is a {@link String#format} pattern, filled with the partition number (1-based). */
     public static final String K_PARTITION_ENTRY_TIME   = "org.paternostro.elkromm.emulator.partition.%d.entry.time";
     /** Default value of {@link #K_PARTITION_ENTRY_TIME}. */
-    public static final String D_PARTITION_ENTRY_TIME   = "0";
-    /** Property key: exit time in seconds of a partition. This is a {@link String#format} pattern, filled with the partition number (1-based). */
+    public static final String D_PARTITION_ENTRY_TIME   = "DISABLED";
+    /** Property key: exit time of a partition, see {@link Partition.EntryExitDelay}. This is a {@link String#format} pattern, filled with the partition number (1-based). */
     public static final String K_PARTITION_EXIT_TIME    = "org.paternostro.elkromm.emulator.partition.%d.exit.time";
     /** Default value of {@link #K_PARTITION_EXIT_TIME}. */
-    public static final String D_PARTITION_EXIT_TIME    = "0";
+    public static final String D_PARTITION_EXIT_TIME    = "DISABLED";
     /** Property key: name of a partition. This is a {@link String#format} pattern, filled with the partition number (1-based). */
     public static final String K_PARTITION_NAME = "org.paternostro.elkromm.emulator.partition.%d.name";
     /** Default value of {@link #K_PARTITION_NAME}. */
@@ -746,22 +746,22 @@ public class Config {
         return getIntProperty(K_PARTITIONS, D_PARTITIONS, "partitions");
     }
 
-    public int getPartitionEntryTime(int partition) {
+    public Partition.EntryExitDelay getPartitionEntryTime(int partition) {
         if (partition < 1 || partition > ElkrommFacade.MAX_PARTITIONS) {
             logger.warn("Invalid partition number: " + partition + ", must be between 1 and " + ElkrommFacade.MAX_PARTITIONS);
-            return 0;
+            return Partition.EntryExitDelay.PD_DISABLED;
         }
         
-        return getIntProperty(String.format(K_PARTITION_ENTRY_TIME, partition), D_PARTITION_ENTRY_TIME, "partition " + partition + " entry time");
+        return Partition.EntryExitDelay.valueOf("PD_" + properties.getProperty(String.format(K_PARTITION_ENTRY_TIME, partition), D_PARTITION_ENTRY_TIME));
     }
 
-    public int getPartitionExitTime(int partition) {
+    public Partition.EntryExitDelay getPartitionExitTime(int partition) {
         if (partition < 1 || partition > ElkrommFacade.MAX_PARTITIONS) {
             logger.warn("Invalid partition number: " + partition + ", must be between 1 and " + ElkrommFacade.MAX_PARTITIONS);
-            return 0;
+            return Partition.EntryExitDelay.PD_DISABLED;
         }
         
-        return getIntProperty(String.format(K_PARTITION_EXIT_TIME, partition), D_PARTITION_EXIT_TIME, "partition " + partition + " exit time");
+        return Partition.EntryExitDelay.valueOf("PD_" + properties.getProperty(String.format(K_PARTITION_EXIT_TIME, partition), D_PARTITION_EXIT_TIME));
     }
 
     public String getPartitionName(int partition) {

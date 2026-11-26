@@ -132,8 +132,8 @@ not present falls back to its default value below.
 | `org.paternostro.elkromm.emulator.area.<N>.partitions` | `1` for area 1, `0` otherwise | Partitions of an area (`<N>`: 1-4) |
 | `org.paternostro.elkromm.emulator.area.<N>.name` | `...` | Name of an area (`<N>`: 1-4) |
 | `org.paternostro.elkromm.emulator.partitions` | `1` | Number of partitions of the emulated panel |
-| `org.paternostro.elkromm.emulator.partition.<N>.entry.time` | `0` | Entry time of a partition (`<N>`: 1-8) |
-| `org.paternostro.elkromm.emulator.partition.<N>.exit.time` | `0` | Exit time of a partition (`<N>`: 1-8) |
+| `org.paternostro.elkromm.emulator.partition.<N>.entry.time` | `DISABLED` | Entry time of a partition (`<N>`: 1-8). Values: `DISABLED`, `TEN_SECONDS`, `TWENTY_SECONDS`, `THIRTY_SECONDS`, `ONE_MINUTE`, `ONE_MINUTE_THIRTY_SECONDS`, `FIVE_MINUTES` |
+| `org.paternostro.elkromm.emulator.partition.<N>.exit.time` | `DISABLED` | Exit time of a partition (`<N>`: 1-8). Values: `DISABLED`, `TEN_SECONDS`, `TWENTY_SECONDS`, `THIRTY_SECONDS`, `ONE_MINUTE`, `ONE_MINUTE_THIRTY_SECONDS`, `FIVE_MINUTES` |
 | `org.paternostro.elkromm.emulator.partition.<N>.name` | `...` | Name of a partition (`<N>`: 1-8) |
 | `org.paternostro.elkromm.emulator.partition.<N>.vocalName` | `false` | Vocal name of a partition (`<N>`: 1-8) |
 | `org.paternostro.elkromm.emulator.partition.<N>.type` | `STANDARD` | Type of a partition (`<N>`: 1-8) |
@@ -250,8 +250,8 @@ org.paternostro.elkromm.emulator.areas=1
 org.paternostro.elkromm.emulator.area.1.name=Home
 org.paternostro.elkromm.emulator.partitions=1
 org.paternostro.elkromm.emulator.partition.1.name=Ground floor
-org.paternostro.elkromm.emulator.partition.1.entry.time=30
-org.paternostro.elkromm.emulator.partition.1.exit.time=30
+org.paternostro.elkromm.emulator.partition.1.entry.time=THIRTY_SECONDS
+org.paternostro.elkromm.emulator.partition.1.exit.time=THIRTY_SECONDS
 ```
 
 If the file is missing entirely, the emulator still starts, using every default above.

@@ -15,7 +15,7 @@ import org.paternostro.elkromm.ElkrommFacade;
  */
 public class Partition implements Serializable
 {
-    public static final Partition   UNUSED = new Partition(ElkrommFacade.DEFAULT_NAME, false, Type.STANDARD, 0, 0);
+    public static final Partition   UNUSED = new Partition(ElkrommFacade.DEFAULT_NAME, false, Type.STANDARD, EntryExitDelay.PD_DISABLED, EntryExitDelay.PD_DISABLED);
 
     /** How a partition behaves with respect to self-exclusion/arming restrictions. */
     public enum Type
@@ -30,11 +30,68 @@ public class Partition implements Serializable
         UNKNOWN         // should never happen...
     }
 
-    private String      name;
-    private boolean     vocalName;
-    private Type        type;
-    private int         entryDelay;
-    private int         exitDelay;
+    /**
+     * The delay a partition waits on entry/exit before triggering an alarm
+     *
+     * @since 0.6
+     */
+    public enum EntryExitDelay {
+        /** Immediate alarm */
+        PD_DISABLED((byte)0),
+        /** Ten seconds delay */
+        PD_TEN_SECONDS((byte)10),
+        /** Twenty seconds delay */
+        PD_TWENTY_SECONDS((byte)20),
+        /** Thirty seconds delay */
+        PD_THIRTY_SECONDS((byte)30),
+        /** Sixty seconds delay */
+        PD_ONE_MINUTE((byte)60),
+        /** Ninety seconds delay */
+        PD_ONE_MINUTE_THIRTY_SECONDS((byte)90),
+        /** Three hundred seconds delay. <b>WARNING:</b> this is the only value whose raw value (230) does not match its duration in seconds. */
+        PD_FIVE_MINUTES((byte)230);
+
+        private final byte value;
+
+        EntryExitDelay(byte value) {
+            this.value = value;
+        }
+
+        /**
+         * Returns the raw byte value of this delay.
+         *
+         * @return the raw value
+         */
+        public byte getValue()
+        {
+            return value;
+        }
+
+        /**
+         * Looks up the {@code EntryExitDelay} matching a raw byte value.
+         *
+         * @param value the raw value to look up
+         * @return the matching delay, or {@code null} if none matches
+         */
+        public static EntryExitDelay valueOf(byte value) {
+            EntryExitDelay  retval = null;
+
+            for (EntryExitDelay pivot : values()) {
+                if (pivot.getValue() == value) {
+                    retval = pivot;
+                    break;
+                }
+            }
+
+            return retval;
+        }
+    }
+
+    private String          name;
+    private boolean         vocalName;
+    private Type            type;
+    private EntryExitDelay  entryDelay;
+    private EntryExitDelay  exitDelay;
 
     /**
      * Creates a new partition.
@@ -42,10 +99,10 @@ public class Partition implements Serializable
      * @param name display name
      * @param vocalName whether the name is announced by voice
      * @param type this partition's behavior type
-     * @param entryDelay entry delay, in seconds
-     * @param exitDelay exit delay, in seconds
+     * @param entryDelay entry delay
+     * @param exitDelay exit delay
      */
-    public Partition(String name, boolean vocalName, Type type, int entryDelay, int exitDelay)
+    public Partition(String name, boolean vocalName, Type type, EntryExitDelay entryDelay, EntryExitDelay exitDelay)
     {
         setName(name);
         setVocalName(vocalName);
@@ -122,11 +179,11 @@ public class Partition implements Serializable
     }
 
     /**
-     * Returns the entry delay, in seconds.
+     * Returns the entry delay.
      *
      * @return the entry delay
      */
-    public int getEntryDelay()
+    public EntryExitDelay getEntryDelay()
     {
         return entryDelay;
     }
@@ -134,22 +191,22 @@ public class Partition implements Serializable
     /**
      * Sets the entry delay.
      *
-     * @param entryDelay the delay to set, in seconds, non-negative
-     * @throws IllegalArgumentException if negative
+     * @param entryDelay the delay to set, not {@code null}
+     * @throws IllegalArgumentException if {@code entryDelay} is {@code null}
      */
-    public void setEntryDelay(int entryDelay)
+    public void setEntryDelay(EntryExitDelay entryDelay)
     {
-        if (entryDelay < 0) throw new IllegalArgumentException("Wrong entry delay " + entryDelay);
+        if (entryDelay == null) throw new IllegalArgumentException("Missing mandatory entryDelay");
 
         this.entryDelay = entryDelay;
     }
 
     /**
-     * Returns the exit delay, in seconds.
+     * Returns the exit delay.
      *
      * @return the exit delay
      */
-    public int getExitDelay()
+    public EntryExitDelay getExitDelay()
     {
         return exitDelay;
     }
@@ -157,12 +214,12 @@ public class Partition implements Serializable
     /**
      * Sets the exit delay.
      *
-     * @param exitDelay the delay to set, in seconds, non-negative
-     * @throws IllegalArgumentException if negative
+     * @param exitDelay the delay to set, not {@code null}
+     * @throws IllegalArgumentException if {@code exitDelay} is {@code null}
      */
-    public void setExitDelay(int exitDelay)
+    public void setExitDelay(EntryExitDelay exitDelay)
     {
-        if (exitDelay < 0) throw new IllegalArgumentException("Wrong exit delay " + exitDelay);
+        if (exitDelay == null) throw new IllegalArgumentException("Missing mandatory exitDelay");
 
         this.exitDelay = exitDelay;
     }

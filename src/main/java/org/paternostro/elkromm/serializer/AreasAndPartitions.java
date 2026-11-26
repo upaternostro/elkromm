@@ -114,8 +114,8 @@ public class AreasAndPartitions implements ElkrommSerializer<org.paternostro.elk
                     break;
             }
 
-            ElkrommUtils.setWord(data, PARTITIONS_ENTRY_DELAYS_OFFSET + i*DELAY_SIZE, obj.getPartition(i).getEntryDelay()); // tempo di ingresso
-            ElkrommUtils.setWord(data, PARTITIONS_EXIT_DELAYS_OFFSET + i*DELAY_SIZE, obj.getPartition(i).getExitDelay()); // tempo di uscita
+            ElkrommUtils.setWord(data, PARTITIONS_ENTRY_DELAYS_OFFSET + i*DELAY_SIZE, obj.getPartition(i).getEntryDelay().getValue() & 0xFF); // entry delay
+            ElkrommUtils.setWord(data, PARTITIONS_EXIT_DELAYS_OFFSET + i*DELAY_SIZE, obj.getPartition(i).getExitDelay().getValue() & 0xFF); // exit delay
             ElkrommUtils.setText(data, PARTITIONS_NAMES_OFFSET + i*ElkrommFacade.NAME_LENGTH, obj.getPartition(i).getName(), ElkrommFacade.NAME_LENGTH); // nome del settore
         }
 
@@ -165,7 +165,7 @@ public class AreasAndPartitions implements ElkrommSerializer<org.paternostro.elk
                 }
             }
 
-            retval.addPartition(new Partition(ElkrommUtils.getText(data, PARTITIONS_NAMES_OFFSET + i * ElkrommFacade.NAME_LENGTH, ElkrommFacade.NAME_LENGTH), false, type, ElkrommUtils.getWord(data, PARTITIONS_ENTRY_DELAYS_OFFSET + i * DELAY_SIZE), ElkrommUtils.getWord(data, PARTITIONS_EXIT_DELAYS_OFFSET + i * DELAY_SIZE)));
+            retval.addPartition(new Partition(ElkrommUtils.getText(data, PARTITIONS_NAMES_OFFSET + i * ElkrommFacade.NAME_LENGTH, ElkrommFacade.NAME_LENGTH), false, type, Partition.EntryExitDelay.valueOf((byte)ElkrommUtils.getWord(data, PARTITIONS_ENTRY_DELAYS_OFFSET + i * DELAY_SIZE)), Partition.EntryExitDelay.valueOf((byte)ElkrommUtils.getWord(data, PARTITIONS_EXIT_DELAYS_OFFSET + i * DELAY_SIZE))));
         }
 
         return retval;

@@ -229,8 +229,8 @@ Offset	| Significato	| Note
 0x65	| Numero di settori	|
 0x66	| Bitmask self exclusion	| LSB = settore 1. Un settore non può essere contemporaneamente self exclusion e arming block. Per default, i settori hanno entrambi i flag a zero.
 0x67	| Bitmask arming block	| LSB = settore 1
-0x68-0x77 | Entry delay	| 2 byte per settore (partendo da 0x68-0x69 per settore 1 e così via), big endian
-0x78-0x87 | Exit delay	| 2 byte per settore (partendo da 0x78-0x79 per settore 1 e così via), big endian
+0x68-0x77 | Entry delay	| 2 byte per settore (partendo da 0x68-0x69 per settore 1 e così via), big endian; in pratica solo il byte basso è diverso da zero, e assume uno dei valori elencati sotto la tabella
+0x78-0x87 | Exit delay	| 2 byte per settore (partendo da 0x78-0x79 per settore 1 e così via), big endian; stessi valori dell'entry delay
 0x88-0x9f	| Nome del primo settore	|
 0xa0-0xb7	| Nome del secondo settore	|
 0xb8-0xcf	| Nome del terzo settore	|
@@ -241,6 +241,8 @@ Offset	| Significato	| Note
 0x130-0x147	| Nome del ottavo settore	|
 0x148	| ?	| Il serializer lo azzera esplicitamente in scrittura (`data[328] = 0; // ???`); stessa firma degli altri byte "di stato" già documentati (vedi [Input](#input)) — sospetto contenuto dinamico non gestito dal client, non ancora identificato ma incluso nel checksum
 0x149-0x14c	| Checksum blocco	|
+
+I tempi di ingresso e di uscita assumono uno di questi valori grezzi (la libreria li mappa su `Partition.EntryExitDelay`): `0x00` = disabilitato (allarme immediato), `0x0a` = 10 s, `0x14` = 20 s, `0x1e` = 30 s, `0x3c` = 60 s, `0x5a` = 90 s e `0xe6` (230) = cinque minuti: quest'ultimo **non** è il numero di secondi. Sono gli unici valori impostabili, sia dalla tastiera sia da Hi-Connect.
 
 ` `  
 ` `  

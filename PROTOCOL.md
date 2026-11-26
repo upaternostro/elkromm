@@ -229,8 +229,8 @@ Offset	| Meaning	| Note
 0x65	| Number of partitions	|
 0x66	| Self-exclusion bitmask	| LSB = partition 1. A partition cannot be both self-exclusion and arming block. Standard partitions have both flags to zero.
 0x67	| Arming block bitmask	| LSB = partition 1
-0x68-0x77 | Entry delay	| 2 bytes per partition (starting at 0x68-0x69 for partition 1 and so on), big endian
-0x78-0x87 | Exit delay	| 2 bytes per partition (starting at 0x78-0x79 for partition 1 and so on), big endian
+0x68-0x77 | Entry delay	| 2 bytes per partition (starting at 0x68-0x69 for partition 1 and so on), big endian; in practice only the low byte is non-zero, and it takes one of the values listed below the table
+0x78-0x87 | Exit delay	| 2 bytes per partition (starting at 0x78-0x79 for partition 1 and so on), big endian; same values as the entry delay
 0x88-0x9f	| First partition name	|
 0xa0-0xb7	| Second partition name	|
 0xb8-0xcf	| Third partition name	|
@@ -241,6 +241,8 @@ Offset	| Meaning	| Note
 0x130-0x147	| Eighth partition name	|
 0x148	| ?	| The serializer explicitly zeroes it on write (`data[328] = 0; // ???`); same signature as the other "status" bytes already documented (see [Input](#input)) — suspected dynamic content not handled by the client, not yet identified but computed in checksum
 0x149-0x14c	| Block checksum	|
+
+The entry and exit delays take one of these raw values (the library maps them to `Partition.EntryExitDelay`): `0x00` = disabled (immediate alarm), `0x0a` = 10 s, `0x14` = 20 s, `0x1e` = 30 s, `0x3c` = 60 s, `0x5a` = 90 s and `0xe6` (230) = five minutes: the last one is **not** the number of seconds. These are the only values that can be set, both from the keypad and from Hi-Connect.
 
 ` `  
 ` `  
